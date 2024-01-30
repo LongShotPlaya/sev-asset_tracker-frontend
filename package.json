@@ -28,7 +28,7 @@
     "@mdi/js": "^7.0.96",
     "@vitejs/plugin-vue": "^4.1.0",
     "cross-env": "^7.0.3",
-    "cypress": "^12.9.0",
+    "cypress": "^13.6.3",
     "vite": "^4.2.1"
   }
 }
