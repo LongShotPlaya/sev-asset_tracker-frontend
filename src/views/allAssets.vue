@@ -7,11 +7,12 @@ import Utils from "../config/utils.js";
 const router = useRouter();
 const user = Utils.getStore("user");
 const message = ref("Everything is working");
+const searchTerm = ref("");
 
 const asset = ref({
     id: null,
     type: "",
-    catergory: "",
+    category: "",
     status: "",
     borrowerId: "",
     locationId: "",
@@ -41,16 +42,22 @@ onMounted(() => {
                     <h4>{{ user.fName }}</h4> -->
                 </v-card-text>
 
-                <v-row justify="end" style="padding: 1% 5% 0 0">  
-                    <v-btn class="mx-2" color="primary" @click="addAsset">Add Asset</v-btn>
+                <v-row class="bar">  
+                    <v-col cols="9">
+                        <input v-model="searchTerm" @input="search" placeholder="Search" class="searchBar">
+                    </v-col>
+
+                    <v-col cols="3" class="d-flex justify-end">
+                        <v-btn class="mx-2" color="primary" @click="addAsset">Add Asset</v-btn>
+                    </v-col>
                 </v-row>
             <br>
                 <v-table>
                     <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>type</th>
-                                <th>Catergory</th>
+                                <th>Type</th>
+                                <th>Category</th>
                                 <th>Status</th>
                                 <th>Current Owner</th>
                                 <th>Current Location</th>                            
@@ -60,10 +67,10 @@ onMounted(() => {
                         <tr v-for="(asset, index) in assets" :key="index">
                             <td>{{ `${asset.id}` }}</td>
                             <td>{{ `${asset.type}` }}</td>
-                            <td>{{ `${asset.catergory}`}}</td>
+                            <td>{{ `${asset.category}`}}</td>
                             <td>{{ `${asset.status}` }}</td>
                             <td>{{ `${asset.borrowerId}` }}</td>
-                            <td>{{ `${asset.LocationId}`}}</td>
+                            <td>{{ `${asset.locationId}`}}</td>
                         </tr>
                     </tbody>
                 </v-table>
@@ -76,5 +83,14 @@ onMounted(() => {
 </template>
 
 <style>
+    .searchBar{
+        padding-top: 1%; 
+        padding-bottom: 1%; 
+        margin-top: 0.5%;
+    }
+    .bar{
+        padding-left: 5%; 
+        padding-right: 4%;
+    }
 
 </style>
