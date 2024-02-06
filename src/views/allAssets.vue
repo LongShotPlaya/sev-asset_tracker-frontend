@@ -19,7 +19,7 @@ const asset = ref({
 });
 
 const addAsset = () => {
-    router.push({name: "addAsset"}); //Route to add asset page
+    router.push({name: "/addAsset"});
 }
 
 
@@ -38,8 +38,6 @@ onMounted(() => {
         <!--List of all assets-->
             <v-card>
                 <v-card-text>
-                    <!-- <b>{{ message }}</b>
-                    <h4>{{ user.fName }}</h4> -->
                 </v-card-text>
 
                 <v-row class="bar">  
@@ -74,10 +72,9 @@ onMounted(() => {
                         </tr>
                     </tbody>
                 </v-table>
-
-                <v-table>
-
-                </v-table>
+                <v-card-text>
+                    <b>{{ message }}</b>
+                </v-card-text>
             </v-card>
     </v-container>
 </template>
@@ -86,7 +83,13 @@ onMounted(() => {
     .searchBar{
         padding-top: 1%; 
         padding-bottom: 1%; 
+        padding-left: 1%;
         margin-top: 0.5%;
+        border-style: solid;
+        border-color: rgb(219, 219, 219);
+        border-radius: 6px;
+        box-shadow: 2px 2px 2px 0px rgb(174, 174, 174);        
+        
     }
     .bar{
         padding-left: 5%; 
