@@ -41,20 +41,20 @@ onMounted(() => {
                     <h4>{{ user.fName }}</h4> -->
                 </v-card-text>
 
-                <v-row justify="end" style="padding-right: 4%">  
+                <v-row justify="end" style="padding: 1% 5% 0 0">  
                     <v-btn class="mx-2" color="primary" @click="addAsset">Add Asset</v-btn>
                 </v-row>
             <br>
                 <v-table>
                     <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>type</th>
-                            <th>Catergory</th>
-                            <th>Status</th>
-                            <th>Current Owner</th>
-                            <th>Current Location</th>                            
-                        </tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>type</th>
+                                <th>Catergory</th>
+                                <th>Status</th>
+                                <th>Current Owner</th>
+                                <th>Current Location</th>                            
+                            </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(asset, index) in assets" :key="index">
