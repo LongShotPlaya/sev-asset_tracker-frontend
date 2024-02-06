@@ -9,21 +9,17 @@ const user = Utils.getStore("user");
 const message = ref("Everything is working");
 
 const asset = ref({
-    id: ref(),
-    returnDate: ref(),
-    borrowerId: ref(),
-    type: ref(""),
-    catergory: ref(""),
-})
+    id: null,
+    type: "",
+    catergory: "",
+    status: "",
+    borrowerId: "",
+    locationId: "",
+});
 
-
-const getAssets = () => {
-    const data = {
-        id: asset.value.id,
-        returnDate: asset.value.returnDate,
-        borrowerId: asset.value.borrowerId,
-    };
-};
+const addAsset = () => {
+    router.push({name: "addAsset"}); //Route to add asset page
+}
 
 
 onMounted(() => {
@@ -45,25 +41,29 @@ onMounted(() => {
                     <h4>{{ user.fName }}</h4> -->
                 </v-card-text>
 
-                <v-row justify="end" style="padding-right: 5%;">  
-                    <v-btn class="mx-2" color="primary" @click="saveChanges">Add Asset</v-btn>
+                <v-row justify="end" style="padding-right: 4%">  
+                    <v-btn class="mx-2" color="primary" @click="addAsset">Add Asset</v-btn>
                 </v-row>
-
-                <br>
-
+            <br>
                 <v-table>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Return Date</th>
+                            <th>type</th>
+                            <th>Catergory</th>
+                            <th>Status</th>
                             <th>Current Owner</th>
+                            <th>Current Location</th>                            
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="(asset, index) in assets" :key="index">
                             <td>{{ `${asset.id}` }}</td>
-                            <td>{{ `${asset.returnDate}`}}</td>
-                            <td>{{ `${asset.borrowerId}`}}</td>
+                            <td>{{ `${asset.type}` }}</td>
+                            <td>{{ `${asset.catergory}`}}</td>
+                            <td>{{ `${asset.status}` }}</td>
+                            <td>{{ `${asset.borrowerId}` }}</td>
+                            <td>{{ `${asset.LocationId}`}}</td>
                         </tr>
                     </tbody>
                 </v-table>
