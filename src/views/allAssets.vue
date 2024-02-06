@@ -41,12 +41,12 @@ onMounted(() => {
         <!--List of all assets-->
             <v-card>
                 <v-card-text>
-                    <b>{{ message }}</b>
-                    <h4>{{ user.fName }}</h4>
+                    <!-- <b>{{ message }}</b>
+                    <h4>{{ user.fName }}</h4> -->
                 </v-card-text>
 
-                <v-row justify="flex-end">  
-                    <v-btn class="mx-2" color="secondary" @click="saveChanges">Add Asset</v-btn>
+                <v-row justify="end" style="padding-right: 5%;">  
+                    <v-btn class="mx-2" color="primary" @click="saveChanges">Add Asset</v-btn>
                 </v-row>
 
                 <br>
