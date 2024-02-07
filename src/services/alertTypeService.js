@@ -7,8 +7,8 @@ export default {
     getAlert(alertId) {
         return apiClient.get(`alertType/${alertId}`);
     },
-    createAlert() {
-        return apiClient.post(`/alertType`);
+    createAlert(data) {
+        return apiClient.post(`/alertType/${data}`);
     },
     updateAlert(alertId) {
         return apiClient.put(`/alertType/${alertId}`, data);
