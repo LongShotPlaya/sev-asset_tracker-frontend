@@ -41,16 +41,16 @@ onMounted(() => {
                 </v-card-text>
 
                 <v-row class="bar">  
-                    <v-col cols="9">
+                    <v-col cols=start>
                         <input v-model="searchTerm" @input="search" placeholder="Search" class="searchBar">
                     </v-col>
 
-                    <v-col cols="3" class="d-flex justify-end">
-                        <v-btn class="mx-2" color="primary" @click="addAsset">Add Asset</v-btn>
+                    <v-col cols=end class="d-flex justify-end">
+                        <v-btn class="mx-3" color="primary" @click="addAsset">Add Asset</v-btn>
                     </v-col>
                 </v-row>
             <br>
-                <v-table>
+                <v-table class="infoTable">
                     <thead>
                             <tr>
                                 <th>ID</th>
@@ -80,6 +80,12 @@ onMounted(() => {
 </template>
 
 <style>
+    .mx-3{
+        padding: 10px 40px;
+        min-width: 200px;
+        min-height: 36px;
+        border-radius: 6px;
+    }
     .searchBar{
         padding-top: 1%; 
         padding-bottom: 1%; 
@@ -88,12 +94,16 @@ onMounted(() => {
         border-style: solid;
         border-color: rgb(219, 219, 219);
         border-radius: 6px;
-        box-shadow: 2px 2px 2px 0px rgb(174, 174, 174);        
-        
+        box-shadow: 1px 1px 1px 0px rgb(174, 174, 174);        
+        max-height: 36px;
+        min-height: 36px;
     }
     .bar{
         padding-left: 5%; 
         padding-right: 4%;
+    }
+    .infoTable{
+        text-align: center;
     }
 
 </style>
