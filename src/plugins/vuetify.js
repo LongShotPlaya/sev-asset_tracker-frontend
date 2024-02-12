@@ -2,9 +2,7 @@
  * Vuetify3 Plugin
  */
 import { createVuetify } from "vuetify";
-
-// Misc
-import { loadFonts } from "./webfontloader";
+import { loadFonts } from "./webfontloader";// Misc
 loadFonts();
 
 // Styles
@@ -14,11 +12,11 @@ import "@mdi/font/css/materialdesignicons.css";
 const myCustomLightTheme = {
   dark: false,
   colors: {
-    primary: "#80162B",
-    secondary: "#E1E1E1",
-    accent: "#47121D",
-    success: "#47121D",
-    error: "#EE5044",
+    primary: "#80162B",   //maroon
+    secondary: "#E1E1E1", //silver
+    accent: "#47121D",    //dark maroon
+    success: "#47121D",   //dark maroon
+    error: "#EE5044",     //light red
     teal: "#63BAC0",
     blue: "#196CA2",
     yellow: "#F8C545",
