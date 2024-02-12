@@ -11,29 +11,29 @@
 	const bannerName = ref("");
 	const drawer = ref(false);
 
-	const links =[
+	const links = [
 		{ bannerName: 'Home', routeName: "add", permission: "any" },
 		{ bannerName: 'Seen by everyone', routeName: "", permission: "any" },
 		{ bannerName: 'Seen by admins', routeName: "", permission: "test2" },
-
 	];
-	const items = ref([]);
+	const linksAllowed = ref([]);
 
 	const configureMenu = () => {
-	// Get the the user's info
-	//user.value = null; 
-	user.value = Utils.getStore("user");
-	if (user.value) {
-		initials.value = user.value.fName[0] + user.value.lName[0];
-		name.value = user.value.fName + " " + user.value.lName;
-	}
+		// Get the the user's info
+		//user.value = null; why is this here??
+		user.value = Utils.getStore("user");
+		if (user.value) {
+			initials.value = user.value.fName[0] + user.value.lName[0];
+			name.value = user.value.fName + " " + user.value.lName;
+		}
 
-	// Configure the items in the menu
-	items.value = [];
-	links.forEach((item) => {
-		/*if (authorize(item.authLevel))*/ items.value.push(item);
-	});
-
+		// Configure the linksAllowed in the menu
+		linksAllowed.value = [];
+		links.forEach((item) => {
+			/*if (authorize(item.authLevel))*/
+				linksAllowed.value.push(item);
+			//console.log(item);
+		});
 	};
 
 	const logout = () => {
@@ -51,6 +51,10 @@
 	onMounted(() => {
 	logoURL.value = ocLogo;
 	configureMenu();
+	//if ($router)
+	//	console.log("Router is defined");
+	//else
+	//	console.log("Router is not working");
 	//bannerName.value = $route.name;
 	});
 
@@ -96,14 +100,11 @@
 	</v-menu>
 	</v-app-bar>
 			<v-navigation-drawer v-model="drawer" temporary>
-			<!--<v-list density = "compact" nav>
-				<v-list-item title = "Test" value="test"></v-list-item>
-				<v-list-item title = "Home" value="home"></v-list-item>
-				<v-list-item title = "About" value="about"></v-list-item>
-			</v-list>-->
 			<v-list>
-				<v-list-item v-for="(item, i) in items" :key = "i">
-				<v-list-item-title @click="router.push({name: item.routeName})">{{ item.bannerName }}</v-list-item-title>
+				<v-list-item v-for="(item, i) in linksAllowed" :key = "i">
+					<v-list-item-title @click = "router.push({name: item.routeName})">
+						{{ item.bannerName }}
+					</v-list-item-title>
 				</v-list-item>
 			</v-list>
 		</v-navigation-drawer>

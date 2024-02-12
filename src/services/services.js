@@ -5,11 +5,7 @@ import Router from "../router.js";
 
 var baseurl = "";
 if (import.meta.env.DEV) {
-<<<<<<< Updated upstream
   baseurl = "http://localhost/asset-t3/";
-=======
-  baseurl = "http://localhost/asset-t3";
->>>>>>> Stashed changes
 } else {
   baseurl = "/asset-t3/";
 }
