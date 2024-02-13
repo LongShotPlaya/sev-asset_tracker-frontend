@@ -3,7 +3,11 @@
 	import { ref, onMounted, watch } from "vue";
 	import Utils from "../config/utils";
 	import AuthServices from "../services/authServices";
+	import { useRouter } from 'vue-router';
+	//import routes from "./router";
 
+	//const route = routes();
+	const router = useRouter();
 	const user = ref(null);
 	const initials = ref("");
 	const name = ref("");
@@ -12,9 +16,9 @@
 	const drawer = ref(false);
 
 	const links = [
-		{ bannerName: 'Home', routeName: "add", permission: "any" },
-		{ bannerName: 'Seen by everyone', routeName: "", permission: "any" },
-		{ bannerName: 'Seen by admins', routeName: "", permission: "test2" },
+		{ bannerName: 'Home', routeName: "tutorials", permission: "any" },
+		{ bannerName: 'Seen by everyone', routeName: "add", permission: "any" },
+		{ bannerName: 'Seen by admins', routeName: "add", permission: "homeView" },
 	];
 	const linksAllowed = ref([]);
 
@@ -30,10 +34,29 @@
 		// Configure the linksAllowed in the menu
 		linksAllowed.value = [];
 		links.forEach((item) => {
-			/*if (authorize(item.authLevel))*/
+			if (authorize(item.permission))
 				linksAllowed.value.push(item);
 			//console.log(item);
 		});
+	};
+
+	const authorize = (permission) => {
+		if(permission == "any") return true; 
+		if(!user.value) return false;
+		switch (permission)
+		{
+			case "homeView":
+				// get the group
+				// check to see if the group has a permission enabled (this one could be redundant)
+				// if not check the user permissions to see if it's enabled
+				// if found, return true
+				return false;
+			case "allAssetView":
+				return false;
+			default:
+				console.error("[MenuBar] Permission " + '"' + permission + '"' + " does not exist");
+				return false;
+		}
 	};
 
 	const logout = () => {
@@ -41,7 +64,7 @@
 		.then((response) => {
 		console.log(response);
 		Utils.removeItem("user");
-		$router.push({ name: "login" });
+		router.push({ name: "login" });
 		})
 		.catch((error) => {
 		console.log("error", error);
@@ -51,16 +74,14 @@
 	onMounted(() => {
 	logoURL.value = ocLogo;
 	configureMenu();
-	//if ($router)
-	//	console.log("Router is defined");
-	//else
-	//	console.log("Router is not working");
-	//bannerName.value = $route.name;
+	//bannerName.value = route.name;
+	//console.log(route.name);
 	});
 
-	//watch(() => $route, () => {
-	//bannerName.value = $route.name;
-	//});
+	watch(() => router, () => {
+		//bannerName.value = route.name;
+		//console.log(route.name);
+	});
 
 </script>
 
@@ -102,9 +123,12 @@
 			<v-navigation-drawer v-model="drawer" temporary>
 			<v-list>
 				<v-list-item v-for="(item, i) in linksAllowed" :key = "i">
-					<v-list-item-title @click = "router.push({name: item.routeName})">
-						{{ item.bannerName }}
-					</v-list-item-title>
+					<v-btn block size="large" variant="text"
+					@click = "router.push({name: item.routeName})">
+						<v-list-item-title class="font-weight-regular text-h6">
+							{{ item.bannerName }}
+						</v-list-item-title>
+					</v-btn>
 				</v-list-item>
 			</v-list>
 		</v-navigation-drawer>
