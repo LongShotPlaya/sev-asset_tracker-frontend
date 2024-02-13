@@ -16,6 +16,7 @@ const myCustomLightTheme = {
     secondary: "#E1E1E1", //silver
     accent: "#47121D",    //dark maroon
     success: "#47121D",   //dark maroon
+    cream:  "f4ecd0",     //cream
     error: "#EE5044",     //light red
     teal: "#63BAC0",
     blue: "#196CA2",
