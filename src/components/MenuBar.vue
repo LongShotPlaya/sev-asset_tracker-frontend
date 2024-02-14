@@ -87,7 +87,7 @@
 
 <template>
 	<!-- App bar things -->
-	<v-app-bar app :elevation="1">
+	<v-app-bar app color="primary" :elevation="4">
 	<v-app-bar-nav-icon @click.stop = "drawer = !drawer"></v-app-bar-nav-icon>
 	<v-spacer></v-spacer>
 	<v-app-bar-title>{{ bannerName }}</v-app-bar-title>
@@ -120,14 +120,13 @@
 		</v-card>
 	</v-menu>
 	</v-app-bar>
-			<v-navigation-drawer v-model="drawer" temporary>
+			<v-navigation-drawer color="grey-darken-3" v-model="drawer" :elevation="6" temporary>
 			<v-list>
 				<v-list-item v-for="(item, i) in linksAllowed" :key = "i">
-					<v-btn block size="large" variant="text"
+					<v-btn text color="grey-lighten-4" class="text-left font-weight-regular text-h6"
+					size="large" variant="text"
 					@click = "router.push({name: item.routeName})">
-						<v-list-item-title class="font-weight-regular text-h6">
-							{{ item.bannerName }}
-						</v-list-item-title>
+						{{ item.bannerName }}
 					</v-btn>
 				</v-list-item>
 			</v-list>
