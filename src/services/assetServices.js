@@ -18,5 +18,5 @@ export default {
     },
     deleteAllAssets() {
         return apiClient.delete(`/assets`);
-    }
+    },
 };

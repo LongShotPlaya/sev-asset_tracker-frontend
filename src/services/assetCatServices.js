@@ -2,21 +2,21 @@ import apiClient from "./services";
 
 export default {
     getAllAssetCats() {
-        return apiClient.get(`/assetCatManagement/`);
+        return apiClient.get(`/assetCategory/`);
     },
     getAssetCat(assetCatId) {
-        return apiClient.get(`/assetCatManagement/${assetCatId}`);
+        return apiClient.get(`/assetCategory/${assetCatId}`);
     },
     createAssetCat(data) {
-        return apiClient.post(`/assetCatManagement/${data}`);
+        return apiClient.post(`/assetCategory/${data}`);
     },
     updateAssetCat(assetCatId) {
-        return apiClient.put(`/assetCatManagement/${assetCatId}`);
+        return apiClient.put(`/assetCategory/${assetCatId}`);
     },
     deleteAllAssetCats() {
-        return apiClient.delete(`/assetCatManagement/`);
+        return apiClient.delete(`/assetCategory/`);
     },
     deleteAssetCat(assetCatId) {
-        return apiClient.delete(`/assetCatManagement${assetCatId}`);
+        return apiClient.delete(`/assetCategory${assetCatId}`);
     },
 };

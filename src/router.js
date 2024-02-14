@@ -18,6 +18,7 @@ import PersonManagement from "./views/PersonManagement.vue";
 import RoomManagement from "./views/RoomManagement.vue";
 import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
+import AlertTypeManagement from "./views/AlertTypeManagement.vue";
 
 
 const router = createRouter({
@@ -36,53 +37,58 @@ const router = createRouter({
     },
     {
       path: "/assetData",
-      name: "data",
+      name: "assetData",
       component: AssetData,
     },
     {
       path: "/assetType",
-      name: "type",
+      name: "assetType",
       component: AssetTypeManagement,
     },
     {
-      path: "/asset/category",
-      name: "category",
+      path: "/assetCategory",
+      name: "assetCategory",
       component: AssetCatManagement,
     },
     {
-      path: "/asset/template",
-      name: "template",
+      path: "/assetTemplate",
+      name: "assetTemplate",
       component: AssetTemplateManagement,
     },
     {
-      path: "/buildingManagement",
-      name: "buildingsManagement",
+      path: "/buildings",
+      name: "buildings",
       component: BuildingManagement,
     },
     {
-      path: "/groupManagement",
-      name: "groupManagement",
+      path: "/groups",
+      name: "groups",
       component: GroupManagement,
     },
     {
-      path: "/personManagement",
-      name: "personManagement",
+      path: "/people",
+      name: "people",
       component: PersonManagement,
     },
     {
-      path: "/roomManagement",
-      name: "roomManagement",
+      path: "/rooms",
+      name: "rooms",
       component: RoomManagement,
     },
     {
-      path: "/templateDataManagement",
-      name: "tamplateDataManagement",
+      path: "/templateData",
+      name: "templateData",
       component: TemplateDataManagement,
     },
     {
-      path: "/vendorManagement",
-      name: "vendorManagement",
+      path: "/vendors",
+      name: "vendors",
       component: VendorManagement,
+    },
+    {
+      path: "/alertType",
+      name: "alertType",
+      component: AlertTypeManagement,
     },
     //{
     //   path: "/tutorials",

@@ -2,21 +2,21 @@ import apiClient from "./services";
 
 export default{
     getAllAssetTemplates() {
-        return apiClient.get(`/assetTemplateManagement/`);
+        return apiClient.get(`/assetTemplate/`);
     },
     getAssetTemplate(assetTemplateId) {
-        return apiClient.get(`/assetTemplateManagement/${assetTemplateId}`);
+        return apiClient.get(`/assetTemplate/${assetTemplateId}`);
     },
     createAssetTemplate(data) {
-        return apiClient.post(`/assetTemplateManagement/${data}`);
+        return apiClient.post(`/assetTemplate/${data}`);
     },
     updateAssetTemplate(assetTemplateId) {
-        return apiClient.put(`/assetTemplateManagement/${assetTemplateId}`);
+        return apiClient.put(`/assetTemplate/${assetTemplateId}`);
     },
     deleteAssetTemplate(assetTemplateId) {
-        return apiClient.delete(`/assetTemplateManagement/${assetTemplateId}`);
+        return apiClient.delete(`/assetTemplate/${assetTemplateId}`);
     },
     deleteAllTemplates() {
-        return apiClient.delete(`/assetTemplateManagement/`);
+        return apiClient.delete(`/assetTemplate/`);
     },
 };

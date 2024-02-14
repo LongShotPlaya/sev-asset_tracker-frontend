@@ -2,21 +2,21 @@ import apiClient from "./services";
 
 export default {
     getAllPeople() {
-        return apiClient.get(`/personManagement/`);
+        return apiClient.get(`/people/`);
     },
     getPerson(personId) {
-        return apiClient.get(`/personManagement/${personId}`);
+        return apiClient.get(`/people/${personId}`);
     },
     createPerson(data) {
-        return apiClient.post(`/personManagement/${data}`);
+        return apiClient.post(`/people/${data}`);
     },
     updatePerson(personId) {
-        return apiClient.put(`/personManagement/${personId}`);
+        return apiClient.put(`/people/${personId}`);
     },
     deletePerson(personId) {
-        return apiClient.delete(`/personManagement/${personId}`);
+        return apiClient.delete(`/people/${personId}`);
     },
     deleteAllPeople() {
-        return apiClient.delete(`/personManagement/`);
+        return apiClient.delete(`/people/`);
     },
 };

@@ -2,21 +2,21 @@ import apiClient from "./services";
 
 export default {
     getAllGroups() {
-        return apiClient.get(`/groupManagement/`);
+        return apiClient.get(`/groups/`);
     },
     getGroup(groupId) {
-        return apiClient.get(`/groupManagement/${groupId}`);
+        return apiClient.get(`/groups/${groupId}`);
     },
     createGroup(data) {
-        return apiClient.post(`/groupManagement/${data}`);
+        return apiClient.post(`/groups/${data}`);
     },
     updateGroup(groupId) {
-        return apiClient.put(`/groupManagement/${groupId}`);
+        return apiClient.put(`/groups/${groupId}`);
     },
     deleteGroup(groupId) {
-        return apiClient.delete(`/groupManagement/${groupId}`);
+        return apiClient.delete(`/groups/${groupId}`);
     },
     deleteAllGroups() {
-        return apiClient.delete(`/groupManagement/`);
+        return apiClient.delete(`/groups/`);
     },
 };

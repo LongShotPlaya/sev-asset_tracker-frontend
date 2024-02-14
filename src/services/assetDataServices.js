@@ -19,4 +19,4 @@ export default {
     deleteAllAssetData() {
         return apiClient.delete(`/assetData/`);
     },
-}
+};
