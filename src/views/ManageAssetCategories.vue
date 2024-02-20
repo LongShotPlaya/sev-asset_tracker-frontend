@@ -2,32 +2,35 @@
   <v-toolbar>
     <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
   </v-toolbar>
-  <v-table>
-    <thead>
-      <tr>
-        <th class="text-left column">
-          Name
-        </th>
-        <th class="text- column">
-          Description
-        </th>
-        <th class="text-left column">
-          Actions
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="item in categories" :key="item.name">
-        <td class="column">{{ item.name }}</td>
-        <td class="column">{{ item.description }}</td>
-        <td class="column">
-          <v-btn color="primary" @click="openDialog(item)">
-            Edit
-          </v-btn>
-        </td>
-      </tr>
-    </tbody>
-  </v-table>
+  <v-card>
+    <v-table>
+      <thead>
+        <tr>
+          <th class="text-left column">
+            Name
+          </th>
+          <th class="text- column">
+            Description
+          </th>
+          <th class="text-left column">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in categories" :key="item.name">
+          <td class="column">{{ item.name }}</td>
+          <td class="column">{{ item.description }}</td>
+          <td class="column">
+            <v-btn color="primary" @click="openDialog(item)">
+              Edit
+            </v-btn>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+  </v-card>
+  
 
   <v-dialog v-model="dialog" persistent max-width="800px">
     <v-card>
@@ -163,6 +166,6 @@ const addCategory = () => {
 <style>
   th.column,
   td.column{
-    width: 33.33%;
+    width: auto;
   }
 </style>
