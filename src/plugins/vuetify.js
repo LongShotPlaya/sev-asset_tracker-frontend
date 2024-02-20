@@ -9,11 +9,16 @@ loadFonts();
 import "vuetify/styles";
 import "@mdi/font/css/materialdesignicons.css";
 
+/**
+ * Primary = use for things like the header and highlighted action btns
+ * btncolor = use this for the outlines of normal actions and btns 
+*/
 const myCustomLightTheme = {
   dark: false,
   colors: {
     primary: "#80162B",   //maroon
     secondary: "#E1E1E1", //silver
+    btncolor: "#8F9AA4",  //dark silver
     accent: "#47121D",    //dark maroon
     success: "#47121D",   //dark maroon
     cream:  "f4ecd0",     //cream
