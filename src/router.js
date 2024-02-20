@@ -36,23 +36,23 @@ const router = createRouter({
       component: AllAssets,
     },
     {
-      path: "/assetData",
-      name: "assetData",
+      path: "/asset-data",
+      name: "asset-data",
       component: AssetData,
     },
     {
-      path: "/assetType",
-      name: "assetType",
+      path: "/asset-type",
+      name: "asset-type",
       component: AssetTypeManagement,
     },
     {
-      path: "/assetCategory",
-      name: "assetCategory",
+      path: "/asset-categories",
+      name: "asset-categories",
       component: AssetCatManagement,
     },
     {
-      path: "/assetTemplate",
-      name: "assetTemplate",
+      path: "/asset-templates",
+      name: "asset-templates",
       component: AssetTemplateManagement,
     },
     {
@@ -76,8 +76,8 @@ const router = createRouter({
       component: RoomManagement,
     },
     {
-      path: "/templateData",
-      name: "templateData",
+      path: "/template-data",
+      name: "template-data",
       component: TemplateDataManagement,
     },
     {
@@ -86,8 +86,8 @@ const router = createRouter({
       component: VendorManagement,
     },
     {
-      path: "/alertType",
-      name: "alertType",
+      path: "/alert-types",
+      name: "alert-types",
       component: AlertTypeManagement,
     },
     //{
@@ -124,6 +124,11 @@ const router = createRouter({
     //   component: EditLesson,
     //   props: true,
     // },
+    {
+      path: "/manageAssetCat",
+      name: "manageAssetCategories",
+      component: ManageAssetCategories,
+    },
   ],
 });
 
