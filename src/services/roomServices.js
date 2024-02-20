@@ -16,7 +16,4 @@ export default {
     deleteRoom(roomId) {
         return apiClient.delete(`/rooms/${roomId}`);
     },
-    deleteAllRooms() {
-        return apiClient.delete(`/rooms/`);
-    },
 };

@@ -16,7 +16,4 @@ export default {
     deleteVendor(vendorId) {
         return apiClient.delete(`/vendors/${vendorId}`);
     },
-    deleteAllVendors() {
-        return apiClient.delete(`/vendors/`);
-    },
 };

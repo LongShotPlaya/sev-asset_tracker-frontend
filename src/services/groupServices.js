@@ -16,7 +16,4 @@ export default {
     deleteGroup(groupId) {
         return apiClient.delete(`/groups/${groupId}`);
     },
-    deleteAllGroups() {
-        return apiClient.delete(`/groups/`);
-    },
 };

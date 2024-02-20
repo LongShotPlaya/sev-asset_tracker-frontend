@@ -16,7 +16,4 @@ export default {
     deletePerson(personId) {
         return apiClient.delete(`/people/${personId}`);
     },
-    deleteAllPeople() {
-        return apiClient.delete(`/people/`);
-    },
 };

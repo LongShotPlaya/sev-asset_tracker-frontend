@@ -16,7 +16,4 @@ export default {
     deleteTemplateData(templateId) {
         return apiClient.delete(`/templateData/${templateId}`);
     },
-    deleteAllTemplateData() {
-        return apiClient.delete(`/templateData/`);
-    },
 };

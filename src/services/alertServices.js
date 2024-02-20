@@ -16,7 +16,4 @@ export default {
     deleteAlert(alertId) {
         return apiClient.delete(`/alert/${alertId}`);
     },
-    deleteAllAlerts() {
-        return apiClient.delete(`/alerts`);
-    },
 };
