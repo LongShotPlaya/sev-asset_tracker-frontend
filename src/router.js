@@ -2,12 +2,24 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import Login from "./views/Login.vue";
 import Home from "./views/Home.vue";
-import TutorialsList from "./views/TutorialsList.vue";
-import EditTutorial from "./views/EditTutorial.vue";
-import AddTutorial from "./views/AddTutorial.vue";
-import ViewTutorial from "./views/ViewTutorial.vue";
-import AddLesson from "./views/AddLesson.vue";
-import EditLesson from "./views/EditLesson.vue";
+// import TutorialsList from "./views/TutorialsList.vue";
+// import EditTutorial from "./views/EditTutorial.vue";
+// import AddTutorial from "./views/AddTutorial.vue";
+// import ViewTutorial from "./views/ViewTutorial.vue";
+// import AddLesson from "./views/AddLesson.vue";
+// import EditLesson from "./views/EditLesson.vue";
+//import AllAssets from "./views/AllAssets.vue";
+import AssetData from "./views/AssetData.vue";
+import AssetTypeManagement from "./views/AssetTypeManagement.vue";
+import AssetCatManagement from "./views/AssetCatManagement.vue";
+import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
+import BuildingManagement from "./views/BuildingManagement.vue";
+import GroupManagement from "./views/GroupManagement.vue";
+import PersonManagement from "./views/PersonManagement.vue";
+import RoomManagement from "./views/RoomManagement.vue";
+import TemplateDataManagement from "./views/TemplateDataManagement.vue";
+import VendorManagement from "./views/VendorManagement.vue";
+import AlertTypeManagement from "./views/AlertTypeManagement.vue";
 
 
 const router = createRouter({
@@ -28,7 +40,7 @@ const router = createRouter({
     {
       path: "/assets",
       name: "assets",
-      component: AllAssets,
+      //component: AllAssets,
     },
     {
       path: "/assetData",
