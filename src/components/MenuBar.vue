@@ -16,9 +16,9 @@
 	const drawer = ref(false);
 
 	const links = [
-		{ bannerName: 'Home', routeName: "tutorials", permission: "any" },
-		{ bannerName: 'Seen by everyone', routeName: "add", permission: "any" },
-		{ bannerName: 'Seen by admins', routeName: "add", permission: "homeView" },
+		{ bannerName: 'Home', routeName: "home", permission: "any" },
+		{ bannerName: 'Seen by everyone', routeName: "home", permission: "any" },
+		{ bannerName: 'Seen by admins', routeName: "home", permission: "homeView" },
 	];
 	const linksAllowed = ref([]);
 
