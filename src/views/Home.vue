@@ -10,31 +10,12 @@
 	const sectionsAllowed = ref([]);
 	const linksAllowed = ref([]);
 
-	const sections = [
-			{ name: "Assets", permission: "any" },
-			{ name: "Reports and Customization", permission: "any" },
-			{ name: "People and Groups", permission: "any" },
-		];
-	const links = [
-			{ name: "All Assests", section: "Assets", routeName: "", permission: "any" },
-			{ name: "Manage Assest Templates", section: "Assets", routeName: "", permission: "any" },
-			{ name: "Manage Custom Dropdown", section: "Reports and Customization", routeName: "", permission: "any" },
-		];
-
+	const links = ref([
+		"assets", "", "", "", "", "", "", "", "people", "groups","vendors", "",
+	]);
+		
 	const configureScreen = () => {
-		// Configure the sectionsAllowed
-		sectionsAllowed.value = [];
-		sections.forEach((item) => {
-			if (authorize(item.permission))
-				sectionsAllowed.value.push(item);
-		});
 
-		// Configure the linksAllowed
-		linksAllowed.value = [];
-		links.forEach((item) => {
-			if (authorize(item.permission))
-				linksAllowed.value.push(item);
-		});
 	};
 
 	const authorize = (permission) => {
@@ -74,7 +55,8 @@
 			title="All Assets" text="Desc" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
-						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"></v-btn>
+						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
+						@click = "router.push({name: links[0]})"></v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
@@ -83,7 +65,8 @@
 			title="Search Person" text="Desc" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
-						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"></v-btn>
+						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
+						@click = "router.push({name: links[1]})"></v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
@@ -92,7 +75,8 @@
 			title="Create Report" text="Desc" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
-						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"></v-btn>
+						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
+						@click = "router.push({name: links[2]})"></v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
@@ -129,17 +113,22 @@
 	color="grey-darken-3" class="text-center rounded-0">
 		<v-row class="mt-6" justify="center">
 			<v-spacer></v-spacer>
-			<v-btn max-width="150" min-height="50" variant="outlined">
+			<v-btn max-width="150" min-height="50" variant="outlined"
+			@click = "router.push({name: links[7]})">
 				<p class="text-wrap">Custom Dropdown</p>
 			</v-btn>
 			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined">People</v-btn>
+			<v-btn min-width="150" min-height="50" variant="outlined"
+			@click = "router.push({name: links[8]})">People</v-btn>
 			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined">Groups</v-btn>
+			<v-btn min-width="150" min-height="50" variant="outlined"
+			@click = "router.push({name: links[9]})">Groups</v-btn>
 			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined">Vendors</v-btn>
+			<v-btn min-width="150" min-height="50" variant="outlined"
+			@click = "router.push({name: links[10]})">Vendors</v-btn>
 			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined">Alerts</v-btn>
+			<v-btn min-width="150" min-height="50" variant="outlined"
+			@click = "router.push({name: links[11]})">Alerts</v-btn>
 			<v-spacer></v-spacer>
 		</v-row>
 	</v-card>
