@@ -38,12 +38,14 @@ const filterPeople = () => {
       return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
              person.lName.toLowerCase().includes(search.value.trim().toLowerCase());
     });
+    console.log("if");
   } else {
     filteredPeople.value = people.value.filter(person => {
       return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
              person.lName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
              person.email.toLowerCase().includes(search.value.trim().toLowerCase());
     });
+    console.log("else");
   }
 };
 
