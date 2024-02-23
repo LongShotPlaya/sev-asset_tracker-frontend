@@ -2,7 +2,7 @@ import apiClient from "./services";
 
 export default {
     getAllAssetCats() {
-        return apiClient.get(`/assetCategory/`);
+        return apiClient.get(`/asset-categories/`);
     },
     getAssetCat(assetCatId) {
         return apiClient.get(`/assetCategory/${assetCatId}`);
