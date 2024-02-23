@@ -12,7 +12,7 @@ import AssetData from "./views/AssetData.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/AssetCatManagement.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
-import AssetFieldManagement from "./views/AssetFieldManagement.vue"; //Make service
+import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import PersonManagement from "./views/PersonManagement.vue";
