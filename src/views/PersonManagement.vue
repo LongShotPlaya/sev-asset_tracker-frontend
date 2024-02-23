@@ -4,6 +4,7 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
 import peopleServices from "../services/personServices";
+import personEditDialog from "../components/personEditDialog.vue";
 
 const router = useRouter();
 const user = Utils.getStore("user");
@@ -12,14 +13,17 @@ const search = ref("");
 const person = ref("");
 let people = ref([]);
 const filteredPeople = ref([]);
+const selectedPerson = ref(null);
+
+const openDialog = (person) => {
+  selectedPerson.value = person;
+}
 
 const getPeople = () => { 
   peopleServices.getAllPeople()
     .then((response) => {
       person.value = response.data;
-      console.log(response.data);
       people.value = response.data;
-      console.log(response.data);
       filterPeople();
       console.log(response.data);
     })
@@ -66,7 +70,6 @@ watch(search, filterPeople);
     ></v-text-field>
 </v-card>
 
-
 <v-card class="table">
     <v-table>
       <thead>
@@ -78,16 +81,18 @@ watch(search, filterPeople);
             Email
           </th>
           <th class="text-left column">
-            Other Things...
+            Role
           </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="person in filteredPeople" :key="person.id">
-          <td class="column">{{ person.fName + ' ' + person.lName}}</td>
+          <td class="column" @click="openDialog(person)">{{ person.fName + ' ' + person.lName}}</td>
           <td class="column">{{ person.email }}</td>
           <td class="column">
+            <personEditDialog :person="selectedPerson" />
           </td>
+          
         </tr>
       </tbody>
     </v-table>
