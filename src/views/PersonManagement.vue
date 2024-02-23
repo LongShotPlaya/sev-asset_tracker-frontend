@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
 import peopleServices from "../services/personServices";
@@ -11,16 +11,36 @@ const message = ref("");
 const search = ref("");
 const person = ref("");
 let people = ref([]);
+const filteredPeople = ref([]);
 
 const getPeople = () => { 
   peopleServices.getAllPeople()
     .then((response) => {
       person.value = response.data;
+      console.log(response.data);
       people.value = response.data;
+      console.log(response.data);
+      filterPeople();
+      console.log(response.data);
     })
     .catch((e) => {
       message.value = e.response.data.message;
     });
+};
+
+const filterPeople = () => {
+  if (!search.value.trim()) {
+    filteredPeople.value = people.value.filter(person => {
+      return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+             person.lName.toLowerCase().includes(search.value.trim().toLowerCase());
+    });
+  } else {
+    filteredPeople.value = people.value.filter(person => {
+      return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+             person.lName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+             person.email.toLowerCase().includes(search.value.trim().toLowerCase());
+    });
+  }
 };
 
 onMounted(() => {
@@ -28,6 +48,7 @@ onMounted(() => {
   getPeople();
 });
 
+watch(search, filterPeople);
 </script>
 
 <template>
@@ -62,7 +83,7 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="person in people" :key="person.id">
+        <tr v-for="person in filteredPeople" :key="person.id">
           <td class="column">{{ person.fName + ' ' + person.lName}}</td>
           <td class="column">{{ person.email }}</td>
           <td class="column">
