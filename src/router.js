@@ -19,14 +19,14 @@ import PersonManagement from "./views/PersonManagement.vue";
 import RoomManagement from "./views/RoomManagement.vue";
 import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
-import Alerts from "./views/AlertManagement.vue" //Make service
+import Alerts from "./views/AlertManagement.vue";
 import AlertTypeManagement from "./views/AlertTypeManagement.vue";
-import FieldList from "./views/fieldLists.vue" //Make service
-import FieldListOptions from "./views/fieldListOptions.vue"; //Make service
-import Logs from "./views/logs.vue"; //Make service
-import Notifications from "./views/notificationsManagement.vue"; //Make service
-import Permissions from "./views/permissionManagement.vue"; //Make service
-import Users from "./views/userManagement.vue"; //Make service
+import FieldList from "./views/fieldLists.vue";
+import FieldListOptions from "./views/fieldListOptions.vue";
+import Logs from "./views/logs.vue";
+import Notifications from "./views/notificationsManagement.vue";
+import Permissions from "./views/permissionManagement.vue";
+import Users from "./views/userManagement.vue";
 
 
 const router = createRouter({

@@ -2,7 +2,7 @@ import apiClient from "./services";
 
 export default {
     getAllAssetData() {
-        return apiClient.get(`/assetData/`)
+        return apiClient.get(`/assetData/`);
     },
     getAssetData(assetDataId) {
         return apiClient.get(`/assetData/${assetDataId}`);
