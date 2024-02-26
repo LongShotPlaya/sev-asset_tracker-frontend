@@ -84,17 +84,12 @@ watch(search, filterPeople);
           <th>
             <h4>Email</h4>
           </th>
-          <th>
-            <h4>Permissions</h4>
-          </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="person in filteredPeople" :key="person.id" @click="openDialog(person.id)">
           <td class="column">{{ person.lName + ', ' + person.fName}}</td>
           <td class="column">{{ person.email }}</td>
-          <td class="column">
-          </td>
         </tr>
       </tbody>
     </v-table>
