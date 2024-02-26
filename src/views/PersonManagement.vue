@@ -111,6 +111,7 @@ watch(search, filterPeople);
       margin-left: 5%;
       margin-right: 5%;
       margin-top: 1%;
+      margin-bottom: 20%;
     }
     .header{
       background-color: #811429;
