@@ -11,9 +11,9 @@ export default {
         return apiClient.post(`/field-list-options/${data}`);
     },
     updateFieldListOption(id) {
-        return apiClient.put(`/field-list-option/${id}`);
+        return apiClient.put(`/field-list-options/${id}`);
     },
     deleteFieldListOption(id) {
-        return apiClient.delete(`field-list-option/${id}`);
+        return apiClient.delete(`/field-list-options/${id}`);
     },
 };

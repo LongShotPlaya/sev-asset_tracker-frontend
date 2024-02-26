@@ -8,12 +8,12 @@ export default{
         return apiClient.get(`/asset-fields/`);
     },
     getAssetField(assetFieldId) {
-        return apiClient.get(`asset-field/${assetFieldId}`);
+        return apiClient.get(`asset-fields/${assetFieldId}`);
     },
     updateAssetField(assetFieldId) {
-        return apiClient.put(`asset-field/${assetFieldId}`);
+        return apiClient.put(`asset-fields/${assetFieldId}`);
     },
     deleteAssetField(assetFieldId) {
-        return apiClient.delete(`asset-field/${assetFieldId}`);
+        return apiClient.delete(`asset-fields/${assetFieldId}`);
     },
 }

@@ -5,15 +5,15 @@ export default {
         return apiClient.get(`/field-lists/`);
     },
     getOneFieldList(fieldListId) {
-        return apiClient.get(`/field-list/${fieldListId}`);
+        return apiClient.get(`/field-lists/${fieldListId}`);
     },
     createFieldList(data) {
-        return apiClient.post(`/field-list/${data}`);
+        return apiClient.post(`/field-lists/${data}`);
     },
     updateFieldList(fieldListId) {
-        return apiClient.put(`/field-list/${fieldListId}`);
+        return apiClient.put(`/field-lists/${fieldListId}`);
     },
     deleteFieldList(fieldListId) {
-        return apiClient.delete(`/field-list/${fieldListId}`);
+        return apiClient.delete(`/field-lists/${fieldListId}`);
     },
 };
