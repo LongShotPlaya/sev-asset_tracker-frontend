@@ -72,10 +72,10 @@
 	};
 
 	onMounted(() => {
-	logoURL.value = ocLogo;
-	configureMenu();
-	//bannerName.value = route.name;
-	//console.log(route.name);
+		logoURL.value = ocLogo;
+		configureMenu();
+		//bannerName.value = route.name;
+		//console.log(route.name);
 	});
 
 	watch(() => router, () => {
