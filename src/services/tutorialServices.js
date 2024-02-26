@@ -19,9 +19,6 @@ export default {
   delete(id) {
     return apiClient.delete(`/tutorials/${id}`);
   },
-  deleteAll() {
-    return apiClient.delete(`/tutorials`);
-  },
   findByTitle(title) {
     return apiClient.get(`/tutorials?title=${title}`);
   },
