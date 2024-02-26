@@ -22,6 +22,9 @@ const openDialog = (person) => {
 const getPeople = () => { 
   peopleServices.getAllPeople()
     .then((response) => {
+      const sortedPeople = response.data.sort((a, b) => {
+        return a.lName.localeCompare(b.lName);
+      });
       person.value = response.data;
       people.value = response.data;
       filterPeople();
@@ -38,14 +41,13 @@ const filterPeople = () => {
       return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
              person.lName.toLowerCase().includes(search.value.trim().toLowerCase());
     });
-    console.log("if");
-  } else {
-    filteredPeople.value = people.value.filter(person => {
-      return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
-             person.lName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
-             person.email.toLowerCase().includes(search.value.trim().toLowerCase());
-    });
-    console.log("else");
+  } 
+  else {
+      filteredPeople.value = people.value.filter(person => {
+        return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+              person.lName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
+              person.email.toLowerCase().includes(search.value.trim().toLowerCase());
+      });
   }
 };
 
@@ -74,27 +76,25 @@ watch(search, filterPeople);
 
 <v-card class="table">
     <v-table>
-      <thead>
+      <thead class="header">
         <tr>
-          <th class="text-left column">
-            Name
+          <th>
+            <h4>Name</h4>
           </th>
-          <th class="text- column">
-            Email
+          <th>
+            <h4>Email</h4>
           </th>
-          <th class="text-left column">
-            Role
+          <th>
+            <h4>Permissions</h4>
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="person in filteredPeople" :key="person.id">
-          <td class="column" @click="openDialog(person)">{{ person.fName + ' ' + person.lName}}</td>
+        <tr v-for="person in filteredPeople" :key="person.id" @click="openDialog(person.id)">
+          <td class="column">{{ person.lName + ', ' + person.fName}}</td>
           <td class="column">{{ person.email }}</td>
           <td class="column">
-            <personEditDialog :person="selectedPerson" />
           </td>
-          
         </tr>
       </tbody>
     </v-table>
@@ -112,5 +112,10 @@ watch(search, filterPeople);
       margin-right: 5%;
       margin-top: 1%;
     }
-
+    .header{
+      background-color: #811429;
+    }
+    .header h4{
+      color: white;
+    }
 </style>

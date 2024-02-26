@@ -1,4 +1,35 @@
-<script setup>
+<script>
+    export default {
+        props: {
+        selectedItemId: {
+            type: Number,
+            required: true
+        }
+        },
+        computed: {
+        selectedItem() {
+            // Retrieve the selected item based on selectedItemId
+            return this.items.find(item => item.id === this.selectedItemId);
+        }
+        },
+        methods: {
+        closeDialog() {
+            this.$emit('closeDialog');
+        }
+        }
+    };
+</script>
+
+<template>
+    <div v-if="selectedItem">
+      <h2>{{ selectedItem.name }}</h2>
+      <!-- Display other information of selectedItem -->
+      <button @click="closeDialog">Close</button>
+    </div>
+  </template>
+  
+  
+<!-- <script setup>
     import { ref } from 'vue';
     import peopleServices from "../services/personServices";
 
@@ -41,4 +72,4 @@
         </v-card>
     </v-dialog>
 </template>
-  
+   -->
