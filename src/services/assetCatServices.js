@@ -13,9 +13,6 @@ export default {
     updateAssetCat(assetCatId) {
         return apiClient.put(`/assetCategory/${assetCatId}`);
     },
-    deleteAllAssetCats() {
-        return apiClient.delete(`/assetCategory/`);
-    },
     deleteAssetCat(assetCatId) {
         return apiClient.delete(`/assetCategory${assetCatId}`);
     },
