@@ -16,4 +16,4 @@ export default{
     deleteAssetField(assetFieldId) {
         return apiClient.delete(`asset-fields/${assetFieldId}`);
     },
-}
+};
