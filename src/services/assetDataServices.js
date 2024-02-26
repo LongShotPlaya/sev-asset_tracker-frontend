@@ -2,21 +2,19 @@ import apiClient from "./services";
 
 export default {
     getAllAssetData() {
-        return apiClient.get(`/assetData/`)
+        return apiClient.get(`/asset-data/`);
     },
     getAssetData(assetDataId) {
-        return apiClient.get(`/assetData/${assetDataId}`);
+        return apiClient.get(`/asset-data/${assetDataId}`);
     },
     createAssetData(data) {
-        return apiClient.post(`/assetData/${data}`);
+        return apiClient.post(`/asset-data/${data}`);
     },
     updateAssetData(assetDataId) {
-        return apiClient.put(`/assetData/${assetDataId}`);
+        return apiClient.put(`/asset-data/${assetDataId}`);
     },
     deleteAssetData(assetDataId) {
-        return apiClient.delete(`/assetData/${assetDataId}`);
+        return apiClient.delete(`/asset-data/${assetDataId}`);
     },
-    deleteAllAssetData() {
-        return apiClient.delete(`/assetData/`);
-    },
+
 };

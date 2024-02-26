@@ -16,7 +16,4 @@ export default{
     deleteBuilding(buildingId) {
         return apiClient.delete(`/buildings/${buildingId}`);
     },
-    deleteAllBuildings() {
-        return apiClient.delete(`/buildings/`);
-    },
 };

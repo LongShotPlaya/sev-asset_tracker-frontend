@@ -2,21 +2,18 @@ import apiClient from "./services";
 
 export default {
     getAllTemplateData() {
-        return apiClient.get(`/templateData/`);
+        return apiClient.get(`/template-data/`);
     },
     getTemplateData(templateId) {
-        return apiClient.get(`/templateData/${templateId}`);
+        return apiClient.get(`/template-data/${templateId}`);
     },
     creaTemplateData(data) {
-        return apiClient.post(`/templateData/${data}`);
+        return apiClient.post(`/template-data/${data}`);
     },
     updateTemplateData(templateId) {
-        return apiClient.put(`/templateData/${templateId}`);
+        return apiClient.put(`/template-data/${templateId}`);
     },
     deleteTemplateData(templateId) {
-        return apiClient.delete(`/templateData/${templateId}`);
-    },
-    deleteAllTemplateData() {
-        return apiClient.delete(`/templateData/`);
+        return apiClient.delete(`/template-data/${templateId}`);
     },
 };
