@@ -7,10 +7,10 @@ import Login from "./views/Login.vue";
 // import ViewTutorial from "./views/ViewTutorial.vue";
 // import AddLesson from "./views/AddLesson.vue";
 // import EditLesson from "./views/EditLesson.vue";
-import AllAssets from "./views/AllAssets.vue";
+// import AllAssets from "./views/AllAssets.vue";
 import AssetData from "./views/AssetData.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
-import AssetCatManagement from "./views/AssetCatManagement.vue";
+import AssetCatManagement from "./views/ManageAssetCategories.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
 import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
@@ -38,11 +38,11 @@ const router = createRouter({
       name: "login",
       component: Login,
     },
-    {
-      path: "/assets",
-      name: "assets",
-      component: AllAssets,
-    },
+    // {
+    //   path: "/assets",
+    //   name: "assets",
+    //   component: AllAssets,
+    // },
     {
       path: "/asset-data",
       name: "asset-data",
