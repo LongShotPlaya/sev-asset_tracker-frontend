@@ -83,10 +83,10 @@ watch(search, filterPeople);
       <thead class="header">
         <tr>
           <th>
-            <h4>First Name</h4>
+            <h4>Last Name</h4>
           </th>
           <th>
-            <h4>Last Name</h4>
+            <h4>First Name</h4>
           </th>
           <th>
             <h4>Email</h4>
@@ -98,8 +98,8 @@ watch(search, filterPeople);
       </thead>
       <tbody>
         <tr v-for="person in filteredPeople" :key="person.id" @click="openDialog(person.id)">
-          <td class="column">{{ person.fName}}</td>
           <td class="column">{{ person.lName}}</td>
+          <td class="column">{{ person.fName}}</td>
           <td class="column">{{ person.email }}</td>
           <td class="column" style="text-align: right; padding-right: .5%;"><v-btn color="primary" @click="">
               View
