@@ -2,6 +2,13 @@
   <v-toolbar>
     <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
   </v-toolbar>
+
+  <v-card class="space2"> 
+    <v-btn color="primary" @click="openDialog(null)">
+      Add
+    </v-btn>
+  </v-card>
+
   <v-card class="space">
     <v-table>
       <thead>
@@ -12,17 +19,17 @@
           <th class="text- column">
             Description
           </th>
-          <th class="text-left column">
+          <th class="text-right column">
             Actions
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in assetcategories" :key="item.name">
+        <tr v-for="item in assetcategories" :key="item.id">
           <td class="column">{{ item.name }}</td>
           <td class="column">{{ item.description }}</td>
-          <td class="column">
-            <v-btn color="primary" @click="openDialog(item)">
+          <td class="text-right column">
+            <v-btn color="primary" @click="openDialog(item.id)">
               Edit
             </v-btn>
           </td>
@@ -31,19 +38,56 @@
     </v-table>
   </v-card>
   
-
-  <v-dialog v-model="dialog" persistent max-width="800px">
+  
+  
+  <!-- add pop-up -->
+  <v-dialog v-model="addDialogue" persistent max-width="800px">
     <v-card>
       <v-container>
-        <v-card-title class="text-h5">
-          <v-text-field
-            v-model="item.name"
-            id="name"
-            :counter="50"
-            label="Name"
-            required
-          ></v-text-field>
-        </v-card-title>
+        <v-card-title class="text-h5">Add</v-card-title>
+        <v-text-field
+          v-model="item.name"
+          id="name"
+          :counter="50"
+          label="Name"
+          required
+        ></v-text-field>
+        
+        <v-textarea
+          v-model="item.description"
+          id="description"
+          :counter="50"
+          label="Description"
+          required
+        ></v-textarea>
+      
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green-darken-1" variant="text" @click="addAssetCats">
+            Save
+          </v-btn>
+          <v-btn color="orange" variant="text" @click="closeDialog">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-container>
+    </v-card>
+  </v-dialog>
+
+  <!-- edit pop-up -->
+  <v-dialog v-model="editDialogue" persistent max-width="800px">
+    
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5">Edit</v-card-title>
+        <v-text-field
+          v-model="item.name"
+          id="name"
+          :counter="50"
+          label="Name"
+          required
+        ></v-text-field>
+        
         <v-textarea
           v-model="item.description"
           id="description"
@@ -68,11 +112,11 @@
     </v-card>
   </v-dialog>
 
-  <!-- Add button to trigger the "Add" functionality -->
-  <v-btn color="primary" @click="addAssetCats">
-    Add
-  </v-btn>
+  
+  
 </template>
+
+
 
 <script setup>
 import Utils from "../config/utils.js";
@@ -81,7 +125,8 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const assetcategories = ref([]);
-const dialog = ref(false)
+const editDialogue = ref(false)
+const addDialogue = ref(false)
 const item = ref({})
 
 const router = useRouter();
@@ -129,14 +174,20 @@ const retrieveAssetCats = () => {
     });
 };
 
-const openDialog = (item) => {
-  item.value = { ...item };
-  dialog.value = true;
+const openDialog = (itemId) => {
+  if (itemId != undefined && itemId != null){
+    item.value = assetcategories.value?.find(cat => cat.id == itemId);
+    editDialogue.value = true;
+  }
+  else {
+    addDialogue.value = true;
+  }
 }
 
 
 const closeDialog = () => {
-  dialog.value = false;
+  editDialogue.value = false;
+  addDialogue.value = false;
   item.value = {}; // Reset item
 }
 
@@ -150,11 +201,17 @@ onMounted(() => {
 <style>
   th.column,
   td.column{
-    width: auto;
+    width: 33.3%;
   }
   .space{
     margin-left: 2%;
     margin-right: 2%;
+    margin-top: 2%;
+  }
+
+  .space2{
+    margin-left: 2%;
+    margin-right: 94%;
     margin-top: 2%;
   }
 </style>
