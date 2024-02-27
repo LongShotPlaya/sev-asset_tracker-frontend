@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/assets/${assetId}`);
     },
     createAsset(data) {
-        return apiClient.post(`/assets/${data}`);
+        return apiClient.post(`/assets/`, data);
     },
-    updateAsset(assetId) {
-        return apiClient.put(`/assets/${assetId}`);
+    updateAsset(assetId, data) {
+        return apiClient.put(`/assets/${assetId}`, data);
     },
     deleteAsset(assetId) {
         return apiClient.delete(`assets/${assetId}`);

@@ -179,11 +179,6 @@ const router = createRouter({
     //   component: EditLesson,
     //   props: true,
     // },
-    // {
-    //   path: "/manageAssetCat",
-    //   name: "manageAssetCategories",
-    //   component: ManageAssetCategories,
-    // },
   ],
 });
 
