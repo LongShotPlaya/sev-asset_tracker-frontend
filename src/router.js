@@ -11,7 +11,7 @@ import Home from "./views/Home.vue";
 import AllAssets from "./views/AllAssets.vue";
 import AssetData from "./views/AssetData.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
-import AssetCatManagement from "./views/AssetCatManagement.vue";
+import AssetCatManagement from "./views/ManageAssetCategories.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
 import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
