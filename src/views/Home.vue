@@ -68,7 +68,7 @@
 				<v-card-actions>
 					<v-row justify="center">
 						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[1]})">Go!</v-btn>
+						@click = "router.push({name: links[8]})">Go!</v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
