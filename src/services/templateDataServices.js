@@ -8,12 +8,12 @@ export default {
         return apiClient.get(`/template-data/${templateId}`);
     },
     creaTemplateData(data) {
-        return apiClient.post(`/template-data/${data}`);
+        return apiClient.post(`/templateData/`, data);
     },
-    updateTemplateData(templateId) {
-        return apiClient.put(`/template-data/${templateId}`);
+    updateTemplateData(templateId, data) {
+        return apiClient.put(`/templateData/${templateId}`, data);
     },
     deleteTemplateData(templateId) {
-        return apiClient.delete(`/template-data/${templateId}`);
+        return apiClient.delete(`/templateData/${templateId}`);
     },
 };

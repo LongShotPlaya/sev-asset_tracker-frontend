@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Login from "./views/Login.vue";
+import Home from "./views/Home.vue";
 // import TutorialsList from "./views/TutorialsList.vue";
 // import EditTutorial from "./views/EditTutorial.vue";
 // import AddTutorial from "./views/AddTutorial.vue";
@@ -32,17 +33,22 @@ import Users from "./views/userManagement.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+	{
+		path: "/",
+		alias: "/login",
+		name: "login",
+		component: Login,
+	},
+	{
+		path: "/home",
+		name: "home",
+		component: Home,
+	},
     {
-      path: "/",
-      alias: "/login",
-      name: "login",
-      component: Login,
+      path: "/assets",
+      name: "assets",
+      component: AllAssets,
     },
-    // {
-    //   path: "/assets",
-    //   name: "assets",
-    //   component: AllAssets,
-    // },
     {
       path: "/asset-data",
       name: "asset-data",
@@ -171,11 +177,6 @@ const router = createRouter({
     //   name: "editLesson",
     //   component: EditLesson,
     //   props: true,
-    // },
-    // {
-    //   path: "/manageAssetCat",
-    //   name: "manageAssetCategories",
-    //   component: ManageAssetCategories,
     // },
   ],
 });
