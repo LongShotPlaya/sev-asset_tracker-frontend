@@ -8,7 +8,7 @@ import Home from "./views/Home.vue";
 // import ViewTutorial from "./views/ViewTutorial.vue";
 // import AddLesson from "./views/AddLesson.vue";
 // import EditLesson from "./views/EditLesson.vue";
-// import AllAssets from "./views/AllAssets.vue";
+import AllAssets from "./views/AllAssets.vue";
 import AssetData from "./views/AssetData.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/ManageAssetCategories.vue";
