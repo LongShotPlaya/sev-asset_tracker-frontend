@@ -3,40 +3,47 @@
     <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
   </v-toolbar>
 
-  <v-card class="space2"> 
-    <v-btn color="primary" @click="openDialog(null)">
-      Add
-    </v-btn>
-  </v-card>
-
-  <v-card class="space">
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-left column">
-            Name
-          </th>
-          <th class="text- column">
-            Description
-          </th>
-          <th class="text-right column">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in assetcategories" :key="item.id">
-          <td class="column">{{ item.name }}</td>
-          <td class="column">{{ item.description }}</td>
-          <td class="text-right column">
-            <v-btn color="primary" @click="openDialog(item.id)">
-              Edit
-            </v-btn>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-card>
+  <v-container fluid>
+    <v-row>
+      <v-col>
+        <v-btn color="primary" @click="openDialog(null)">
+          Add
+        </v-btn>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-table>
+            <thead>
+              <tr>
+                <th class="text-left column">
+                  Name
+                </th>
+                <th class="text- column">
+                  Description
+                </th>
+                <th class="text-right column">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in assetcategories" :key="item.id">
+                <td class="column">{{ item.name }}</td>
+                <td class="column">{{ item.description }}</td>
+                <td class="text-right column">
+                  <v-btn color="primary" @click="openDialog(item.id)">
+                    Edit
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
   
   <!-- add pop-up -->
   <v-dialog v-model="addDialogue" persistent max-width="800px">
