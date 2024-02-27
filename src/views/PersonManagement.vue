@@ -60,15 +60,14 @@ watch(search, filterPeople);
 </script>
 
 <template>
+  <v-toolbar>
+    <v-toolbar-title>Find People</v-toolbar-title>
+  </v-toolbar>
+  <br>
   <v-card
   flat
   title="" class="title"
   >
-  <br>
-  <v-toolbar>
-    <v-toolbar-title>Find People</v-toolbar-title>
-  </v-toolbar>
-  
     <v-text-field
       v-model="search"
       label="Search"
