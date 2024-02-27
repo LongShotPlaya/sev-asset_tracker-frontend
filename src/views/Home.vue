@@ -85,7 +85,7 @@
 			<v-spacer></v-spacer>
 		</v-row>
 		<v-col>
-			<v-card min-height="300" title="Other" variant="flat" class="text-center mt-6">
+			<v-card min-height="300" title="Asset Organization" variant="flat" class="text-center mt-6">
 				<v-row class="mt-4">
 					<v-spacer></v-spacer>
 					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
