@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/rooms/${roomId}`);
     },
     createRoom(data) {
-        return apiClient.post(`/rooms/${data}`);
+        return apiClient.post(`/rooms/`, data);
     },
-    updateRoom(roomId) {
-        return apiClient.put(`/rooms/${roomId}`);
+    updateRoom(roomId, data) {
+        return apiClient.put(`/rooms/${roomId}`, data);
     },
     deleteRoom(roomId) {
         return apiClient.delete(`/rooms/${roomId}`);

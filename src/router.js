@@ -40,8 +40,7 @@ const router = createRouter({
 		component: Login,
 	},
 	{
-		path: "/",
-		alias: "/home",
+		path: "/home",
 		name: "home",
 		component: Home,
 	},
@@ -178,11 +177,6 @@ const router = createRouter({
     //   name: "editLesson",
     //   component: EditLesson,
     //   props: true,
-    // },
-    // {
-    //   path: "/manageAssetCat",
-    //   name: "manageAssetCategories",
-    //   component: ManageAssetCategories,
     // },
   ],
 });
