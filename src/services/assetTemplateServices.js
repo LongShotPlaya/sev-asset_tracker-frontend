@@ -2,10 +2,10 @@ import apiClient from "./services";
 
 export default{
     getAllAssetTemplates() {
-        return apiClient.get(`/assetTemplate/`);
+        return apiClient.get(`/asset-templates/`);
     },
     getAssetTemplate(assetTemplateId) {
-        return apiClient.get(`/assetTemplate/${assetTemplateId}`);
+        return apiClient.get(`/asset-templates/${assetTemplateId}`);
     },
     createAssetTemplate(data) {
         return apiClient.post(`/assetTemplate/`, data);
