@@ -1,22 +1,20 @@
 import apiClient from "./services";
 
 export default {
-    getAllAlerts() {
-        return apiClient.get(`/alertType`);
+    getAllAlertTypes() {
+        return apiClient.get(`/alert-types`);
     },
-    getAlert(alertId) {
-        return apiClient.get(`alertType/${alertId}`);
+    getAlertType(alertId) {
+        return apiClient.get(`/alert-types/${alertId}`);
     },
-    createAlert(data) {
-        return apiClient.post(`/alertType/${data}`);
+    createAlertType(data) {
+        return apiClient.post(`/alert-types/${data}`);
     },
-    updateAlert(alertId) {
-        return apiClient.put(`/alertType/${alertId}`, data);
+    updateAlertType(alertId) {
+        return apiClient.put(`/alert-types/${alertId}`, data);
     },
-    deleteAlert(alertId) {
-        return apiClient.delete(`/alertType/${alertId}`);
+    deleteAlertType(alertId) {
+        return apiClient.delete(`/alert-types/${alertId}`);
     },
-    deleteAllAlerts() {
-        return apiClient.delete(`/alertType`);
-    },
+    
 }

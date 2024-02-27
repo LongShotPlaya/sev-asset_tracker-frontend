@@ -13,13 +13,21 @@ import AssetData from "./views/AssetData.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/AssetCatManagement.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
+import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import PersonManagement from "./views/PersonManagement.vue";
 import RoomManagement from "./views/RoomManagement.vue";
 import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
+import Alerts from "./views/AlertManagement.vue";
 import AlertTypeManagement from "./views/AlertTypeManagement.vue";
+import FieldList from "./views/fieldLists.vue";
+import FieldListOptions from "./views/fieldListOptions.vue";
+import Logs from "./views/logs.vue";
+import Notifications from "./views/notificationsManagement.vue";
+import Permissions from "./views/permissionManagement.vue";
+import Users from "./views/userManagement.vue";
 
 
 const router = createRouter({
@@ -43,24 +51,29 @@ const router = createRouter({
       //component: AllAssets,
     },
     {
-      path: "/assetData",
-      name: "assetData",
+      path: "/asset-data",
+      name: "asset-data",
       component: AssetData,
     },
     {
-      path: "/assetType",
-      name: "assetType",
+      path: "/asset-type",
+      name: "asset-type",
       component: AssetTypeManagement,
     },
     {
-      path: "/assetCategory",
-      name: "assetCategory",
+      path: "/asset-categories",
+      name: "asset-categories",
       component: AssetCatManagement,
     },
     {
-      path: "/assetTemplate",
-      name: "assetTemplate",
+      path: "/asset-templates",
+      name: "asset-templates",
       component: AssetTemplateManagement,
+    },
+    {
+      path: "/asset-fields",
+      name: "asset-fields",
+      component: AssetFieldManagement,
     },
     {
       path: "/buildings",
@@ -83,8 +96,8 @@ const router = createRouter({
       component: RoomManagement,
     },
     {
-      path: "/templateData",
-      name: "templateData",
+      path: "/template-data",
+      name: "template-data",
       component: TemplateDataManagement,
     },
     {
@@ -93,9 +106,44 @@ const router = createRouter({
       component: VendorManagement,
     },
     {
-      path: "/alertType",
-      name: "alertType",
+      path: "/alerts",
+      name: "alerts",
+      component: Alerts,
+    },
+    {
+      path: "/alert-types",
+      name: "alert-types",
       component: AlertTypeManagement,
+    },
+    {
+      path: "/field-list",
+      name: "field-list",
+      component: FieldList,
+    },
+    {
+      path: "/field-list-options",
+      name: "field-list-options",
+      component: FieldListOptions,
+    },
+    {
+      path: "/logs",
+      name: "logs",
+      component: Logs,
+    },
+    {
+      path: "/notifications",
+      name: "notifications",
+      component: Notifications,
+    },
+    {
+      path: "/permissions",
+      name: "permissions",
+      component: Permissions,
+    },
+    {
+      path: "/users",
+      name: "users",
+      component: Users,
     },
     //{
     //   path: "/tutorials",
@@ -130,6 +178,11 @@ const router = createRouter({
     //   name: "editLesson",
     //   component: EditLesson,
     //   props: true,
+    // },
+    // {
+    //   path: "/manageAssetCat",
+    //   name: "manageAssetCategories",
+    //   component: ManageAssetCategories,
     // },
   ],
 });
