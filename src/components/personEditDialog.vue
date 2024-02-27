@@ -1,75 +1,27 @@
-<script>
-    export default {
-        props: {
-        selectedItemId: {
-            type: Number,
-            required: true
-        }
-        },
-        computed: {
-        selectedItem() {
-            // Retrieve the selected item based on selectedItemId
-            return this.items.find(item => item.id === this.selectedItemId);
-        }
-        },
-        methods: {
-        closeDialog() {
-            this.$emit('closeDialog');
-        }
-        }
-    };
+<script setup>
+import { ref, defineProps, defineEmits } from 'vue';
+
+const props = defineProps(['person', 'dialogVisible']);
+const { emit } = defineEmits(['openDialog', 'closeDialog']);
+
+const openDialog = () => {
+    emit('openDialog');
+};
+
+const closeDialog = () => {
+    emit('closeDialog');
+};
 </script>
 
-<template>
-    <div v-if="selectedItem">
-      <h2>{{ selectedItem.name }}</h2>
-      <!-- Display other information of selectedItem -->
-      <button @click="closeDialog">Close</button>
-    </div>
-  </template>
-  
-  
-<!-- <script setup>
-    import { ref } from 'vue';
-    import peopleServices from "../services/personServices";
-
-    const dialog = ref(false);
-    const editedPerson = ref({...props.person});
-
-    const props = defineProps({
-        person: Object, 
-    });
-
-    const saveChanges = () => {
-        peopleServices.updatePerson()
-        .then((response) => {
-            person.value = response.data,
-            people.value - response.data;
-        })
-        .catch((e) => {
-            MessageChannel.value = e.response.data.message;
-        })
-        console.log('Saved Changes: ', editedPerson.value);
-        dialog.value = false;
-    };
-
-    
-</script>
 
 <template>
-    <v-dialog v-model="dialog" max-width="500px">
+    <v-dialog max-width="800px">
+        <v-btn flat slot="activator" class="success">View</v-btn>
         <v-card>
-        <v-card-title>Edit Person</v-card-title>
-        <v-card-text>
-            <v-text-field v-model="editedPerson.fName" label="First Name"></v-text-field>
-            <v-text-field v-model="editedPerson.lName" label="Last Name"></v-text-field>
-            <v-text-field v-model="editedPerson.email" label="Email"></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-            <v-btn color="primary" @click="saveChanges">Save</v-btn>
-            <v-btn color="error" @click="dialog = false">Cancel</v-btn>
-        </v-card-actions>
+            <v-card-title>
+                <h2>Title</h2>
+            </v-card-title>
+            <!-- For goes here -->
         </v-card>
     </v-dialog>
 </template>
-   -->
