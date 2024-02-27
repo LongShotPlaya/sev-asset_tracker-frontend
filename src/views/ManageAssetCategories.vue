@@ -38,8 +38,6 @@
     </v-table>
   </v-card>
   
-  
-  
   <!-- add pop-up -->
   <v-dialog v-model="addDialogue" persistent max-width="800px">
     <v-card>
@@ -63,10 +61,10 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green-darken-1" variant="text" @click="addAssetCats">
+          <v-btn color="primary" variant="outlined" @click="addAssetCats">
             Save
           </v-btn>
-          <v-btn color="orange" variant="text" @click="closeDialog">
+          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
             Cancel
           </v-btn>
         </v-card-actions>
@@ -98,13 +96,13 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red" variant="text" @click="deleteAssetCats">
+          <v-btn color="primary" variant="outlined" @click="deleteAssetCats">
             Delete
           </v-btn>
-          <v-btn color="green-darken-1" variant="text" @click="updateAssetCats">
+          <v-btn color="green" variant="outlined" @click="updateAssetCats">
             Save
           </v-btn>
-          <v-btn color="orange" variant="text" @click="closeDialog">
+          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
             Cancel
           </v-btn>
         </v-card-actions>
@@ -211,7 +209,7 @@ onMounted(() => {
 
   .space2{
     margin-left: 2%;
-    margin-right: 94%;
+    margin-right: 93.6%;
     margin-top: 2%;
   }
 </style>
