@@ -62,8 +62,13 @@ watch(search, filterPeople);
 <template>
   <v-card
   flat
-  title="People" class="title"
+  title="" class="title"
   >
+  <br>
+  <v-toolbar>
+    <v-toolbar-title>Find People</v-toolbar-title>
+  </v-toolbar>
+  
     <v-text-field
       v-model="search"
       label="Search"
@@ -79,17 +84,27 @@ watch(search, filterPeople);
       <thead class="header">
         <tr>
           <th>
-            <h4>Name</h4>
+            <h4>First Name</h4>
+          </th>
+          <th>
+            <h4>Last Name</h4>
           </th>
           <th>
             <h4>Email</h4>
+          </th>
+          <th>
+            <h4></h4>
           </th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="person in filteredPeople" :key="person.id" @click="openDialog(person.id)">
-          <td class="column">{{ person.lName + ', ' + person.fName}}</td>
+          <td class="column">{{ person.fName}}</td>
+          <td class="column">{{ person.lName}}</td>
           <td class="column">{{ person.email }}</td>
+          <td class="column" style="text-align: right; padding-right: .5%;"><v-btn color="primary" @click="">
+              View
+          </v-btn></td>
         </tr>
       </tbody>
     </v-table>
@@ -97,7 +112,7 @@ watch(search, filterPeople);
     
 </template>
 
-<style scoped>
+<style>
     .title{
       padding-left: 5%;
       padding-right: 5%;
@@ -107,6 +122,7 @@ watch(search, filterPeople);
       margin-right: 5%;
       margin-top: 1%;
       margin-bottom: 20%;
+      border-radius: 5px;
     }
     .header{
       background-color: #811429;
@@ -114,4 +130,7 @@ watch(search, filterPeople);
     .header h4{
       color: white;
     }
+    /* .button-column{
+      text-align: right;
+    } */
 </style>
