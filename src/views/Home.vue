@@ -13,7 +13,7 @@
 	const links = ref([
 		"assets", "", "",
 		"asset-templates", "asset-type", "asset-categories", "buildings",
-		"", "people", "groups","vendors", "alert-types",
+		"", "people", "groups", "vendors", "alert-types",
 	]);
 		
 	const configureScreen = () => {
