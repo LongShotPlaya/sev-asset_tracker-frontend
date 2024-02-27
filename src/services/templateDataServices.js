@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/templateData/${templateId}`);
     },
     creaTemplateData(data) {
-        return apiClient.post(`/templateData/${data}`);
+        return apiClient.post(`/templateData/`, data);
     },
-    updateTemplateData(templateId) {
-        return apiClient.put(`/templateData/${templateId}`);
+    updateTemplateData(templateId, data) {
+        return apiClient.put(`/templateData/${templateId}`, data);
     },
     deleteTemplateData(templateId) {
         return apiClient.delete(`/templateData/${templateId}`);

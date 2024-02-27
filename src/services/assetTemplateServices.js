@@ -8,10 +8,10 @@ export default{
         return apiClient.get(`/assetTemplate/${assetTemplateId}`);
     },
     createAssetTemplate(data) {
-        return apiClient.post(`/assetTemplate/${data}`);
+        return apiClient.post(`/assetTemplate/`, data);
     },
-    updateAssetTemplate(assetTemplateId) {
-        return apiClient.put(`/assetTemplate/${assetTemplateId}`);
+    updateAssetTemplate(assetTemplateId, data) {
+        return apiClient.put(`/assetTemplate/${assetTemplateId}`, data);
     },
     deleteAssetTemplate(assetTemplateId) {
         return apiClient.delete(`/assetTemplate/${assetTemplateId}`);

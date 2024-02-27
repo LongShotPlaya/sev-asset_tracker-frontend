@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/assetCategory/${assetCatId}`);
     },
     createAssetCat(data) {
-        return apiClient.post(`/assetCategory/${data}`);
+        return apiClient.post(`/assetCategory/}`, data);
     },
-    updateAssetCat(assetCatId) {
-        return apiClient.put(`/assetCategory/${assetCatId}`);
+    updateAssetCat(assetCatId, data) {
+        return apiClient.put(`/assetCategory/${assetCatId}`, data);
     },
     deleteAssetCat(assetCatId) {
         return apiClient.delete(`/assetCategory${assetCatId}`);
