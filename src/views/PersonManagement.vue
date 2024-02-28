@@ -4,7 +4,6 @@ import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
 import peopleServices from "../services/personServices";
-import personEditDialog from "../components/personEditDialog.vue";
 
 const router = useRouter();
 const user = Utils.getStore("user");
@@ -89,10 +88,12 @@ watch(search, filterPeople);
             <h4>First Name</h4>
           </th>
           <th>
+            <h4>ID Number</h4>
+          </th>
+          <th>
             <h4>Email</h4>
           </th>
           <th>
-            <h4></h4>
           </th>
         </tr>
       </thead>
@@ -100,6 +101,7 @@ watch(search, filterPeople);
         <tr v-for="person in filteredPeople" :key="person.id" @click="openDialog(person.id)">
           <td class="column">{{ person.lName}}</td>
           <td class="column">{{ person.fName}}</td>
+          <td class="column">{{ person.id }}</td>
           <td class="column">{{ person.email }}</td>
           <td class="column" style="text-align: right; padding-right: .5%;"><v-btn color="primary" @click="">
               View
