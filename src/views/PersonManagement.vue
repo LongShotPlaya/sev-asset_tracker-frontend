@@ -42,10 +42,14 @@ const filterPeople = () => {
     });
   } 
   else {
+    const searchString = search.value.trim().toLowerCase();
       filteredPeople.value = people.value.filter(person => {
-        return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
-               person.lName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
-               person.email.toLowerCase().includes(search.value.trim().toLowerCase());
+        const idString = person.id.toString().toLowerCase();
+        return person.fName.toLowerCase().includes(searchString) ||
+               person.lName.toLowerCase().includes(searchString) ||
+               person.email.toLowerCase().includes(searchString) ||
+               idString.includes(searchString) ||
+               idString.endsWith(searchString);
       });
   }
 };
