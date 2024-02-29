@@ -1,5 +1,4 @@
 <script setup>
-
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
@@ -12,11 +11,15 @@ const search = ref("");
 const person = ref("");
 let people = ref([]);
 const filteredPeople = ref([]);
-const selectedPerson = ref(null);
 
-const openDialog = (person) => {
-  selectedPerson.value = person;
-}
+
+const headers = [
+  { text: "Last Name", value: "lName" },
+  { text: "First Name", value: "fName" },
+  { text: "ID Number", value: "id" },
+  { text: "Email", value: "email" },
+  { text: "Action", value: ""},
+];
 
 const getPeople = () => { 
   peopleServices.getAllPeople()
@@ -63,14 +66,12 @@ watch(search, filterPeople);
 </script>
 
 <template>
+  <v-app>
   <v-toolbar>
     <v-toolbar-title>Find People</v-toolbar-title>
   </v-toolbar>
-  <br>
-  <v-card
-  flat
-  title="" class="title"
-  >
+
+  <v-card flat title="" class="title">
     <v-text-field
       v-model="search"
       label="Search"
@@ -79,63 +80,59 @@ watch(search, filterPeople);
       variant="outlined"
       hide-details
     ></v-text-field>
-</v-card>
+  </v-card>
 
-<v-card class="table">
-    <v-table>
-      <thead class="header">
-        <tr>
-          <th>
-            <h4>Last Name</h4>
-          </th>
-          <th>
-            <h4>First Name</h4>
-          </th>
-          <th>
-            <h4>ID Number</h4>
-          </th>
-          <th>
-            <h4>Email</h4>
-          </th>
-          <th>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="person in filteredPeople" :key="person.id" @click="openDialog(person.id)">
-          <td class="column">{{ person.lName}}</td>
-          <td class="column">{{ person.fName}}</td>
-          <td class="column">{{ person.id }}</td>
-          <td class="column">{{ person.email }}</td>
-          <td class="column" style="text-align: right; padding-right: .5%;"><v-btn color="primary" @click="">
-              View
-          </v-btn></td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-card> 
-    
+  <div class="table">
+    <v-card>
+      <v-table>
+        <thead class="header">
+          <tr>
+            <th>
+              <h4>Last Name</h4>
+            </th>
+            <th>
+              <h4>First Name</h4>
+            </th>
+            <th>
+              <h4>ID Number</h4>
+            </th>
+            <th>
+              <h4>Email</h4>
+            </th>
+            <th>
+              <h4></h4>
+            </th>
+          </tr>
+        </thead>
+      </v-table>
+    </v-card>
+      <v-data-table
+        :headers="headers"
+        :items="filteredPeople"
+        item-key="id"
+      >
+      </v-data-table>
+  </div>
+
+</v-app>
+
 </template>
 
-<style>
-    .title{
-      padding-left: 5%;
-      padding-right: 5%;
-    }
-    .table{
-      margin-left: 5%;
-      margin-right: 5%;
-      margin-top: 1%;
-      margin-bottom: 20%;
-      border-radius: 5px;
-    }
-    .header{
-      background-color: #811429;
-    }
-    .header h4{
-      color: white;
-    }
-    /* .button-column{
-      text-align: right;
-    } */
+<style scoped>
+
+.title {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.table {
+  margin-top: 1%;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.header {
+  margin: 0;
+}
+
 </style>
