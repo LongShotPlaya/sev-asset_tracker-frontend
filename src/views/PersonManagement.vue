@@ -13,13 +13,13 @@ let people = ref([]);
 const filteredPeople = ref([]);
 
 
-const headers = [
-  { text: "Last Name", value: "lName" },
-  { text: "First Name", value: "fName" },
-  { text: "ID Number", value: "id" },
-  { text: "Email", value: "email" },
-  { text: "Action", value: ""},
-];
+// const headers = [
+//   { text: "Last Name", value: "lName" },
+//   { text: "First Name", value: "fName" },
+//   { text: "ID Number", value: "id" },
+//   { text: "Email", value: "email" },
+//   { text: "Action", value: ""},
+// ];
 
 const getPeople = () => { 
   peopleServices.getAllPeople()
@@ -83,29 +83,6 @@ watch(search, filterPeople);
   </v-card>
 
   <div class="table">
-    <v-card>
-      <v-table>
-        <thead class="header">
-          <tr>
-            <th>
-              <h4>Last Name</h4>
-            </th>
-            <th>
-              <h4>First Name</h4>
-            </th>
-            <th>
-              <h4>ID Number</h4>
-            </th>
-            <th>
-              <h4>Email</h4>
-            </th>
-            <th>
-              <h4></h4>
-            </th>
-          </tr>
-        </thead>
-      </v-table>
-    </v-card>
       <v-data-table
         :headers="headers"
         :items="filteredPeople"
@@ -113,7 +90,6 @@ watch(search, filterPeople);
       >
       </v-data-table>
   </div>
-
 </v-app>
 
 </template>
@@ -129,10 +105,6 @@ watch(search, filterPeople);
   margin-top: 1%;
   padding-left: 5%;
   padding-right: 5%;
-}
-
-.header {
-  margin: 0;
 }
 
 </style>
