@@ -17,7 +17,7 @@ import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import PersonManagement from "./views/PersonManagement.vue";
-import ViewPerson from '../views/EditPerson.vue';
+import ViewPerson from './views/EditPerson.vue';
 import RoomManagement from "./views/RoomManagement.vue";
 import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
