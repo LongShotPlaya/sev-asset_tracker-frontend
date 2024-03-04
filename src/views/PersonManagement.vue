@@ -47,11 +47,17 @@ const filterPeople = () => {
   }
 };
 
+const viewPerson = (id) => {
+  console.log(id);
+  router.push({ name: 'person', params: { id }});
+}
+
 const headers = [
-  { text: 'Last Name', value: 'lName' },
-  { text: 'First Name', value: 'fName' },
-  { text: 'ID', value: 'id' },
-  { text: 'Email', value: 'email' },
+  { title: 'Last Name', value: 'lName', width: '20%' },
+  { title: 'First Name', value: 'fName', width: '20%' },
+  { title: 'ID', value: 'id', width: '20%' },
+  { title: 'Email', value: 'email', width: '20%' },
+  { title: 'Actions', value: 'actions', align: 'end' },
 ];
 
 onMounted(() => {
@@ -84,7 +90,13 @@ watch(search, filterPeople);
       :headers="headers"
       :items="filteredPeople"
       item-key="id"
-      ></v-data-table>
+    >
+    <template v-slot:[`item.actions`]="{ item }">
+      <v-btn color="primary" @click="viewPerson(item.id)">
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
+    </template>
+  </v-data-table>
   </div>
 </v-app>
 
@@ -100,4 +112,5 @@ watch(search, filterPeople);
   padding-left: 5%;
   padding-right: 5%;
 }
+
 </style>

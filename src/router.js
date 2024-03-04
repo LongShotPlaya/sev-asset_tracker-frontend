@@ -8,7 +8,7 @@ import Home from "./views/Home.vue";
 // import ViewTutorial from "./views/ViewTutorial.vue";
 // import AddLesson from "./views/AddLesson.vue";
 // import EditLesson from "./views/EditLesson.vue";
-//import AllAssets from "./views/AllAssets.vue";
+import AllAssets from "./views/AllAssets.vue";
 import AssetData from "./views/AssetData.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/AssetCatManagement.vue";
@@ -17,6 +17,7 @@ import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import PersonManagement from "./views/PersonManagement.vue";
+import ViewPerson from '../views/EditPerson.vue';
 import RoomManagement from "./views/RoomManagement.vue";
 import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
@@ -48,7 +49,7 @@ const router = createRouter({
     {
       path: "/assets",
       name: "assets",
-      //component: AllAssets,
+      component: AllAssets,
     },
     {
       path: "/asset-data",
@@ -89,6 +90,11 @@ const router = createRouter({
       path: "/people",
       name: "people",
       component: PersonManagement,
+    },
+    {
+      path: "/person",
+      name: "person",
+      component: ViewPerson,
     },
     {
       path: "/rooms",
