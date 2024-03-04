@@ -12,15 +12,6 @@ const person = ref("");
 let people = ref([]);
 const filteredPeople = ref([]);
 
-
-// const headers = [
-//   { text: "Last Name", value: "lName" },
-//   { text: "First Name", value: "fName" },
-//   { text: "ID Number", value: "id" },
-//   { text: "Email", value: "email" },
-//   { text: "Action", value: ""},
-// ];
-
 const getPeople = () => { 
   peopleServices.getAllPeople()
     .then((response) => {
@@ -30,7 +21,6 @@ const getPeople = () => {
       person.value = response.data;
       people.value = response.data;
       filterPeople();
-      console.log(response.data);
     })
     .catch((e) => {
       message.value = e.response.data.message;
@@ -56,6 +46,13 @@ const filterPeople = () => {
       });
   }
 };
+
+const headers = [
+  { text: 'Last Name', value: 'lName' },
+  { text: 'First Name', value: 'fName' },
+  { text: 'ID', value: 'id' },
+  { text: 'Email', value: 'email' },
+];
 
 onMounted(() => {
   user.value = Utils.getStore("user");
@@ -83,28 +80,24 @@ watch(search, filterPeople);
   </v-card>
 
   <div class="table">
-      <v-data-table
-        :headers="headers"
-        :items="filteredPeople"
-        item-key="id"
-      >
-      </v-data-table>
+    <v-data-table
+      :headers="headers"
+      :items="filteredPeople"
+      item-key="id"
+      ></v-data-table>
   </div>
 </v-app>
 
 </template>
 
 <style scoped>
-
 .title {
   padding-left: 5%;
   padding-right: 5%;
 }
-
 .table {
   margin-top: 1%;
   padding-left: 5%;
   padding-right: 5%;
 }
-
 </style>
