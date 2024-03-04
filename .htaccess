@@ -1,11 +1,12 @@
 <IfModule mod_negotiation.c>
     Options -MultiViews
 </IfModule>
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase /asset/t4/
     RewriteRule ^index\.html$ - [L]
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule . /index.html [L]
+    RewriteRule . /asset/t4/index.html [L]
 </IfModule>
