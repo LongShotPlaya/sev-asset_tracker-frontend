@@ -8,8 +8,30 @@
 	const router = useRouter();
 	const user = Utils.getStore("user");
 	const message = ref("");
-
+	
+	const editDialogue = ref(false);
+	const addDialogue = ref(false);
+	const viewDialogue = ref(false);
+	const deleteDialogue = ref(false);
 	const groups = ref([]);
+
+	const openDialog = (action) => {
+		switch (action)
+		{
+			case ("add"):
+				addDialogue.value = true;
+				break;
+			case ("view"):
+				viewDialogue.value = true;
+				break;
+			case ("edit"):
+				editDialogue.value = true;
+				break;
+			case ("delete"):
+				deleteDialogue.value = true;
+				break;
+		}
+	}
 
 	const retrieveGroups = () => {
 		groupServices.getAllGroups()
@@ -27,9 +49,9 @@
 
 </script>
 
-<template v-slot:activator="{ props: activatorProps }">
+<template>
     <v-container>
-        <v-btn class="mt-7 mx-0" color="primary" v-bind="activatorProps">Add group</v-btn>
+        <v-btn class="mt-7 mx-0" color="primary" @click="openDialog('add')">Add group</v-btn>
 		<v-card class="mt-7" variant="outlined" color="grey-lighten-1">
 			<v-table>
 				<thead>
@@ -46,15 +68,15 @@
 					<td class="text-center">
 						<v-row justify="center">
 						<div>
-							<v-btn size="small" icon="mdi-format-list-bulleted-type" @click="router.push({name: ''})">
+							<v-btn size="small" icon="mdi-format-list-bulleted-type" @click="openDialog('view')">
 							</v-btn><v-tooltip activator="parent" location="bottom">View Group</v-tooltip>
 						</div>
 						<div>
-							<v-btn size="small" icon="mdi-pencil" @click="router.push({name: ''})">
+							<v-btn size="small" icon="mdi-pencil" @click="openDialog('edit')">
 							</v-btn><v-tooltip activator="parent" location="bottom">Edit Group</v-tooltip>
 						</div>
 						<div>
-							<v-btn size="small" icon="mdi-trash-can" @click="router.push({name: ''})">
+							<v-btn size="small" icon="mdi-trash-can" @click="openDialog('delete')">
 							</v-btn><v-tooltip activator="parent" location="bottom">Delete Group</v-tooltip>
 						</div>
 					</v-row>
@@ -68,32 +90,36 @@
 		</v-card-text>
     </v-container>
 
-	<v-dialog max-width="500">
-  		<template v-slot:activator="{ props: activatorProps }">
-			<v-btn
-				v-bind="activatorProps"
-				color="surface-variant"
-				text="Open Dialog"
-				variant="flat">
-			</v-btn>
-  		</template>
-
-		<template v-slot:default="{ isActive }">
-			<v-card title="Dialog">
-			<v-card-text>
-				Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-			</v-card-text>
-
-			<v-card-actions>
-				<v-spacer></v-spacer>
-
-				<v-btn
-				text="Close Dialog"
-				@click="isActive.value = false"
-				></v-btn>
-			</v-card-actions>
-			</v-card>
-		</template>
+	<v-dialog v-model="addDialogue" max-width="90%">
+	  <v-card>
+		<v-container>
+			<v-card-title class="text-h5">Add</v-card-title>
+		</v-container>
+	  </v-card>
 	</v-dialog>
+
+  <v-dialog v-model="viewDialogue" max-width="90%">
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5">View</v-card-title>
+      </v-container>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="editDialogue" max-width="90%">
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5">Edit</v-card-title>
+      </v-container>
+    </v-card>
+  </v-dialog>
+
+  <v-dialog v-model="deleteDialogue" max-width="50%">
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5">Are you sure you want to delete?</v-card-title>
+      </v-container>
+    </v-card>
+  </v-dialog>
 
 </template>
