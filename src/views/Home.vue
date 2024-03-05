@@ -11,7 +11,9 @@
 	const linksAllowed = ref([]);
 
 	const links = ref([
-		"assets", "", "", "", "", "", "", "", "people", "groups","vendors", "",
+		"assets", "", "",
+		"assetTemplate", "assetType", "assetCategory", "buildings",
+		"", "people", "groups","vendors", "alertType",
 	]);
 		
 	const configureScreen = () => {
@@ -52,58 +54,78 @@
 		<v-row class="mt-2">
 			<v-spacer></v-spacer>
 			<v-card class="text-center" min-width="200" min-height="200"
-			title="All Assets" text="Desc" variant="outlined">
+			title="All Assets" text="See all currently held assets" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
 						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[0]})"></v-btn>
+						@click = "router.push({name: links[0]})">Go!</v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
 			<v-spacer></v-spacer>
 			<v-card class="text-center" min-width="200" min-height="200"
-			title="Search Person" text="Desc" variant="outlined">
+			title="Search Person" text="Search for a specific person" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
 						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[1]})"></v-btn>
+						@click = "router.push({name: links[8]})">Go!</v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
 			<v-spacer></v-spacer>
 			<v-card class="text-center" min-width="200" min-height="200"
-			title="Create Report" text="Desc" variant="outlined">
+			title="Create Report" text="Generate an asset report" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
 						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[2]})"></v-btn>
+						@click = "router.push({name: links[2]})">Go!</v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
 			<v-spacer></v-spacer>
 		</v-row>
 		<v-col>
-			<v-card min-height="300" title="Other" variant="flat" class="text-center mt-6">
+			<v-card min-height="300" title="Asset Organization" variant="flat" class="text-center mt-6">
 				<v-row class="mt-4">
 					<v-spacer></v-spacer>
-					<v-card class="text-center" min-width="400" max-height="100"
-					title="Asset Templates" text="Desc" variant="outlined">
-					</v-card>
+					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
+					@click = "router.push({name: links[3]})">
+						<v-col>
+							<h3>Asset Templates</h3>
+							<br/>
+							<p>View current asset templates</p>
+						</v-col>
+					</v-btn>
 					<v-spacer></v-spacer>
-					<v-card class="text-center" min-width="400" max-height="100"
-					title="Asset Types" text="Desc" variant="outlined">
-					</v-card>
+					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
+					@click = "router.push({name: links[4]})">
+						<v-col>
+							<h3>Asset Types</h3>
+							<br/>
+							<p>View current asset types</p>
+						</v-col>
+					</v-btn>
 					<v-spacer></v-spacer>
 				</v-row>
 				<v-row class="mt-10">
 					<v-spacer></v-spacer>
-					<v-card class="text-center" min-width="400" max-height="100"
-					title="Asset Categories" text="Desc" variant="outlined">
-					</v-card>
+					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
+					@click = "router.push({name: links[5]})">
+						<v-col>
+							<h3>Asset Categories</h3>
+							<br/>
+							<p>View current asset categories</p>
+						</v-col>
+					</v-btn>
 					<v-spacer></v-spacer>
-					<v-card class="text-center" min-width="400" max-height="100"
-					title="Facilities" text="Desc" variant="outlined">
-					</v-card>
+					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
+					@click = "router.push({name: links[6]})">
+						<v-col>
+							<h3>Facilities</h3>
+							<br/>
+							<p>Configure facilities</p>
+						</v-col>
+					</v-btn>
 					<v-spacer></v-spacer>
 				</v-row>
 			</v-card>
