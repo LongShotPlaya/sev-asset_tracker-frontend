@@ -93,13 +93,11 @@ watch(search, filterPeople);
       :items="filteredPeople"
       item-key="id"
     >
-    <template v-slot:[`item.actions`]="{ item }">
-      <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small">
-        <v-icon>mdi-pencil</v-icon>
-      </v-btn>
-
-    </template>
-
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewPerson(item.id)">
+                <v-icon>mdi-pencil</v-icon> 
+            </v-btn>
+        </template>
   </v-data-table>
   </div>
 </v-app>
@@ -120,5 +118,4 @@ watch(search, filterPeople);
   padding-left: 5%;
   padding-right: 5%;
 }
-
 </style>
