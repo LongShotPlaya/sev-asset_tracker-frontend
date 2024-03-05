@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/users/${id}`);
     },
     createUser(data) {
-        return apiClient.post(`/users/${data}`);
+        return apiClient.post(`/users/`, data);
     },
-    updateUser(id) {
-        return apiClient.put(`/users/${id}`);
+    updateUser(id, data) {
+        return apiClient.put(`/users/${id}`, data);
     },
     deleteUser(id) {
         return apiClient.delete(`/users/${id}`);
