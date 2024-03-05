@@ -54,7 +54,7 @@
 		<v-row class="mt-2">
 			<v-spacer></v-spacer>
 			<v-card class="text-center" min-width="200" min-height="200"
-			title="All Assets" text="See all currently held assets" variant="outlined">
+			title="View Assets" text="See all currently held assets" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
 						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
@@ -85,7 +85,7 @@
 			<v-spacer></v-spacer>
 		</v-row>
 		<v-col>
-			<v-card min-height="300" title="Asset Organization" variant="flat" class="text-center mt-6">
+			<v-card min-height="300" title="Asset Organization (Probably change to checkin/out routes instead)" variant="flat" class="text-center mt-6">
 				<v-row class="mt-4">
 					<v-spacer></v-spacer>
 					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
