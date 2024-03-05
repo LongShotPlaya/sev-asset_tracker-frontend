@@ -8,10 +8,10 @@ export default{
         return apiClient.get(`/buildings/${buildingId}`);
     },
     createBuilding(data) {
-        return apiClient.post(`/buildings/${data}`);
+        return apiClient.post(`/buildings/`, data);
     },
-    updateBuilding(buildingId) {
-        return apiClient.put(`/buildings/${buildingId}`);
+    updateBuilding(buildingId, data) {
+        return apiClient.put(`/buildings/${buildingId}`, data);
     },
     deleteBuilding(buildingId) {
         return apiClient.delete(`/buildings/${buildingId}`);

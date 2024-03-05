@@ -8,9 +8,9 @@ export default {
         return apiClient.get(`/alert-types/${alertId}`);
     },
     createAlertType(data) {
-        return apiClient.post(`/alert-types/${data}`);
+        return apiClient.post(`/alert-types/`, data);
     },
-    updateAlertType(alertId) {
+    updateAlertType(alertId, data) {
         return apiClient.put(`/alert-types/${alertId}`, data);
     },
     deleteAlertType(alertId) {

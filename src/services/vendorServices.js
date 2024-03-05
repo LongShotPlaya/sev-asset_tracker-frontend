@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/vendors/${vendorId}`);
     },
     createVendor(data) {
-        return apiClient.post(`/vendors/${data}`);
+        return apiClient.post(`/vendors/`, data);
     },
-    updateVendor(vendorId) {
-        return apiClient.put(`/vendors/${vendorId}`);
+    updateVendor(vendorId, data) {
+        return apiClient.put(`/vendors/${vendorId}`, data);
     },
     deleteVendor(vendorId) {
         return apiClient.delete(`/vendors/${vendorId}`);
