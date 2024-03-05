@@ -1,30 +1,34 @@
 <template>
-  <v-toolbar>
-    <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
-  </v-toolbar>
+ 
 
-  <v-container fluid>
+  <v-container class="space">
+    <v-toolbar>
+      <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
+    </v-toolbar>
+    <br>
     <v-row>
-      <v-col>
+      <v-spacer></v-spacer>
+      <v-col align="right">
         <v-btn color="primary" @click="openDialog(null)">
           Add
         </v-btn>
       </v-col>
     </v-row>
+    
     <v-row>
       <v-col>
         <v-card>
-          <v-table>
+          <v-data-table>
             <thead>
-              <tr>
-                <th class="text-left column">
+              <tr style="background-color: rgb(129, 20, 41)">
+                <th class="text-left column, fontcolor">
                   Name
                 </th>
-                <th class="text- column">
+                <th class="text- column , fontcolor">
                   Description
                 </th>
                 <th class="text-right column">
-                  Actions
+                  
                 </th>
               </tr>
             </thead>
@@ -33,13 +37,20 @@
                 <td class="column">{{ item.name }}</td>
                 <td class="column">{{ item.description }}</td>
                 <td class="text-right column">
-                  <v-btn color="primary" @click="openDialog(item.id)">
-                    Edit
+                  <v-btn class="ma-2" color="primary" icon="mdi-pencil"  @click="openDialog(item.id)">
+                    <v-icon>mdi-pencil</v-icon>
                   </v-btn>
+                  <v-btn
+                    class="ma-2"
+                    color="primary"
+                    variant="outlined"
+                    icon="mdi-trash-can"
+                    @click="openDeleteDialogue"
+                  ></v-btn>
                 </td>
               </tr>
             </tbody>
-          </v-table>
+          </v-data-table>
         </v-card>
       </v-col>
     </v-row>
@@ -79,6 +90,27 @@
     </v-card>
   </v-dialog>
 
+  <!-- delete pop-up -->
+  <v-dialog v-model="deleteDialogue" persistent max-width="800px">
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete this category?</v-card-title>
+        <v-row justify="center">
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" variant="outlined"  @click="deleteAssetCats">
+              Yes
+            </v-btn>
+            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-row>
+        
+      </v-container>
+    </v-card>
+  </v-dialog>
+
   <!-- edit pop-up -->
   <v-dialog v-model="editDialogue" persistent max-width="800px">
     
@@ -103,9 +135,6 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" variant="outlined" @click="deleteAssetCats">
-            Delete
-          </v-btn>
           <v-btn color="green" variant="outlined" @click="updateAssetCats">
             Save
           </v-btn>
@@ -132,6 +161,7 @@ import { useRouter } from "vue-router";
 const assetcategories = ref([]);
 const editDialogue = ref(false)
 const addDialogue = ref(false)
+const deleteDialogue = ref(false)
 const item = ref({})
 
 const router = useRouter();
@@ -189,10 +219,15 @@ const openDialog = (itemId) => {
   }
 }
 
+const openDeleteDialogue = () =>{
+  deleteDialogue.value = true;
+}
+
 
 const closeDialog = () => {
   editDialogue.value = false;
   addDialogue.value = false;
+  deleteDialogue.value = false;
   item.value = {}; // Reset item
 }
 
@@ -209,14 +244,17 @@ onMounted(() => {
     width: 33.3%;
   }
   .space{
-    margin-left: 2%;
-    margin-right: 2%;
-    margin-top: 2%;
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-top: 1%;
   }
 
   .space2{
-    margin-left: 2%;
-    margin-right: 93.6%;
-    margin-top: 2%;
+    margin-bottom: 4%;
+    margin-top: 1%;
+  }
+
+  .fontcolor{
+    color: rgb(255, 255, 255);
   }
 </style>
