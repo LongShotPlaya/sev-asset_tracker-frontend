@@ -57,7 +57,7 @@ const headers = [
   { title: 'First Name', value: 'fName', width: '20%' },
   { title: 'ID', value: 'id', width: '20%' },
   { title: 'Email', value: 'email', width: '20%' },
-  { title: 'Actions', value: 'actions', align: 'end' },
+  { title: '', value: 'actions', align: 'end' },
 ];
 
 onMounted(() => {
@@ -70,12 +70,14 @@ watch(search, filterPeople);
 
 <template>
   <v-app>
-  <v-toolbar>
-    <v-toolbar-title>Find People</v-toolbar-title>
-  </v-toolbar>
 
   <v-card flat title="" class="title">
-    <v-text-field
+    <v-toolbar>
+      <v-toolbar-title>Find Person</v-toolbar-title>
+    </v-toolbar>
+    <br>
+
+    <v-text-field class="searchBar"
       v-model="search"
       label="Search"
       prepend-inner-icon="mdi-magnify"
@@ -92,10 +94,12 @@ watch(search, filterPeople);
       item-key="id"
     >
     <template v-slot:[`item.actions`]="{ item }">
-      <v-btn color="primary" @click="viewPerson(item.id)">
+      <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small">
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
+
     </template>
+
   </v-data-table>
   </div>
 </v-app>
@@ -103,6 +107,10 @@ watch(search, filterPeople);
 </template>
 
 <style>
+.searchBar{
+  margin-left: 5%;
+  margin-right: 5%;
+}
 .title {
   padding-left: 5%;
   padding-right: 5%;
