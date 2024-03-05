@@ -13,7 +13,3 @@ import MenuBar from "./components/MenuBar.vue";
   </v-app>
 </template>
 
-
-<style>
-  @import "./plugins/style.css";
-</style>
