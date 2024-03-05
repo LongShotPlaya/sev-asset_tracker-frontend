@@ -2,7 +2,7 @@
   <v-toolbar>
     <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
   </v-toolbar>
-  <v-card>
+  <v-card class="space">
     <v-table>
       <thead>
         <tr>
@@ -18,7 +18,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in categories" :key="item.name">
+        <tr v-for="item in assetcategories" :key="item.name">
           <td class="column">{{ item.name }}</td>
           <td class="column">{{ item.description }}</td>
           <td class="column">
@@ -54,10 +54,10 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red" variant="text" @click="saveChanges">
+          <v-btn color="red" variant="text" @click="deleteAssetCats">
             Delete
           </v-btn>
-          <v-btn color="green-darken-1" variant="text" @click="saveChanges">
+          <v-btn color="green-darken-1" variant="text" @click="updateAssetCats">
             Save
           </v-btn>
           <v-btn color="orange" variant="text" @click="closeDialog">
@@ -69,30 +69,18 @@
   </v-dialog>
 
   <!-- Add button to trigger the "Add" functionality -->
-  <v-btn color="primary" @click="addCategory">
+  <v-btn color="primary" @click="addAssetCats">
     Add
   </v-btn>
 </template>
 
 <script setup>
 import Utils from "../config/utils.js";
-import { ref } from "vue";
+import CatServices from "../services/assetCatServices.js";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-const categories = ref([
-  {
-    name: 'Vehicle',
-    description: 'For vehicle-based assets. This description is super long because I want to see if the text wraps. If this keeps going than it did not wrap which will need to be fixed because no one wants a really wide web page.',
-  },
-  {
-    name: 'Electronics',
-    description: 'For electronic-based assets.',
-  },
-  {
-    name: 'Building',
-    description: 'For building-based assets.',
-  },
-])
+const assetcategories = ref([]);
 const dialog = ref(false)
 const item = ref({})
 
@@ -101,71 +89,72 @@ const tutorials = ref([]);
 const user = Utils.getStore("user");
 const message = ref("Search, Edit or Delete Tutorials");
 
-const editTutorial = (tutorial) => {
-  router.push({ name: "edit", params: { id: tutorial.id } });
+const updateAssetCats = async (id) => {
+  const data = {
+    name: assetcategories.value.name,
+    description: assetcategories.value.description,
+  };
+  try {
+    const response = await CatServices.update(props.id, data);
+    assetcategories.value.id = response.data.id;
+    router.push({ name: "asset-category" });
+  } catch (e) {
+    message.value = e.response.data.message;
+  }
+  closeDialog();
 };
 
-const viewTutorial = (tutorial) => {
-  router.push({ name: "view", params: { id: tutorial.id } });
+const addAssetCats = (data) => {
+  router.push({ name: "asset-category", params: { assetId: props.id } });
+  closeDialog();
 };
 
-const deleteTutorial = (tutorial) => {
-  TutorialServices.delete(tutorial.id)
+const deleteAssetCats = () => {
+  CatServices.deleteAssetCat()
     .then(() => {
-      retrieveTutorials();
+      retrieveAssetCats();
     })
     .catch((e) => {
       message.value = e.response.data.message;
     });
 };
 
-// const retrieveTutorials = () => {
-//   TutorialServices.getAllForUser(user.userId)
-//     .then((response) => {
-//       tutorials.value = response.data;
-//     })
-//     .catch((e) => {
-//       message.value = e.response.data.message;
-//     });
-// };
+const retrieveAssetCats = () => {
+  CatServices.getAllAssetCats()
+    .then((response) => {
+      assetcategories.value = response.data;
+    })
+    .catch((e) => {
+      message.value = e.response.data.message;
+    });
+};
 
 const openDialog = (item) => {
   item.value = { ...item };
   dialog.value = true;
 }
 
-const saveChanges = () => {
-  // Handle save logic here
-  if (categories.value.includes(item.value)) {
-    // Update existing item
-    // const index = categories.value.indexOf(item.value);
-    // this.$set(this.categories, index, { ...item.value });
-  } else {
-    // Add new item
-    //categories.value.push({ ...item.value });
-  }
-
-
-  closeDialog();
-}
 
 const closeDialog = () => {
   dialog.value = false;
   item.value = {}; // Reset item
 }
 
-const addCategory = () => {
-  // Initialize item for adding a new category
-  item.value = { name: '', description: '' };
-  dialog.value = true;
-}
 
-//retrieveTutorials();
+onMounted(() => {
+  retrieveAssetCats();
+}) 
+
 </script>
 
 <style>
   th.column,
   td.column{
     width: auto;
+  }
+  .space{
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-top: 2%;
   }
 </style>

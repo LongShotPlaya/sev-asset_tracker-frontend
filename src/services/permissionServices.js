@@ -8,6 +8,6 @@ export default {
         return apiClient.get(`/permissions/${id}`);
     },
     createPermission(data) {
-        return apiClient.post(`/permissions/${data}`);
+        return apiClient.post(`/permissions/`, data);
     },
 }
