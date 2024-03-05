@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 import Login from "./views/Login.vue";
+import Home from "./views/Home.vue";
 // import TutorialsList from "./views/TutorialsList.vue";
 // import EditTutorial from "./views/EditTutorial.vue";
 // import AddTutorial from "./views/AddTutorial.vue";
@@ -16,6 +17,7 @@ import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import PersonManagement from "./views/PersonManagement.vue";
+import ViewPerson from './views/EditPerson.vue';
 import RoomManagement from "./views/RoomManagement.vue";
 import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
@@ -32,17 +34,23 @@ import Users from "./views/userManagement.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+	{
+		path: "/",
+		alias: "/login",
+		name: "login",
+		component: Login,
+	},
+	{
+		path: "/",
+		alias: "/home",
+		name: "home",
+		component: Home,
+	},
     {
-      path: "/",
-      alias: "/login",
-      name: "login",
-      component: Login,
+      path: "/assets",
+      name: "assets",
+      component: AllAssets,
     },
-    // {
-    //   path: "/assets",
-    //   name: "assets",
-    //   component: AllAssets,
-    // },
     {
       path: "/asset-data",
       name: "asset-data",
@@ -82,6 +90,11 @@ const router = createRouter({
       path: "/people",
       name: "people",
       component: PersonManagement,
+    },
+    {
+      path: "/person",
+      name: "person",
+      component: ViewPerson,
     },
     {
       path: "/rooms",
@@ -171,11 +184,6 @@ const router = createRouter({
     //   name: "editLesson",
     //   component: EditLesson,
     //   props: true,
-    // },
-    // {
-    //   path: "/manageAssetCat",
-    //   name: "manageAssetCategories",
-    //   component: ManageAssetCategories,
     // },
   ],
 });
