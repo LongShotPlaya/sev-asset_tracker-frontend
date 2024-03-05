@@ -102,7 +102,7 @@ watch(search, filterPeople);
 
 </template>
 
-<style scoped>
+<style>
 .title {
   padding-left: 5%;
   padding-right: 5%;
