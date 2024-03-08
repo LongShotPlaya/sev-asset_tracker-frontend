@@ -11,7 +11,6 @@ import Login from "./views/Login.vue";
 import AssetData from "./views/AssetData.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/ManageAssetCategories.vue";
-import AssetCatAddEdit from "./views/AssetCatAddEdit.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
 import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
@@ -58,11 +57,6 @@ const router = createRouter({
       path: "/asset-categories",
       name: "asset-categories",
       component: AssetCatManagement,
-    },
-    {
-      path: "/asset-categories-edit",
-      name: "asset-categories-edit",
-      component: AssetCatAddEdit,
     },
     {
       path: "/asset-templates",
