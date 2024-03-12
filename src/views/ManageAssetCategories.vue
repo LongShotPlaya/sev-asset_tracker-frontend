@@ -33,43 +33,10 @@
                       color="primary"
                       variant="outlined"
                       icon="mdi-trash-can"
-                      @click="openDeleteDialogue"
+                      @click="openDeleteDialogue(item.id)"
                     ></v-btn>
             </template>
           </v-data-table>
-          <!-- <v-data-table :items="item">
-            <thead>
-              <tr style="background-color: rgb(129, 20, 41)">
-                <th class="text-left column, fontcolor">
-                  Name
-                </th>
-                <th class="text- column , fontcolor">
-                  Description
-                </th>
-                <th class="text-right column">
-                  
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in assetcategories" :key="item.id">
-                <td class="column">{{ item.name }}</td>
-                <td class="column">{{ item.description }}</td>
-                <td class="text-right column">
-                  <v-btn class="ma-2" color="primary" icon="mdi-pencil"  @click="openDialog(item.id)">
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    class="ma-2"
-                    color="primary"
-                    variant="outlined"
-                    icon="mdi-trash-can"
-                    @click="openDeleteDialogue"
-                  ></v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </v-data-table> -->
         </v-card>
       </v-col>
     </v-row>
@@ -212,13 +179,20 @@ const addAssetCats = (data) => {
 };
 
 const deleteAssetCats = () => {
-  CatServices.deleteAssetCat()
-    .then(() => {
-      retrieveAssetCats();
-    })
-    .catch((e) => {
-      message.value = e.response.data.message;
-    });
+  if(!isNaN(parseInt(item.value.id))){
+    CatServices.deleteAssetCat(item.value.id)
+      .then(() => {
+        retrieveAssetCats();
+        deleteDialogue.value = false;
+      })
+      .catch((e) => {
+        message.value = e.response.data.message;
+        deleteDialogue.value = false;
+      });
+  }
+  else{
+    deleteDialogue.value = false;
+  }
 };
 
 
@@ -244,7 +218,8 @@ const openDialog = (itemId) => {
   }
 }
 
-const openDeleteDialogue = () =>{
+const openDeleteDialogue = (itemId) =>{
+  item.value = assetcategories.value?.find(cat => cat.id == itemId);
   deleteDialogue.value = true;
 }
 
