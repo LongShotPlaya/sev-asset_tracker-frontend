@@ -91,11 +91,11 @@ const router = createRouter({
       component: PersonManagement,
     },
     {
-      path: "/person/:id",
+      path: "/person/:id", 
       name: "person",
       component: ViewPerson,
-      params: true,
-    },
+      props: true,
+    },    
     {
       path: "/rooms",
       name: "rooms",
