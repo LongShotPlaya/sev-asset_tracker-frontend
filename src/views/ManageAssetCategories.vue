@@ -31,7 +31,9 @@
     </v-table>
   </v-card>
   
+  <AssetCatAddEdit v-if="dialog" item="item"></AssetCatAddEdit>
 
+<!-- 
   <v-dialog v-model="dialog" persistent max-width="800px">
     <v-card>
       <v-container>
@@ -66,7 +68,7 @@
         </v-card-actions>
       </v-container>
     </v-card>
-  </v-dialog>
+  </v-dialog> -->
 
   <!-- Add button to trigger the "Add" functionality -->
   <v-btn color="primary" @click="addAssetCats">
@@ -79,6 +81,7 @@ import Utils from "../config/utils.js";
 import CatServices from "../services/assetCatServices.js";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import AssetCatAddEdit from "../components/AssetCatAddEdit.vue";
 
 const assetcategories = ref([]);
 const dialog = ref(false)
@@ -105,8 +108,8 @@ const updateAssetCats = async (id) => {
 };
 
 const addAssetCats = (data) => {
-  router.push({ name: "asset-category", params: { assetId: props.id } });
-  closeDialog();
+  // router.push({ name: "asset-category", params: { assetId: props.id } });
+  openDialog({});
 };
 
 const deleteAssetCats = () => {
