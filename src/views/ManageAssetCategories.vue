@@ -18,7 +18,26 @@
     <v-row>
       <v-col>
         <v-card>
-          <v-data-table>
+          <v-data-table
+            :headers ="headers"
+            :items ="assetcategories"
+            item-key ="id"
+          >
+
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                      class="ma-2"
+                      color="primary"
+                      variant="outlined"
+                      icon="mdi-trash-can"
+                      @click="openDeleteDialogue"
+                    ></v-btn>
+            </template>
+          </v-data-table>
+          <!-- <v-data-table :items="item">
             <thead>
               <tr style="background-color: rgb(129, 20, 41)">
                 <th class="text-left column, fontcolor">
@@ -50,7 +69,7 @@
                 </td>
               </tr>
             </tbody>
-          </v-data-table>
+          </v-data-table> -->
         </v-card>
       </v-col>
     </v-row>
@@ -164,6 +183,9 @@ const addDialogue = ref(false)
 const deleteDialogue = ref(false)
 const item = ref({})
 
+
+
+
 const router = useRouter();
 const tutorials = ref([]);
 const user = Utils.getStore("user");
@@ -199,9 +221,12 @@ const deleteAssetCats = () => {
     });
 };
 
+
+
 const retrieveAssetCats = () => {
   CatServices.getAllAssetCats()
     .then((response) => {
+      const allItems = response.data;
       assetcategories.value = response.data;
     })
     .catch((e) => {
@@ -230,6 +255,12 @@ const closeDialog = () => {
   deleteDialogue.value = false;
   item.value = {}; // Reset item
 }
+
+const headers = [
+  {title: 'Name', value: 'name'},
+  {title: 'Description', value: 'description'},
+  {title: '', value: 'actions'},
+];
 
 
 onMounted(() => {
