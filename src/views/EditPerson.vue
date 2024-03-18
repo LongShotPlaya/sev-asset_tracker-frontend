@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, defineProps } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import peopleServices from "../services/personServices";
 import assetServices from "../services/assetServices.js";
@@ -35,16 +35,19 @@ const getPersonsAssets = (id) => {
     })
 };
 
+//Asset data table
+const headers = ref([
+    { title: 'ID', value: 'id' },
+    { title: 'Name', value: 'name' },
+    { title: 'Type', value: 'type' },
+    { title: '', value: 'actions', align: 'end' },
+]);
+
 onMounted(() => {
     const id = props.id; 
     getSomeone(id);
     getPersonsAssets(id);
 });
-
-//Asset data table
-const headers = ref([
-    { title: 'Asset Name', value: 'id' },
-]);
 </script>
 
 <template>
@@ -62,23 +65,25 @@ const headers = ref([
             <v-container>
                 <v-row>
                     <v-col cols="3">
-                        <v-card class="first">
+                        <v-card class="side">
                             <v-card-title>Person Role: {{ person.id }}</v-card-title>
                             <v-divider></v-divider>
                             <table id="contact">
                                 <tr>
-                                    <td>ID Number: </td>
+                                    <td>ID: </td>
                                     <td>{{ person.id }}</td>
                                 </tr>
                                 <tr>
                                     <td>Email: </td>
-                                    <td>{{ person.email }}</td>
+                                    <td>
+                                        <a :href=" 'https://mail.google.com/mail/?view=cm&fs=1&to=' + person.email" target="_blank">{{ person.email }}</a>
+                                    </td>
                                 </tr>
                             </table>
                         </v-card>
                         <br>
 
-                        <v-card class="last">
+                        <v-card class="side">
                         <v-card-title>Label for third block</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text id="block3txt">Block 3</v-card-text>
@@ -91,7 +96,7 @@ const headers = ref([
                         <v-divider></v-divider>
                         <v-data-table
                         :headers="headers"
-                        :items="items"
+                        :items="personsAssets"
                         :items-per-page="5"
                         :hide-default-footer="true"
                         >
@@ -106,20 +111,21 @@ const headers = ref([
 
 <style scoped>
 
-.first{
-    min-height: 288px;
+.side{
+    min-height: 48%;
 }
 .list{
     min-height: 600px;
 }
-.last{
-    min-height: 288px;
-}
 #contact{
     margin: 5%;
+    width: 100%;
+}
+#contact td{
+    margin-right: 5%;
+    font-size: medium;
 }
 #block3txt{
     font-size: medium;
 }
-
 </style>
