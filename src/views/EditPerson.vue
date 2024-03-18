@@ -1,14 +1,16 @@
 <script setup>
     import { ref, onMounted } from "vue";
-    import { useRouter } from "vue-router";
+    // import { useRouter } from "vue-router";
+    import Utils from "../config/utils.js";
     import peopleServices from "../services/personServices";
     import assetServices from "../services/assetServices.js";
     import userServices from "../services/userServices.js";
+    import roleServices from "../services/groupServices.js";
     
     const message = ref("");
     const person = ref("");
     const personsAssets = ref([]);
-    const user = ref("");
+    const user = Utils.getStore("user");
     
     const props = defineProps({
       id: {
@@ -16,10 +18,20 @@
       },
     });
 
+    const getUserRole = (id) => {
+        roleServices.getGroup(id)
+        .then((response) => {
+            select.value=response.data.role;
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    }
+
     const getPermissions = () => {
         userServices.getAllUsers()
         .then((response) => {
-            user.value = response.data;
+            user.value = response.data.find(user => user.id ===id); //Find for users permissions
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -36,10 +48,10 @@
             })
     };
     
-    const getPersonsAssets = (id) => {
+    const getPersonsAssets = (id) => { 
         assetServices.getAllAssets()
         .then((response) => {
-            personsAssets.value = response.data;
+            personsAssets.value = response.data.find(asset => asset.borrowerId === id); //Find to assets with borrowerId of id
             console.log(personsAssets);
         })
         .catch((error) => {
@@ -54,9 +66,14 @@
         { title: 'Type', value: 'type' },
         { title: '', value: 'actions', align: 'end' },
     ]);
+
+    const select = ref('Default');
+    const roles = ['Super User', 'User', 'Person'];
     
     onMounted(() => {
+        user.value = Utils.getStore("user");
         const id = props.id; 
+        getUserRole(id);
         getSomeone(id);
         getPersonsAssets(id);
         getPermissions(id);
@@ -66,6 +83,9 @@
 
 <template>
     <br><br>
+    <v-toolbar>
+        <v-toolbar-title>{{ user.fName }}</v-toolbar-title> <!--Make sure the master user data uis accurate-->
+    </v-toolbar>
     <v-card
     class="mx-auto"
     max-width="90%"
@@ -77,12 +97,18 @@
             <v-toolbar>
                 <v-toolbar-title>{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
             </v-toolbar>
-
             <v-container>
                 <v-row>
                     <v-col cols="3">
                         <v-card class="side">
-                            <v-card-title>Person Role: {{ user.groupId }}</v-card-title>
+                            <v-card-title>Person Role: {{ user.groupId }}
+                                <v-select
+                                    v-model="select"
+                                    :items="roles"
+                                    return-object
+                                    single-line
+                                    ></v-select>
+                            </v-card-title>
                             <v-divider></v-divider>
                             <table id="contact">
                                 <tr>
@@ -119,6 +145,12 @@
                         </v-card>
                     </v-col>
                 </v-row>
+                <v-btn
+                    color="error" 
+                    x-large 
+                    style="margin-top: .3%; margin-left: 1%;">
+                    back
+                </v-btn>
             </v-container>
         </v-app>
     </v-card>
