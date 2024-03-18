@@ -79,9 +79,9 @@ const headers = ref([
                         <br>
 
                         <v-card class="last">
-                        <v-card-text>Label for third block</v-card-text>
+                        <v-card-title>Label for third block</v-card-title>
                         <v-divider></v-divider>
-                        <v-card-title>Block 3</v-card-title>
+                        <v-card-text id="block3txt">Block 3</v-card-text>
                         </v-card>
                     </v-col>
 
@@ -114,11 +114,12 @@ const headers = ref([
 }
 .last{
     min-height: 288px;
-    justify-content: center;
-    text-align: center;
 }
 #contact{
     margin: 5%;
+}
+#block3txt{
+
 }
 
 </style>
