@@ -97,10 +97,19 @@ onMounted(() => {
                         <v-data-table
                         :headers="headers"
                         :items="personsAssets"
-                        :items-per-page="5"
-                        :hide-default-footer="true"
-                        >
-                        </v-data-table>
+                        :page.sync="page"
+                        :items-per-page="itemsPerPage"
+                        hide-default-footer
+                        class="elevation-1"
+                        @page-count="pageCount = $event"
+                        ></v-data-table>
+                        <div class="text-center pt-2">
+                            <v-pagination
+                            v-model="page"
+                            :length="pageCount"
+                            >
+                        </v-pagination>
+                        </div>
                         </v-card>
                     </v-col>
                 </v-row>
