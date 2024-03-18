@@ -1,9 +1,77 @@
+<script setup>
+    import { ref, onMounted } from "vue";
+    import { useRouter } from "vue-router";
+    import peopleServices from "../services/personServices";
+    import assetServices from "../services/assetServices.js";
+    import userServices from "../services/userServices.js";
+    
+    const message = ref("");
+    const person = ref("");
+    const personsAssets = ref([]);
+    const user = ref("");
+    
+    const props = defineProps({
+      id: {
+        required: true,
+      },
+    });
+
+    const getPermissions = () => {
+        userServices.getAllUsers()
+        .then((response) => {
+            user.value = response.data;
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    }
+    
+    const getSomeone = (id) => {
+        peopleServices.getPerson(id) 
+            .then((response) => {
+                person.value = response.data;
+            })
+            .catch((error) => {
+                message.value = error.response.data.message;
+            })
+    };
+    
+    const getPersonsAssets = (id) => {
+        assetServices.getAllAssets()
+        .then((response) => {
+            personsAssets.value = response.data;
+            console.log(personsAssets);
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    };
+    
+    //Asset data table
+    const headers = ref([
+        { title: 'ID', value: 'id' },
+        { title: 'Name', value: 'name' },
+        { title: 'Type', value: 'type' },
+        { title: '', value: 'actions', align: 'end' },
+    ]);
+    
+    onMounted(() => {
+        const id = props.id; 
+        getSomeone(id);
+        getPersonsAssets(id);
+        getPermissions(id);
+    });
+</script>
+
+
 <template>
     <br><br>
     <v-card
     class="mx-auto"
     max-width="90%"
+    min-width="80%"
     max-height="75%"
+    min-height="70%"
     >
         <v-app>
             <v-toolbar>
@@ -14,7 +82,7 @@
                 <v-row>
                     <v-col cols="3">
                         <v-card class="side">
-                            <v-card-title>Person Role: {{ person.id }}</v-card-title>
+                            <v-card-title>Person Role: {{ user.groupId }}</v-card-title>
                             <v-divider></v-divider>
                             <table id="contact">
                                 <tr>
@@ -42,32 +110,13 @@
                         <v-card class="list">
                         <v-card-title>Assets</v-card-title>
                         <v-divider></v-divider>
-                        <v-data-table
-                        :headers="headers"
-                        :items="personsAssets"
-                        :page.sync="page"
-                        :items-per-page="itemsPerPage"
-                        no-footer
-                        class="elevation-1"
-                        @page-count="pageCount = $event"
-                        >
-                            <template #pagination="{ options, prev, next, page, pages }">
-                                <v-pagination
-                                    :length="pages"
-                                    :total-visible="10"
-                                    :prev-icon="null"
-                                    :next-icon="null"
-                                    @input="onPageChange"
-                                ></v-pagination>
-                            </template>
-                        </v-data-table>
-                        <div class="text-center pt-2">
-                            <v-pagination
-                                v-model="page"
-                                :length="pageCount"
-                            ></v-pagination>
-                        </div>
-                    </v-card>
+                            <v-data-table
+                            :headers="headers"
+                            :items="personsAssets"
+                            :disable-items-per-page="true"
+                            >
+                            </v-data-table>
+                        </v-card>
                     </v-col>
                 </v-row>
             </v-container>
@@ -75,68 +124,7 @@
     </v-card>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import peopleServices from "../services/personServices";
-import assetServices from "../services/assetServices.js";
-
-const message = ref("");
-const person = ref("");
-const personsAssets = ref([]);
-const page = ref(1); // Initialize page number
-const itemsPerPage = ref(5); // Define items per page
-const pageCount = ref(0); // Initialize page count
-
-const props = defineProps({
-  id: {
-    required: true,
-  },
-});
-
-const getSomeone = (id) => {
-    peopleServices.getPerson(id) 
-        .then((response) => {
-            person.value = response.data;
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-};
-
-const getPersonsAssets = (id) => {
-    assetServices.getAllAssets()
-    .then((response) => {
-        personsAssets.value = response.data.filter(asset => asset.borrowerId === id);
-        console.log(personsAssets);
-    })
-    .catch((error) => {
-        message.value = error.response.data.message;
-    })
-};
-
-//Asset data table
-const headers = ref([
-    { title: 'ID', value: 'id' },
-    { title: 'Name', value: 'name' },
-    { title: 'Type', value: 'type' },
-    { title: '', value: 'actions', align: 'end' },
-]);
-
-const onPageChange = (page) => {
-    console.log('Current Page:', page);
-    // You can perform any additional logic here when the page changes
-};
-
-onMounted(() => {
-    const id = props.id; 
-    getSomeone(id);
-    getPersonsAssets(id);
-});
-</script>
-
 <style scoped>
-
 .side{
     min-height: 48%;
 }
