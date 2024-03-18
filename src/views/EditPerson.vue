@@ -119,7 +119,7 @@ const headers = ref([
     margin: 5%;
 }
 #block3txt{
-
+    font-size: medium;
 }
 
 </style>
