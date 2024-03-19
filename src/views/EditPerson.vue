@@ -67,31 +67,30 @@
         { title: '', value: 'actions', align: 'end' },
     ]);
 
-    const select = ref('Default');
+    const select = ref(getUserRole());
     const roles = ['Super User', 'User', 'Person'];
     
     onMounted(() => {
         user.value = Utils.getStore("user");
-        const id = props.id; 
+        const id = props.id;
         getUserRole(id);
         getSomeone(id);
         getPersonsAssets(id);
-        getPermissions(id);
+        // getPermissions();
     });
 </script>
 
-
 <template>
     <br><br>
-    <v-toolbar>
-        <v-toolbar-title>{{ user.fName }}</v-toolbar-title> <!--Make sure the master user data uis accurate-->
-    </v-toolbar>
+    <!-- <v-toolbar>
+        <v-toolbar-title>{{ user.fName }}</v-toolbar-title>
+    </v-toolbar> -->
     <v-card
     class="mx-auto"
     max-width="90%"
     min-width="80%"
-    max-height="75%"
-    min-height="70%"
+    max-height="73%"
+    min-height="73%"
     >
         <v-app>
             <v-toolbar>
@@ -129,7 +128,21 @@
                         <v-card-title>Label for third block</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text id="block3txt">Block 3</v-card-text>
-                        </v-card>
+                    </v-card>
+                        <v-btn
+                            id="backbtn"
+                            color="primary" 
+                            style="margin-top: 3%;"
+                            x-large>
+                            back
+                        </v-btn>
+                        <v-btn
+                            id="backbtn"
+                            color="error" 
+                            style="margin-top: 3%; margin-left: .5%;"
+                            x-large>
+                            cancel
+                        </v-btn>
                     </v-col>
 
                     <v-col cols="9">
@@ -145,20 +158,20 @@
                         </v-card>
                     </v-col>
                 </v-row>
-                <v-btn
-                    color="error" 
-                    x-large 
-                    style="margin-top: .3%; margin-left: 1%;">
-                    back
-                </v-btn>
+
             </v-container>
         </v-app>
     </v-card>
 </template>
 
 <style scoped>
+#backbtn{
+    width: 200px;
+    height: 50px;
+    font-size: large;
+}
 .side{
-    min-height: 48%;
+    min-height: 43%;
 }
 .list{
     min-height: 600px;
