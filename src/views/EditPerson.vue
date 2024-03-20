@@ -1,16 +1,18 @@
 <script setup>
     import { ref, onMounted } from "vue";
-    // import { useRouter } from "vue-router";
+    import { useRouter } from "vue-router";
     import Utils from "../config/utils.js";
     import peopleServices from "../services/personServices";
     import assetServices from "../services/assetServices.js";
     import userServices from "../services/userServices.js";
     import roleServices from "../services/groupServices.js";
+    import PersonManagementVue from "./PersonManagement.vue";
     
     const message = ref("");
     const person = ref("");
     const personsAssets = ref([]);
     const user = Utils.getStore("user");
+    const router = useRouter();
     
     const props = defineProps({
       id: {
@@ -67,8 +69,26 @@
         { title: '', value: 'actions', align: 'end' },
     ]);
 
-    const select = ref(getUserRole());
+    const select = ref();
     const roles = ['Super User', 'User', 'Person'];
+
+    const saveChanges = () => {
+        const id = person.value.id;
+        const data = { role: select.value };
+
+        roleServices.updateGroup(id, data)
+        .then(() => {
+            console.log("Group updated successfully");
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const cancel = () => {
+        select.value = getUserRole();
+        router.push({ name: "people" });
+    };
     
     onMounted(() => {
         user.value = Utils.getStore("user");
@@ -130,18 +150,20 @@
                         <v-card-text id="block3txt">Block 3</v-card-text>
                     </v-card>
                         <v-btn
-                            id="backbtn"
+                            @click="cancel()"
+                            id="btn"
                             color="primary" 
                             style="margin-top: 3%;"
                             x-large>
-                            back
+                            cancel
                         </v-btn>
                         <v-btn
-                            id="backbtn"
-                            color="error" 
-                            style="margin-top: 3%; margin-left: .5%;"
+                            @click="saveChanges(person.id, { role: select.value })"
+                            id="btn"
+                            color="green" 
+                            style="margin-top: 3%; margin-left: 2%;"
                             x-large>
-                            cancel
+                            save
                         </v-btn>
                     </v-col>
 
@@ -165,9 +187,9 @@
 </template>
 
 <style scoped>
-#backbtn{
-    width: 200px;
-    height: 50px;
+#btn{
+    width: 49%;
+    height: 8%;
     font-size: large;
 }
 .side{
