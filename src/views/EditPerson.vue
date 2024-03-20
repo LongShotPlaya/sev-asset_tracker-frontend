@@ -5,8 +5,7 @@
     import peopleServices from "../services/personServices";
     import assetServices from "../services/assetServices.js";
     import userServices from "../services/userServices.js";
-    import roleServices from "../services/groupServices.js";
-    import PersonManagementVue from "./PersonManagement.vue";
+    import groupServices from "../services/groupServices.js";
     
     const message = ref("");
     const person = ref("");
@@ -20,8 +19,18 @@
       },
     });
 
-    const getUserRole = (id) => {
-        roleServices.getGroup(id)
+    const getUserRoleNum = () => {
+        userServices.getUser(id) 
+        .then((response) => {
+            role.value = response.data;
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    }
+
+    const getGroup = (id) => {
+        groupServices.getGroup(id)
         .then((response) => {
             select.value=response.data.role;
         })
@@ -63,8 +72,8 @@
     
     //Asset data table
     const headers = ref([
-        { title: 'ID', value: 'id' },
         { title: 'Name', value: 'name' },
+        { title: 'ID', value: 'id' },
         { title: 'Type', value: 'type' },
         { title: '', value: 'actions', align: 'end' },
     ]);
@@ -76,9 +85,9 @@
         const id = person.value.id;
         const data = { role: select.value };
 
-        roleServices.updateGroup(id, data)
+        groupServices.updateGroup(id, data)
         .then(() => {
-            console.log("Group updated successfully");
+            console.log("Group updated successfully: ", data);
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -86,17 +95,16 @@
     };
 
     const cancel = () => {
-        select.value = getUserRole();
+        select.value = getGroup();
         router.push({ name: "people" });
     };
     
     onMounted(() => {
         user.value = Utils.getStore("user");
         const id = props.id;
-        getUserRole(id);
+        getGroup(id);
         getSomeone(id);
         getPersonsAssets(id);
-        // getPermissions();
     });
 </script>
 
@@ -152,7 +160,7 @@
                         <v-btn
                             @click="cancel()"
                             id="btn"
-                            color="primary" 
+                            color="#811429" 
                             style="margin-top: 3%;"
                             x-large>
                             cancel
