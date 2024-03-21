@@ -171,20 +171,20 @@
                         </v-btn>
                     </v-col>
 
-                    <v-col cols="9">
+                    <v-col cols="9"
+                    style="height: 100%;">
                         <v-card class="list">
                         <v-card-title>Assets</v-card-title>
-                        <v-divider></v-divider>
                             <v-data-table
                                 :headers="headers"
                                 :items="personsAssets" 
+                                :disable-items-per-page="true"
                                 class="elevation-2 mt-4"
                                 loading-text="Loading... Please wait">
                             </v-data-table>
                         </v-card>
                     </v-col>
                 </v-row>
-
             </v-container>
         </v-app>
     </v-card>
