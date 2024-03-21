@@ -27,22 +27,20 @@
         .catch((error) => {
             message.value = error.response.data.message;
         })
-    }
+    };
+
+    // const userRoleNum = getUserRoleNum();
+    // let roleNum;
+
+    // if (userRoleNum.groupId == 1)
+    //     roleNum = "Super User";
+    // else
+    //     roleNum = 'null';
 
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
             select.value=response.data.role;
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    }
-
-    const getPermissions = () => {
-        userServices.getAllUsers()
-        .then((response) => {
-            user.value = response.data.find(user => user.id ===id); //Find for users permissions
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -62,7 +60,7 @@
     const getPersonsAssets = (id) => { 
         assetServices.getAllAssets()
         .then((response) => {
-            personsAssets.value = response.data.find(asset => asset.borrowerId === id); //Find to assets with borrowerId of id
+            personsAssets.value = response.data.filter(asset => asset.borrowerId === id); //Find to assets with borrowerId of id
             console.log(personsAssets);
         })
         .catch((error) => {
@@ -110,23 +108,21 @@
 
 <template>
     <br><br>
-    <!-- <v-toolbar>
-        <v-toolbar-title>{{ user.fName }}</v-toolbar-title>
-    </v-toolbar> -->
     <v-card
     class="mx-auto"
-    max-width="90%"
-    min-width="80%"
-    max-height="73%"
-    min-height="73%"
+    width="90%"
+    height="73%"
     >
-        <v-app>
+        <v-app
+        class="layout">
             <v-toolbar>
                 <v-toolbar-title>{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
             </v-toolbar>
-            <v-container>
+            <v-container
+            class="v-container">
                 <v-row>
-                    <v-col cols="3">
+                    <v-col cols="3"
+                    class="sidePanel">
                         <v-card class="side">
                             <v-card-title>Person Role: {{ user.groupId }}
                                 <v-select
@@ -180,10 +176,10 @@
                         <v-card-title>Assets</v-card-title>
                         <v-divider></v-divider>
                             <v-data-table
-                            :headers="headers"
-                            :items="personsAssets"
-                            :disable-items-per-page="true"
-                            >
+                                :headers="headers"
+                                :items="personsAssets" 
+                                class="elevation-2 mt-4"
+                                loading-text="Loading... Please wait">
                             </v-data-table>
                         </v-card>
                     </v-col>
@@ -195,16 +191,30 @@
 </template>
 
 <style scoped>
+.v-container{
+    min-width: 100%;
+}
+.layout{
+    height: 100%;
+    min-height: 900px;
+}
+.sidePanel{
+    height: 400px;
+    justify-content: center;
+    width: auto;
+}
 #btn{
     width: 49%;
-    height: 8%;
+    height: 10%;
     font-size: large;
 }
 .side{
-    min-height: 43%;
+    min-height: 70%;
+    width: 100%;
 }
 .list{
-    min-height: 600px;
+    height: 160%;
+    width: auto;
 }
 #contact{
     margin: 5%;
