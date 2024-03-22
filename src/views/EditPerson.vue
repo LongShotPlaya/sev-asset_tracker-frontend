@@ -19,23 +19,15 @@
       },
     });
 
-    const getUserRoleNum = () => {
-        userServices.getUser(id) 
-        .then((response) => {
-            role.value = response.data;
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    };
-
-    // const userRoleNum = getUserRoleNum();
-    // let roleNum;
-
-    // if (userRoleNum.groupId == 1)
-    //     roleNum = "Super User";
-    // else
-    //     roleNum = 'null';
+    // const getUserRoleNum = () => {
+    //     userServices.getUser(id) 
+    //     .then((response) => {
+    //         role.value = response.data;
+    //     })
+    //     .catch((error) => {
+    //         message.value = error.response.data.message;
+    //     })
+    // };
 
     const getGroup = (id) => {
         groupServices.getGroup(id)
@@ -57,11 +49,12 @@
             })
     };
     
-    const getPersonsAssets = (id) => { 
+    const getPersonsAssets = () => { 
         assetServices.getAllAssets()
         .then((response) => {
-            personsAssets.value = response.data.filter(asset => asset.borrowerId === id); //Find to assets with borrowerId of id
-            console.log(personsAssets);
+            // personsAssets.value = response.data.filter(asset => asset.borrowerId === id); //Find to assets with borrowerId of id
+            personsAssets.value = response.data;
+            console.log("Person's Assets: ", personsAssets);
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -69,12 +62,13 @@
     };
     
     //Asset data table
-    const headers = ref([
-        { title: 'Name', value: 'name' },
+    const headers = [
         { title: 'ID', value: 'id' },
-        { title: 'Type', value: 'type' },
+        { title: 'Condition', value: 'condition' },
+        { title: 'Type', value: 'typeId' },
+        { title: 'BorrowerId', value: 'borrowerId' },
         { title: '', value: 'actions', align: 'end' },
-    ]);
+    ];
 
     const select = ref();
     const roles = ['Super User', 'User', 'Person'];
@@ -178,8 +172,6 @@
                             <v-data-table
                                 :headers="headers"
                                 :items="personsAssets" 
-                                :disable-items-per-page="true"
-                                class="elevation-2 mt-4"
                                 loading-text="Loading... Please wait">
                             </v-data-table>
                         </v-card>
