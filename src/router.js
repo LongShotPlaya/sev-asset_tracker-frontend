@@ -29,22 +29,23 @@ import Logs from "./views/logs.vue";
 import Notifications from "./views/notificationsManagement.vue";
 import Permissions from "./views/permissionManagement.vue";
 import Users from "./views/userManagement.vue";
+import GenerateReports from "./views/GenerateReports.vue";
 
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-	{
-		path: "/",
-		alias: "/login",
-		name: "login",
-		component: Login,
-	},
-	{
-		path: "/home",
-		name: "home",
-		component: Home,
-	},
+    {
+      path: "/",
+      alias: "/login",
+      name: "login",
+      component: Login,
+    },
+    {
+      path: "/home",
+      name: "home",
+      component: Home,
+    },
     {
       path: "/assets",
       name: "assets",
@@ -94,6 +95,11 @@ const router = createRouter({
       path: "/person",
       name: "person",
       component: ViewPerson,
+    },
+    {
+      path: "/reports",
+      name: "reports",
+      component: GenerateReports,
     },
     {
       path: "/rooms",
