@@ -49,29 +49,33 @@
             })
     };
     
-    const getPersonsAssets = () => { 
+    const getPersonsAssets = (id) => { 
         assetServices.getAllAssets()
         .then((response) => {
-            // personsAssets.value = response.data.filter(asset => asset.borrowerId === id); //Find to assets with borrowerId of id
-            personsAssets.value = response.data;
+            personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
+            // personsAssets.value = response.data;
             console.log("Person's Assets: ", personsAssets);
         })
         .catch((error) => {
             message.value = error.response.data.message;
         })
     };
+
     
     //Asset data table
     const headers = [
-        { title: 'ID', value: 'id' },
-        { title: 'Condition', value: 'condition' },
-        { title: 'Type', value: 'typeId' },
-        { title: 'BorrowerId', value: 'borrowerId' },
+        { title: 'Type', value: 'typeId', width: '30%' },
+        { title: 'ID', value: 'id', width: '30%' },
+        { title: 'Status', value: 'status', width: '30%' },
         { title: '', value: 'actions', align: 'end' },
     ];
 
     const select = ref();
-    const roles = ['Super User', 'User', 'Person'];
+    const roles = [
+        { title: 'Super User', value: 1 }, 
+        { title: 'User', value: 2 }, 
+        { title: 'Person', value: 3 }, 
+    ];
 
     const saveChanges = () => {
         const id = person.value.id;
@@ -90,6 +94,10 @@
         select.value = getGroup();
         router.push({ name: "people" });
     };
+
+    const viewAsset = () => {
+        router.push({ name: "asset" }); //Chnage when page is made. 
+    }
     
     onMounted(() => {
         user.value = Utils.getStore("user");
@@ -105,7 +113,7 @@
     <v-card
     class="mx-auto"
     width="90%"
-    height="73%"
+    height="71%"
     >
         <v-app
         class="layout">
@@ -114,7 +122,7 @@
             </v-toolbar>
             <v-container
             class="v-container">
-                <v-row>
+                <v-row style="height: 49%">
                     <v-col cols="3"
                     class="sidePanel">
                         <v-card class="side">
@@ -166,13 +174,25 @@
                     </v-col>
 
                     <v-col cols="9"
-                    style="height: 100%;">
+                    style="height: 102%;">
                         <v-card class="list">
                         <v-card-title>Assets</v-card-title>
                             <v-data-table
+                                v-model:page="page"
                                 :headers="headers"
-                                :items="personsAssets" 
-                                loading-text="Loading... Please wait">
+                                :items="personsAssets"
+                                :items-per-page="10"
+                            >
+                            <template v-slot:[`item.actions`]="{ item }">
+                                <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewAsset(item.id)">
+                                    <v-icon>mdi-pencil</v-icon> 
+                                </v-btn>
+                            </template>
+                                <template v-slot:bottom>
+                                    <div class="text-center pt-2">
+                                        <v-pagination v-model="page" :length="pageCount"></v-pagination>
+                                    </div>
+                                </template>
                             </v-data-table>
                         </v-card>
                     </v-col>
@@ -185,19 +205,19 @@
 <style scoped>
 .v-container{
     min-width: 100%;
+    height: 100%;
 }
 .layout{
-    height: 100%;
-    min-height: 900px;
+    height: 1000px;
 }
 .sidePanel{
-    height: 400px;
+    height: 96%;
     justify-content: center;
     width: auto;
 }
 #btn{
     width: 49%;
-    height: 10%;
+    height: 10.5%;
     font-size: large;
 }
 .side{
@@ -205,7 +225,7 @@
     width: 100%;
 }
 .list{
-    height: 160%;
+    height: 150%;
     width: auto;
 }
 #contact{
