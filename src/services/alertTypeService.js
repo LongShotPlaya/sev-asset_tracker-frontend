@@ -2,10 +2,10 @@ import apiClient from "./services";
 
 export default {
     getAllAlertTypes() {
-        return apiClient.get(`/alertType`);
+        return apiClient.get(`/alert-types`);
     },
     getAlertTypes(alertId) {
-        return apiClient.get(`alertType/${alertId}`);
+        return apiClient.get(`alert-types/${alertId}`);
     },
     createAlertType(data) {
         return apiClient.post(`/alert-types/`, data);

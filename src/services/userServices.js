@@ -13,9 +13,6 @@ export default {
     updateUser(id, data) {
         return apiClient.put(`/users/${id}`, data);
     },
-    updateUserWithPermissions(id) {
-        return apiClient.put(`/users/${id}`);
-    },
     deleteUser(id) {
         return apiClient.delete(`/users/${id}`);
     },

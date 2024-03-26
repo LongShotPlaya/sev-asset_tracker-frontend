@@ -16,9 +16,6 @@ export default {
     updateGroup(groupId, data) {
         return apiClient.put(`/groups/${groupId}`, data);
     },
-    updateGroupWithPermissions(groupId) {
-        return apiClient.put(`/groups/${groupId}`);
-    },
     deleteGroup(groupId) {
         return apiClient.delete(`/groups/${groupId}`);
     },
