@@ -187,7 +187,8 @@
     min-width: 100%;
     height: 100%;
 }
-.layout{
+
+.layout {
     height: 1000px;
 }
 .sidePanel{
@@ -195,28 +196,47 @@
     justify-content: center;
     width: auto;
 }
-#btn{
+
+#btn {
     width: 49%;
     height: 10.5%;
     font-size: large;
 }
-.side{
+
+.side {
     min-height: 70%;
     width: 100%;
 }
-.list{
+
+.list {
     height: 150%;
     width: auto;
 }
-#contact{
+
+#contact {
     margin: 5%;
     width: 100%;
 }
-#contact td{
+
+#contact td {
     margin-right: 5%;
     font-size: medium;
 }
-#block3txt{
+
+#block3txt {
     font-size: medium;
+}
+
+.table-header {
+    display: flex;
+    background-color: #f5f5f5;
+    font-weight: bold;
+    padding: 10px;
+}
+
+.table-row {
+    display: flex;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
 }
 </style>
