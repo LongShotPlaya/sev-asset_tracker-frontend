@@ -14,6 +14,6 @@ export default{
         return apiClient.put(`/asset-templates/${assetTemplateId}`, data);
     },
     deleteAssetTemplate(assetTemplateId) {
-        return apiClient.delete(`/asset-template/${assetTemplateId}`);
+        return apiClient.delete(`/asset-templates/${assetTemplateId}`);
     },
 };

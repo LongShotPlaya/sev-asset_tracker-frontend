@@ -17,6 +17,6 @@ export default {
         return apiClient.put(`/assets/${assetId}`, data);
     },
     deleteAsset(assetId) {
-        return apiClient.delete(`assets/${assetId}`);
+        return apiClient.delete(`/assets/${assetId}`);
     },
 };

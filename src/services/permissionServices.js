@@ -4,10 +4,16 @@ export default {
     getAllPermissions() {
         return apiClient.get(`/permissions/`);
     },
-    getPermission(id) {
+    getPermissions(id) {
         return apiClient.get(`/permissions/${id}`);
     },
-    createPermission(data) {
+    createPermissions(data) {
         return apiClient.post(`/permissions/`, data);
     },
-}
+    updatePermissions(id, data) {
+        return apiClient.put(`/permissions/${id}`, data);
+    },
+    deletePermissions(id) {
+        return apiClient.delete(`/permissions/${id}`);
+    },
+};
