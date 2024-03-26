@@ -6,6 +6,7 @@
     import assetServices from "../services/assetServices.js";
     import groupServices from "../services/groupServices.js";
     import AssetTypeManagement from "../services/AssetTypeManagementServices.js";
+import personServices from "../services/personServices";
     
     const message = ref("");
     const person = ref("");
@@ -81,11 +82,11 @@
         router.push({ name: "people" });
     };
 
-    const testGetFullAssetType = () => {
-    const assetTypeId = 1; 
-    AssetTypeManagement.getFullAssetType(assetTypeId)
+    const test = () => {
+    const idTest = 1; 
+    personServices.getFullPerson(idTest)
       .then(response => {
-        console.log("Full Asset Type:", response.data);
+        console.log("Test:", response.data);
       })
       .catch(error => {
         if (error.response.status === 404) {
@@ -103,7 +104,7 @@
         getGroup(id);
         getSomeone(id);
         getPersonsAssets(id);
-        testGetFullAssetType();
+        test();
     });
 </script>
 
