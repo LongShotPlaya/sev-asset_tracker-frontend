@@ -1,11 +1,11 @@
 <script setup>
-    import { ref, onMounted } from "vue";
+    import { ref, onMounted, defineProps } from "vue";
     import { useRouter } from "vue-router";
     import Utils from "../config/utils.js";
     import peopleServices from "../services/personServices";
     import assetServices from "../services/assetServices.js";
-    import userServices from "../services/userServices.js";
     import groupServices from "../services/groupServices.js";
+    import AssetTypeManagement from "../services/AssetTypeManagementServices.js";
     
     const message = ref("");
     const person = ref("");
@@ -18,16 +18,6 @@
         required: true,
       },
     });
-
-    // const getUserRoleNum = () => {
-    //     userServices.getUser(id) 
-    //     .then((response) => {
-    //         role.value = response.data;
-    //     })
-    //     .catch((error) => {
-    //         message.value = error.response.data.message;
-    //     })
-    // };
 
     const getGroup = (id) => {
         groupServices.getGroup(id)
@@ -90,6 +80,22 @@
         select.value = getGroup();
         router.push({ name: "people" });
     };
+
+    const testGetFullAssetType = () => {
+    const assetTypeId = 1; 
+    AssetTypeManagement.getFullAssetType(assetTypeId)
+      .then(response => {
+        console.log("Full Asset Type:", response.data);
+      })
+      .catch(error => {
+        if (error.response.status === 404) {
+        console.error("Asset type not found:", error.response.data.message);
+      } else {
+        console.error("Error:", error.message);
+      }
+      });
+  };
+
     
     onMounted(() => {
         user.value = Utils.getStore("user");
@@ -97,6 +103,7 @@
         getGroup(id);
         getSomeone(id);
         getPersonsAssets(id);
+        testGetFullAssetType();
     });
 </script>
 

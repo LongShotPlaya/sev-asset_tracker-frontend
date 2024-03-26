@@ -17,7 +17,7 @@ export default {
         return apiClient.put(`/asset-types/${assetTypeId}`, data);
     },
     updateAssetTypeFields(assetTypeId) {
-        return apiClient.put(`/asset-types/${assetTypeId}`); //No data???
+        return apiClient.put(`/asset-types/${assetTypeId}`);
     },
     deleteAssetType(assetTypeId) {
         return apiClient.delete(`/asset-types/${assetTypeId}`);
