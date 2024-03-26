@@ -4,6 +4,9 @@ export default {
     getAllAssets() {
         return apiClient.get(`/assets`);
     },
+    getFullAsset(id) {
+        return apiClient.get(`/assets/${id}?full`);
+    },
     getAsset(assetId) {
         return apiClient.get(`/assets/${assetId}`);
     },
