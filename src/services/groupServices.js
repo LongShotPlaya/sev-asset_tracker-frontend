@@ -7,6 +7,9 @@ export default {
     getGroup(groupId) {
         return apiClient.get(`/groups/${groupId}`);
     },
+    getGroupWithPermissions(groupId) {
+        return apiClient.get(`/groups/${groupId}?full`);
+    },
     createGroup(data) {
         return apiClient.post(`/groups/`, data);
     },
