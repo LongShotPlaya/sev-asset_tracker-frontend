@@ -4,7 +4,6 @@
     import Utils from "../config/utils.js";
     import peopleServices from "../services/personServices";
     import assetServices from "../services/assetServices.js";
-    import userServices from "../services/userServices.js";
     import groupServices from "../services/groupServices.js";
     
     const message = ref("");
@@ -18,16 +17,6 @@
         required: true,
       },
     });
-
-    // const getUserRoleNum = () => {
-    //     userServices.getUser(id) 
-    //     .then((response) => {
-    //         role.value = response.data;
-    //     })
-    //     .catch((error) => {
-    //         message.value = error.response.data.message;
-    //     })
-    // };
 
     const getGroup = (id) => {
         groupServices.getGroup(id)
@@ -96,7 +85,7 @@
     };
 
     const viewAsset = () => {
-        router.push({ name: "asset" }); //Chnage when page is made. 
+        router.push({ name: "asset" }); //Change when page is made. 
     }
     
     onMounted(() => {
@@ -109,11 +98,10 @@
 </script>
 
 <template>
-    <br><br>
+    <br>
     <v-card
     class="mx-auto"
     width="90%"
-    height="71%"
     >
         <v-app
         class="layout">
@@ -122,7 +110,7 @@
             </v-toolbar>
             <v-container
             class="v-container">
-                <v-row style="height: 49%">
+                <v-row style="height: 50%">
                     <v-col cols="3"
                     class="sidePanel">
                         <v-card class="side">
@@ -149,7 +137,6 @@
                             </table>
                         </v-card>
                         <br>
-
                         <v-card class="side">
                         <v-card-title>Label for third block</v-card-title>
                         <v-divider></v-divider>
@@ -173,25 +160,18 @@
                         </v-btn>
                     </v-col>
 
-                    <v-col cols="9"
-                    style="height: 102%;">
+                    <v-col cols="9">
                         <v-card class="list">
                         <v-card-title>Assets</v-card-title>
                             <v-data-table
-                                v-model:page="page"
                                 :headers="headers"
                                 :items="personsAssets"
-                                :items-per-page="10"
+                                item-key="id"
                             >
-                            <template v-slot:[`item.actions`]="{ item }">
-                                <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewAsset(item.id)">
-                                    <v-icon>mdi-pencil</v-icon> 
-                                </v-btn>
-                            </template>
-                                <template v-slot:bottom>
-                                    <div class="text-center pt-2">
-                                        <v-pagination v-model="page" :length="pageCount"></v-pagination>
-                                    </div>
+                                <template v-slot:[`item.actions`]="{ item }">
+                                    <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewPerson(item.id)">
+                                        <v-icon>mdi-pencil</v-icon> 
+                                    </v-btn>
                                 </template>
                             </v-data-table>
                         </v-card>
@@ -211,7 +191,7 @@
     height: 1000px;
 }
 .sidePanel{
-    height: 96%;
+    height: 100%;
     justify-content: center;
     width: auto;
 }
