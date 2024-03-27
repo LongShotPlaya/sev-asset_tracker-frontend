@@ -1,7 +1,6 @@
 <script setup>
 import AlertTypeServices from "../services/alertTypeService";
 import CatServices from "../services/assetCatServices";
-import FieldServices from "../services/assetFieldService";
 import TypeServices from "../services/assetTypeManagementServices";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -11,24 +10,19 @@ const currTab = ref('report-by-type');
 //#region Type Selection Variables
 const category = ref(null);
 const categories = ref([]);
-const catLoading = ref(false);
-const validCategory = ref(false);
+const catHasTypes = ref(true);
 
 const type = ref(null);
 const types = ref([]);
-const typeLoading = ref(false);
+let allTypes = [];
+const typeLoading = ref([]); // A stack to ensure that asynchronous operations won't cause weird behavior
 const validType = ref(false);
 
 const includeFields = ref([]);
 const fields = ref([]);
-const validFields = ref(false);
-
-const includeAlerts = ref([]);
-const alertTypes = ref([]);
 //#endregion
 
-const specs = ref([]);
-const specDetails = ref([]);
+const filters = ref([]);
 const referenceOptions = ref([]);
 
 //#region Type selection Functions
@@ -50,38 +44,39 @@ const fetchCategories = async () => {
   });
 };
 
-// Grabs all relevant asset types from the backend and sorts them by name
-const fetchRelevantTypes = async () => {
-  validCategory.value = !isNaN(parseInt(category.value?.id));
-  type.value = null;
-  fetchRelevantFields()
-  if (!validCategory.value) return catLoading.value = false;
-
-  catLoading.value = true;
-  const categoryId = category.value.id;
-
+// Grabs all asset types from the backend (which the user is able to view) and sorts them by name
+const fetchAssetTypes = async () => {
   TypeServices.getAllAssetTypes()
   .then(response => {
-    // Reject the promise if it finished, but has the wrong category id
-    if (category.value?.id != categoryId) throw new Error();
-    types.value = response.data
-    .filter(assetType => assetType.categoryId == categoryId)
-    .map(assetType => {
+    const data = response.data ?? [];
+    allTypes = data.map(assetType => {
       return {
         title: assetType.name,
         value: assetType,
       };
     })
     .sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
-    
-    type.value = types.value.length > 0 ? null : { title: "No types for this category!", value: {} };
 
-    catLoading.value = false;
+    filterTypes();
   })
   .catch(err => {
-    console.log("Error retrieving types!")
-    catLoading.value = false;
+    console.log("Error retrieving asset types!");
   });
+};
+
+// Filters asset types by their category
+const filterTypes = async () => {
+  const categoryId = parseInt(category.value?.id);
+
+  types.value = !isNaN(categoryId) ?
+  allTypes.filter(assetType => assetType.value.categoryId == categoryId) : allTypes.slice();
+
+  catHasTypes.value = types.value.length > 0;
+  if (!catHasTypes.value || !types.value.find(assetType => assetType.value.id == type.value?.id))
+  {
+    type.value = catHasTypes.value ? null : { title: "This category has no asset types!", value: {} };
+    fetchRelevantFields();
+  }
 };
 
 // Grabs all relevant asset fields from the backend and sorts them by name
@@ -89,37 +84,42 @@ const fetchRelevantFields = async () => {
   validType.value = !isNaN(parseInt(type.value?.id));
   if (!validType.value)
   {
-    typeLoading.value = false;
-    fields.value = [];
-    includeFields.value = [];
-    refreshReferences();
+    typeLoading.value = [];
+    fields.value = fields.value.filter(field => !field.value.isField);
+    includeFields.value = includeFields.value.filter(field => !field.isField);
+    refreshReferences(true);
     return;
   }
+  category.value = categories.value.find(cat => cat.value.id == type.value.categoryId).value;
 
-  typeLoading.value = true;
+  typeLoading.value.push(true);
   const typeId = type.value.id;
 
-  FieldServices.getAllAssetFields()
-  .then(response => {
-    // Reject the promise if it finished, but has the wrong category id
+  TypeServices.getFullAssetType(typeId)
+  .then(async (response) => {
+    // Reject the promise if it finished, but has the wrong type id
     if (type.value?.id != typeId) throw new Error();
-    fields.value = response.data
-    .filter(field => field.assetTypeId == typeId)
+    fields.value = fields.value.filter(field => !field.value.isField);
+    fields.value.push(...response.data.fields
     .map(field => {
       return {
         title: field.label,
-        value: field,
+        value: {
+          ...field,
+          isField: true,
+        },
       };
-    })
-    .sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
+    }));
     
-    includeFields.value = fields.value.length > 0 ? null : { title: "No fields for this asset type!", value: {} };
-
-    typeLoading.value = false;
+    fields.value.sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
+    
+    if (fields.value.length <= 0) includeFields.value.push({ title: "No fields for this asset type!", value: { isField: true } });
+    else includeFields.value = includeFields.value.filter(field => fields.value.some(option => option.value.id == field.id));
+    typeLoading.value = [];
   })
   .catch(err => {
     console.log("Error retrieving fields!")
-    typeLoading.value = false;
+    typeLoading.value.pop();
   });
 };
 
@@ -127,14 +127,19 @@ const fetchRelevantFields = async () => {
 const fetchAlertTypes = async () => {
   AlertTypeServices.getAllAlertTypes()
   .then(response => {
-    const data = response.data ?? [];
-    alertTypes.value = data.map(alertType => {
+    const data = (response.data ?? [])
+    .map(alertType => {
       return {
         title: alertType.name,
-        value: alertType,
+        value: {
+          ...alertType,
+          isField: false,
+        },
       };
-    })
-    .sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
+    }).sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
+    
+    fields.value.push(...data);
+    if (fields.value.length <= 0) includeFields.value.push({ title: "No fields for this asset type!", value: { isField: true } });
   })
   .catch(err => {
     console.log("Error retrieving alert types!");
@@ -142,14 +147,25 @@ const fetchAlertTypes = async () => {
 };
 //#endregion
 
-// Adds a specification
-const addSpec = () => {
+// Adds a filter to the list
+const addFilter = () => {
   refreshReferences(true);
-  specs.value.push({
-    index: specs.value.length,
-    valid: ref(false),
-    reference: ref(null),
+  filters.value.push({
+    minimum: null,
+    parsedMin: null,
+    maximum: null,
+    parsedMax: null,
+    nulled: false,
+    valid: false,
+    reference: null,
+    fieldType: null,
+    description: "Description: ...",
   });
+};
+
+// Removes a filter from the list
+const removeFilter = (index) => {
+  filters.value.splice(index, 1);
 };
 
 // Refreshes the references so they can be dynamic
@@ -158,28 +174,117 @@ const refreshReferences = (focused) => {
   
   referenceOptions.value = [];
 
-  referenceOptions.value.push(...(includeFields.value?.map(field => {
+  const newOptions = (includeFields.value ?? [])
+  .map(option => {
     return {
-      title: field.label,
+      title: option.isField ? option.label : option.name,
       value: {
-        id: field.id,
-        isField: true,
+        ...option,
       },
     };
-  }) ?? []));
+  });
+
+  referenceOptions.value = newOptions;
+  refreshFilters();
+};
+
+const refreshFilters = () => {
+  filters.value.forEach(filter => {
+    filter.nulled = filter.reference != null && !includeFields.value.find(field => field.id == filter.reference?.id && field.isField == filter.reference?.isField);
+  });
+};
+
+const validateFilter = (index) => {
+  const curr = filters.value[index];
+
+  const selected = !!curr.reference;
+  curr.description = selected ? `"${curr.reference?.name ?? curr.reference?.label}" must be ` : "Description: ..."
   
-  referenceOptions.value.push(...(includeAlerts.value?.map(alertType => {
-    return {
-      title: alertType.name,
-      value: {
-        id: alertType.id,
-        isField: false,
-      },
-    };
-  }) ?? []));
+  if (!selected) return curr.valid = false;
+  
+  if (curr.reference.isField)
+  {
+    switch (curr.fieldType)
+    {
+      case "Number":
+        const parsedMin = getInputType(curr.minimum) == "number" ? parseFloat(curr.minimum) : NaN;
+        const parsedMax = getInputType(curr.maximum) == "number" ? parseFloat(curr.maximum) : NaN;
+  
+        if (!isNaN(parsedMin) && !isNaN(parsedMax))
+        {
+          curr.description += parsedMin == parsedMax ? `exactly ${parsedMin}` : `between ${parsedMin} and ${parsedMax}`
+          curr.valid = true;
+        }
+        else if (!isNaN(parsedMin))
+        {
+          curr.description += `at least ${parsedMin}`
+          curr.valid = true;
+        }
+        else if (!isNaN(parsedMax))
+        {
+          curr.description += `at most ${parsedMax}`
+          curr.valid = true;
+        }
+        else
+        {
+          curr.description += `...`;
+          curr.valid = false;
+        }
+        break;
+      case "Text":
+        curr.minimum ??= "";
+        curr.maximum = null;
+        curr.description += `${curr.minimum}`.length > 0 ? `"${curr.minimum}"` : "Empty";
+        curr.valid = true;
+        break;
+      case "True/False":
+        curr.minimum = /true/i.test(curr.minimum);
+        curr.maximum = null;
+        curr.description += curr.minimum ? "True" : "False";
+        curr.valid = true;
+        break;
+      default:
+        curr.maximum = null;
+        curr.minimum = null;
+        curr.description += "...";
+        curr.valid = false;
+        break;
+    }
+  }
+  else
+  {
+    // Do this in order to handle alerts! --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  }
+};
+
+// Returns the closest type of the input string
+const getInputType = (input) => {
+  if (!isNaN(Number(input, 10)) && !isNaN(parseFloat(input, 10))) return "number";
+
+  if (/true/i.test(input) || /false/i.test(input)) return "bool";
+
+  return "string";
+};
+
+// Ensures that boolean values are erased when the type is changed, since they seem out of place
+const changeType = (index) => {
+  const curr = filters.value[index];
+  if (getInputType(curr.minimum) == "bool" && curr.fieldType != "True/False") curr.minimum = "";
+  else if (getInputType(curr.minimum) == "string" && curr.fieldType != "Text") curr.minimum = curr.fieldType == "Number" ? "" : /true/i.test(curr.minimum);
+  validateFilter(index);
+};
+
+// When dealing with numbers, ensures that they are valid, or they will be erased when unfocusing
+const adjustInput = (index, minimumField) => {
+  const curr = filters.value[index];
+  if (curr.fieldType != "Number") return;
+
+  if (minimumField) curr.minimum = getInputType(curr.minimum) == "number" ? Number(curr.minimum, 10) : "";
+  else curr.maximum = getInputType(curr.maximum) == "number" ? parseFloat(curr.maximum) : "";
 };
 
 fetchCategories();
+fetchAssetTypes();
 fetchAlertTypes();
 </script>
 
@@ -190,10 +295,11 @@ fetchAlertTypes();
 
           <!-- This is to extend the toolbar to include the tabs -->
           <template v-slot:extension>
+            <v-spacer />
             <v-tabs
               v-model="currTab"
               align-tabs="center"
-              align="center"
+              justify-content="center"
             >
               <v-tab value="report-by-type">
                 By Type
@@ -202,6 +308,7 @@ fetchAlertTypes();
                 By Assignment
               </v-tab>
             </v-tabs>
+            <v-spacer />
           </template>
         </v-toolbar>
 
@@ -210,103 +317,164 @@ fetchAlertTypes();
             <v-card>
               <v-container>
                 <v-card-title align="center">
-                  Asset Type Selection
+                  Asset Selection
                 </v-card-title>
-                <v-row>
-                  <v-spacer />
-                  <v-col>
+                <v-row justify="center">
+                  <v-col cols="3">
                     <v-combobox
                       v-model="category"
-                      @update:modelValue="fetchRelevantTypes"
+                      @update:modelValue="filterTypes"
                       label="Category"
                       :items="categories"
                       :return-object="false"
-                      :loading="catLoading"
                       auto-select-first
                       clearable
                     />
                   </v-col>
-                  <v-col>
+                  <v-col cols="3">
                     <v-combobox
-                      :disabled="!validCategory || types.length <= 0"
+                      :disabled="!catHasTypes"
                       v-model="type"
                       @update:modelValue="fetchRelevantFields"
                       label="Asset Type"
                       :items="types"
                       :return-object="false"
-                      :loading="typeLoading"
+                      :loading="typeLoading.length > 0"
                       auto-select-first
                       clearable
                     />
                   </v-col>
-                  <v-spacer />
                 </v-row>
-                <v-row>
-                  <v-spacer />
-                  <v-col>
+                <v-row justify="center">
+                  <v-col cols="6">
                     <v-combobox
-                      v-model="includeAlerts"
-                      label="Alert Types to Include"
-                      :items="alertTypes"
-                      :return-object="false"
-                      @update:modelValue="refreshReferences(true)"
-                      clearable
-                      multiple
-                      chips
-                    />
-                  </v-col>
-                  <v-col>
-                    <v-combobox
-                      :disabled="!validType || fields.length <= 0"
+                      :disabled="fields.length <= 0 || typeLoading.length > 0"
                       v-model="includeFields"
-                      label="Fields to Include"
+                      label="Fields to Report"
                       :items="fields"
                       :return-object="false"
                       @update:modelValue="refreshReferences(true)"
                       clearable
                       multiple
                       chips
+                      closable-chips
                     />
                   </v-col>
-                  <v-spacer />
                 </v-row>
                 <br>
                 <v-card-title align="center">
-                  Asset Type Specifications
+                  Asset Filters
                 </v-card-title>
                 <br>
-                <v-row
-                  v-for="spec in specs"
-                  :key="spec.index"
-                  :value="spec"
-                  justify="center"
-                >
-                  <v-col cols="9">
-                    <v-card>
-                      <br>
-                      <v-row>
-                        <v-col>
-                          <v-select
-                            v-model="specs[spec.index].reference"
-                            label="Alert Type or Field"
-                            :items="referenceOptions"
-                            :return-object="false"
-                            @update:focused="refreshReferences"
-                            clearable
-                          />
-                        </v-col>
-                        <v-col>
-
-                        </v-col>
-                      </v-row>
-                    </v-card>
+                <v-row justify="center">
+                  <v-col cols="6">
+                    <v-expansion-panels>
+                      <v-expansion-panel
+                        v-for="(filter, index) in filters"
+                        :key="index"
+                        :value="filter"
+                        justify="center"
+                        :class="filter.nulled ? 'expansion-nulled' : ''"
+                      >
+                        <v-expansion-panel-title>
+                          <template v-slot:default="{ expanded }">
+                            <v-row>
+                              <v-fade-transition leave-absolute>
+                                <v-col
+                                  v-if="expanded"
+                                  key="0"
+                                >
+                                  {{ filter.reference != null ? `Filter For "${filter.reference?.name ?? filter.reference?.label}"` : "New Filter" }}
+                                </v-col>
+                                <v-col
+                                  v-else
+                                  key="1"
+                                >
+                                  {{ filter.nulled ? `Field "${filter.reference?.name ?? filter.reference?.label}" Removed From Selection!` : filter.reference != null ? filter.description : "New Filter" }}
+                                </v-col>
+                              </v-fade-transition>
+                            </v-row>
+                          </template>
+                        </v-expansion-panel-title>
+                        <v-expansion-panel-text>
+                          <v-card-text style="font-weight: bold; font-size: 16px;">
+                            {{ filter.nulled ? `Field "${filter.reference?.name ?? filter.reference?.label}" Removed From Selection!` : filter.description }}
+                          </v-card-text>
+                          <v-row>
+                            <v-col>
+                              <v-select
+                                :disabled="filter.nulled"
+                                v-model="filters[index].reference"
+                                label="Alert Type or Field"
+                                :items="referenceOptions"
+                                :return-object="false"
+                                @update:focused="refreshReferences"
+                                @update:modelValue="validateFilter(index)"
+                                clearable
+                              />
+                            </v-col>
+                            <v-col>
+                              <v-select
+                                :disabled="filter.nulled || !filter.reference"
+                                v-model="filters[index].fieldType"
+                                label="Field Data Type"
+                                :items="['Number', 'Text', 'True/False']"
+                                :return-object="false"
+                                @update:modelValue="changeType(index)"
+                              />
+                            </v-col>
+                            
+                            <v-col cols="1">
+                              <v-btn
+                                class="ma-2"
+                                color="primary"
+                                variant="outlined"
+                                icon="mdi-trash-can"
+                                @click="removeFilter(index)"
+                              />
+                            </v-col>
+                          </v-row>
+                          <v-row>
+                            <v-col v-if="filter.fieldType != 'True/False'">
+                              <v-text-field
+                                :disabled="!filter.fieldType || filter.nulled || !filter.reference"
+                                v-model="filters[index].minimum"
+                                @blur="adjustInput(index, true)"
+                                @update:modelValue="validateFilter(index)"
+                                :label="filter.fieldType == 'Number' ? 'Minimum Value' : 'Value'"
+                              />
+                            </v-col>
+                            <v-col v-else>
+                              <v-checkbox
+                                :disabled="!filter.fieldType || filter.nulled || !filter.reference"
+                                v-model="filters[index].minimum"
+                                @update:modelValue="validateFilter(index)"
+                                label="Value Must Be True"
+                              />
+                            </v-col>
+                            <v-col v-if="filter.fieldType == 'Number'">
+                              <v-text-field
+                                :disabled="!filter.fieldType || filter.nulled || !filter.reference"
+                                v-model="filters[index].maximum"
+                                @blur="adjustInput(index, false)"
+                                @update:modelValue="validateFilter(index)"
+                                label="Maximum Value"
+                              />
+                            </v-col>
+                            <v-col cols="1" />
+                          </v-row>
+                        </v-expansion-panel-text>
+                      </v-expansion-panel>
+                    </v-expansion-panels>
                   </v-col>
                 </v-row>
+                <br v-if="filters.length > 0">
+                <br>
                 <v-row justify="center">
                   <v-btn
-                    :disabled="specs.slice(-1)?.[0]?.valid == false || referenceOptions.length <= 0"
+                    :disabled="referenceOptions.length <= 0 || !validType"
                     color="primary"
-                    @click="addSpec"
+                    @click="addFilter"
                   >
                     <v-icon
                       icon="mdi-plus-circle-outline"
@@ -314,7 +482,7 @@ fetchAlertTypes();
                       size="x-large"
                       start
                     />
-                    Add Specification
+                    Add Filter
                   </v-btn>
                 </v-row>
               </v-container>
@@ -331,5 +499,8 @@ fetchAlertTypes();
 </template>
 
 <style>
-
+.expansion-nulled {
+  border: 1px solid rgb(var(--v-theme-primary)); /* Set border properties as needed */
+  border-radius: 4px; /* Optional: Add border radius */
+}
 </style>
