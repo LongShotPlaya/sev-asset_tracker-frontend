@@ -48,9 +48,9 @@ const filterPeople = () => {
 };
 
 const viewPerson = (id) => {
-  console.log(id);
   router.push({ name: 'person', params: { id }});
 }
+
 
 const headers = [
   { title: 'Last Name', value: 'lName', width: '20%' },

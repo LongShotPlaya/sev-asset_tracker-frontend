@@ -92,10 +92,11 @@ const router = createRouter({
       component: PersonManagement,
     },
     {
-      path: "/person",
+      path: "/person/:id", 
       name: "person",
       component: ViewPerson,
-    },
+      props: true,
+    },    
     {
       path: "/reports",
       name: "reports",
