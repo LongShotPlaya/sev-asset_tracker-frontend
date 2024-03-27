@@ -22,7 +22,7 @@
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
-            select.value=response.data.role;
+            select.value=response.data.name; //Was group
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -94,7 +94,7 @@
         })
     }
 
-    const select = ref("User");
+    const select = ref("");
     const roles = [
         { title: 'Super User', value: 1 }, 
         { title: 'User', value: 2 }, 
@@ -119,7 +119,7 @@
         router.push({ name: "people" });
     };
 
-    const viewAsset = () => {
+    const viewAsset = (id) => {
         router.push({ name: "asset" }); //Change when page is made. 
     }
 
@@ -145,9 +145,9 @@
         getGroup(id);
         getSomeone(id);
         getPersonsAssets(id);
-        test();
-        getUserGroupId(id);
-        getGroupName(id);
+        test(); //Test
+        getUserGroupId(id); //Test
+        getGroupName(id); //Test
     });
 </script>
 
@@ -227,7 +227,7 @@
                                     {{ assetTypeName }}
                                 </template>
                                 <template v-slot:[`item.actions`]="{ item }">
-                                    <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewPerson(item.id)">
+                                    <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewAsset(item.id)">
                                         <v-icon>mdi-pencil</v-icon> 
                                     </v-btn>
                                 </template>
