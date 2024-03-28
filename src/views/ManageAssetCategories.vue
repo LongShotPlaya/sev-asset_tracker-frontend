@@ -30,8 +30,11 @@
       </tbody>
     </v-table>
   </v-card>
-  
-  <AssetCatAddEdit v-if="dialog" item="item"></AssetCatAddEdit>
+
+<!--Call the AssetCatAddEdit component-->
+  <v-dialog v-model="dialog" persistent max-width="800px">  
+    <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveAssetCat" :edit-function="editAssetCat"/> 
+  </v-dialog>
 
 <!-- 
   <v-dialog v-model="dialog" persistent max-width="800px">
@@ -56,7 +59,7 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red" variant="text" @click="deleteAssetCats">
+          <v-btn color="red" variant="text" @click=f"deleteAssetCats">
             Delete
           </v-btn>
           <v-btn color="green-darken-1" variant="text" @click="updateAssetCats">
@@ -70,7 +73,6 @@
     </v-card>
   </v-dialog> -->
 
-  <!-- Add button to trigger the "Add" functionality -->
   <v-btn color="primary" @click="addAssetCats">
     Add
   </v-btn>
@@ -81,7 +83,7 @@ import Utils from "../config/utils.js";
 import CatServices from "../services/assetCatServices.js";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import AssetCatAddEdit from "../components/AssetCatAddEdit.vue";
+import AssetCatAddEdit from "../components/AssetCatAddEdit.vue"; 
 
 const assetcategories = ref([]);
 const dialog = ref(false)
@@ -90,7 +92,8 @@ const item = ref({})
 const router = useRouter();
 const tutorials = ref([]);
 const user = Utils.getStore("user");
-const message = ref("Search, Edit or Delete Tutorials");
+const message = ref("Search, Edit or Delete Categories");
+
 
 const updateAssetCats = async (id) => {
   const data = {
@@ -99,8 +102,8 @@ const updateAssetCats = async (id) => {
   };
   try {
     const response = await CatServices.update(props.id, data);
-    assetcategories.value.id = response.data.id;
-    router.push({ name: "asset-category" });
+    assetcategories.value.id = response.data.id; //check to see if the cat id matches the responce id
+    router.push({ name: "asset-category" });  //then push the reponse to asset cat
   } catch (e) {
     message.value = e.response.data.message;
   }
@@ -108,9 +111,20 @@ const updateAssetCats = async (id) => {
 };
 
 const addAssetCats = (data) => {
-  // router.push({ name: "asset-category", params: { assetId: props.id } });
   openDialog({});
 };
+
+// save function
+const saveAssetCat = async (newItemData) => {
+  retrieveAssetCats();
+};
+
+//edit function 
+const editAssetCat = (itemData) => {
+  console.log('Editing asset:', itemData);
+  closeDialog(); 
+};
+
 
 const deleteAssetCats = () => {
   CatServices.deleteAssetCat()
@@ -132,8 +146,9 @@ const retrieveAssetCats = () => {
     });
 };
 
-const openDialog = (item) => {
-  item.value = { ...item };
+const openDialog = (itemData) => { 
+  const newItem = { ...itemData }; // Copy the item data 
+  item.value = newItem;  // Update the item value with the new copy
   dialog.value = true;
 }
 

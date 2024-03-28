@@ -1,142 +1,7 @@
-<script setup>
-  import { defineProps } from 'vue';
-  import { onMounted, ref } from "vue";
-
-  //script
-  const editDialogue = ref(false)
-  const deleteDialogue = ref(false)
-
-  //define the item
-  const item = ref({
-    name: '',
-    id: null,
-    description: ''
-  });
-
-  const props = defineProps({
-    item: {
-      required: true
-    },
-  });
-  //props.whatever
-  // const props = defineProps([
-  //   "item"
-  // ]);
-
-  const addMode = ref({
-
-  });
-
-  // openDialog happens when the user clicks on the add or edit button
-  // const openDialog = (itemId) => {
-  //   if (itemId != undefined && itemId != null){
-  //     item.value = assetcategories.value?.find(cat => cat.id == itemId);
-  //     editDialogue.value = true;
-  //   }
-  //   else {
-  //     addDialogue.value = true;
-  //   }
-  // }
-
-
-  //handle the addAssetCat functionality 
-  const addAssetCats = () => {
-    assetCatServices.createAssetCat(item.value)
-      .then((response) => {
-        const newAssetCat = response.data;
-        assetcategories.value.push(newAssetCat);
-
-        // Close the dialog
-        addDialogue.value = false;
-      })
-      .catch((error) => {
-        console.error("Error adding asset category:", error);
-      });
-  };
-
-  //handle the updateAssetCat functionality 
-  const updateAssetCats = () => {    
-    assetCatServices.updateAssetCat(item.value.id, item.value)
-      .then((response) => {
-        const updatedAssetCat = response.data;
-        const index = assetcategories.value.findIndex(cat => cat.id === updatedAssetCat.id);
-        if (index !== -1) {
-          assetcategories.value.splice(index, 1, updatedAssetCat);
-        }
-
-        // Close the dialog
-        editDialogue.value = false;
-      })
-      .catch((error) => {
-        console.error("Error updating asset category:", error);
-      });
-  };
-
-  //handle the deleteAssetCat functionality?
-  const deleteAssetCat = () => {
-    const assetCatIdToDelete = item.value.id;
-
-    assetCatServices.deleteAssetCat(assetCatIdToDelete)
-      .then(() => {
-        // Assuming the deletion was successful
-        const index = assetcategories.value.findIndex(cat => cat.id === assetCatIdToDelete);
-        if (index !== -1) {
-          assetcategories.value.splice(index, 1);
-        }
-
-        // Close the dialog 
-        editDialogue.value = false; 
-      })
-      .catch((error) => {
-        console.error("Error deleting asset category:", error);
-      });
-  };
-
-</script>
-
-
-
 <template>
-  <!-- add pop-up -->
-  <v-dialog persistent max-width="800px">
     <v-card>
       <v-container>
-        <v-card-title class="text-h5">{{isNaN(parseInt(props?.item?.id))?"Add":"Edit"}}</v-card-title> 
-        <v-text-field
-          v-model="props.item.name"
-          id="name"
-          :counter="50"
-          label="Name"
-          required
-        ></v-text-field>
-        
-        <v-textarea
-          v-model="item.description"
-          id="description"
-          :counter="50"
-          label="Description"
-          required
-        ></v-textarea>
-      
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" variant="outlined" @click="addAssetCats">
-            Save
-          </v-btn>
-          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
-            Cancel
-          </v-btn>
-        </v-card-actions>
-      </v-container>
-    </v-card>
-  </v-dialog>
-
-<!-- edit pop-up -->
-<!-- <v-dialog v-model="editDialogue" persistent max-width="800px">
-    
-    <v-card>
-      <v-container>
-        <v-card-title class="text-h5">Edit</v-card-title>
+        <v-card-title class="text-h5">{{ isNewItem ? 'Add' : 'Edit' }}</v-card-title> 
         <v-text-field
           v-model="item.name"
           id="name"
@@ -155,8 +20,8 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green" variant="outlined" @click="updateAssetCats">
-            Save
+          <v-btn color="primary" variant="outlined" @click="saveAssetCat">
+            {{ isNewItem ? 'Add' : 'Save' }} 
           </v-btn>
           <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
             Cancel
@@ -164,10 +29,50 @@
         </v-card-actions>
       </v-container>
     </v-card>
-  </v-dialog>   -->
-
 </template>
 
+<script setup>
+import { defineProps, defineEmits, ref, computed } from 'vue';
+import CatServices from '../services/assetCatServices';
+
+// Define props
+const props = defineProps({
+  item: {
+    type: Object, 
+    required: true
+  },
+  saveFunction: Function,  
+  editFunction: Function 
+});
+
+const emit=defineEmits(["save", "add", "close"])
+
+// Define reactive variables
+const dialog = ref(false);
+const isNewItem = computed(() => !props.item.id); // Check if the item is new or existing
+const item = ref({ ...props.item }); // Make a copy of the prop to prevent mutation
+
+const saveAssetCat = async () => {
+  // either save asset category or add it
+  const saveOrUpdate = isNewItem.value
+  ? CatServices.createAssetCat(item.value)
+  : CatServices.updateAssetCat(item.value.id, item.value);
+  // .then( emit and close dialog )
+  saveOrUpdate.then(data => {
+    if (props.saveFunction) props.saveFunction(item.value);
+    closeDialog();
+  })
+  .catch(err => {
+    console.log(err);
+    if (props.saveFunction) props.saveFunction(item.value);
+    closeDialog();
+  })
+};
+
+const closeDialog = () => {
+  emit('close');
+};
+</script>
 
 <style>
 </style>
