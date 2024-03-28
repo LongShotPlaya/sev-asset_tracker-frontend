@@ -17,6 +17,7 @@ import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import PersonManagement from "./views/PersonManagement.vue";
+import ViewPerson from './views/EditPerson.vue';
 import RoomManagement from "./views/RoomManagement.vue";
 import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
@@ -28,6 +29,7 @@ import Logs from "./views/logs.vue";
 import Notifications from "./views/notificationsManagement.vue";
 import Permissions from "./views/permissionManagement.vue";
 import Users from "./views/userManagement.vue";
+import GenerateReports from "./views/GenerateReports.vue";
 
 // import TutorialsList from "./views/TutorialsList.vue";
 // import EditTutorial from "./views/EditTutorial.vue";
@@ -40,17 +42,17 @@ import Users from "./views/userManagement.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-	{
-		path: "/",
-		alias: "/login",
-		name: "login",
-		component: Login,
-	},
-	{
-		path: "/home",
-		name: "home",
-		component: Home,
-	},
+    {
+      path: "/",
+      alias: "/login",
+      name: "login",
+      component: Login,
+    },
+    {
+      path: "/home",
+      name: "home",
+      component: Home,
+    },
     {
       path: "/assets",
       name: "assets",
@@ -95,6 +97,17 @@ const router = createRouter({
       path: "/people",
       name: "people",
       component: PersonManagement,
+    },
+    {
+      path: "/person/:id", 
+      name: "person",
+      component: ViewPerson,
+      props: true,
+    },    
+    {
+      path: "/reports",
+      name: "reports",
+      component: GenerateReports,
     },
     {
       path: "/rooms",
