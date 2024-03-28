@@ -1,17 +1,27 @@
 <script setup>
 import Utils from "../config/utils.js";
 import TypeServices from "../services/assetTypeManagementServices.js";
+import CatServices from "../services/assetCatServices.js";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
 const assetTypes = ref([]);
+const assetcategories = ref([]);
 const editDialogue = ref(false)
 const addDialogue = ref(false)
 const item = ref({})
 
+
 const router = useRouter();
 const user = Utils.getStore("user");
 const message = ref("Search, Edit or Delete Tutorials");
+const headers = [
+    {title: 'Name', value: 'name'},
+    {title: 'Circulatable', value: 'circulatable'},
+    {title: 'Created', value: 'createdAt'},
+    {title: 'Category', value: 'categoryName'},
+    {title: '', value: 'actions', align: 'end'},
+];
 
 const updateAssetTypes = async (id) => {
   const data = {
@@ -41,12 +51,26 @@ const deleteAssetTypes = () => {
     });
 };
 
-const retrieveAssetTypes = () => {
+const retrieveAssetTypes = async () => {
+  assetcategories.value = (await CatServices.getAllAssetCats())?.data;
+  if(!assetcategories.value){
+    console.log("error getting asset categories")
+    return 
+  }
+    
   TypeServices.getAllAssetTypes()
     .then((response) => {
       assetTypes.value = response.data;
+      assetTypes.value = assetTypes.value.map(assetType => {
+        return {
+            ...assetType,
+            categoryName: assetcategories.value.find(cat => cat.id == assetType.categoryId)?.name,
+        };
+      });
+      console.log(assetTypes.value)
     })
     .catch((e) => {
+        console.log(e)
       message.value = e.response.data.message;
     });
 };
@@ -75,11 +99,49 @@ onMounted(() => {
 </script>
 
 <template>
+  <v-container class="space">  
     <v-toolbar>
-    <v-toolbar-title>Asset Type Management</v-toolbar-title>
-  </v-toolbar>
+        <v-toolbar-title>Asset Type Management</v-toolbar-title>
+    </v-toolbar>
 
-  <v-container fluid>
+  <br>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col align="right">
+        <v-btn color="primary" @click="openDialog(null)">
+          Add
+        </v-btn>
+      </v-col>
+    </v-row>
+
+  <v-row>
+      <v-col>
+        <v-card>
+          <v-data-table
+            :headers ="headers"
+            :items ="assetTypes"
+            item-key ="id"
+          >
+
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                class="ma-2"
+                color="primary"
+                variant="outlined"
+                icon="mdi-trash-can"
+                @click=""
+                ></v-btn>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container> 
+
+  <!-- <v-container fluid>
     <v-row>
       <v-col>
         <v-btn color="primary" @click="">
@@ -126,12 +188,17 @@ onMounted(() => {
         </v-card>
       </v-col>
     </v-row>
-  </v-container> 
+  </v-container>  -->
 </template>
 
 <style>
-th.column,
-  td.column{
-    width: 33.3%;
-  }
+    th.column,
+    td.column{
+        width: 33.3%;
+    }
+    .space{
+        padding-left: 5%;
+        padding-right: 5%;
+        margin-top: 1%;
+    }
 </style>
