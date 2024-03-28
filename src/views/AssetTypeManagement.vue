@@ -7,8 +7,7 @@ import { useRouter } from "vue-router";
 
 const assetTypes = ref([]);
 const assetcategories = ref([]);
-const editDialogue = ref(false)
-const addDialogue = ref(false)
+const deleteDialogue = ref(false)
 const item = ref({})
 
 
@@ -42,14 +41,35 @@ const addAssetType = (data) => {
 };
 
 const deleteAssetTypes = () => {
-  TypeServices.deleteAssetType()
-    .then(() => {
+  if(!isNaN(parseInt(item.value.id))){
+    TypeServices.deleteAssetType(item.value.id)
+      .then(() => {
         retrieveAssetTypes();
-    })
-    .catch((e) => {
-      message.value = e.response.data.message;
-    });
+        deleteDialogue.value = false;
+      })
+      .catch((e) => {
+        message.value = e.response.data.message;
+        deleteDialogue.value = false;
+      });
+  }
+  else{
+    deleteDialogue.value = false;
+  }
 };
+
+const openDeleteDialogue = (itemId) =>{
+  item.value = assetTypes.value?.find(cat => cat.id == itemId);
+  deleteDialogue.value = true;
+}
+
+const closeDialog = () => {
+  deleteDialogue.value = false;
+  item.value = {}; // Reset item
+}
+
+const addEditLink = () => {
+
+}
 
 const retrieveAssetTypes = async () => {
   assetcategories.value = (await CatServices.getAllAssetCats())?.data;
@@ -124,7 +144,7 @@ onMounted(() => {
           >
 
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="addEditLink()">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn
@@ -132,63 +152,35 @@ onMounted(() => {
                 color="primary"
                 variant="outlined"
                 icon="mdi-trash-can"
-                @click=""
+                @click="openDeleteDialogue(item.id)"
                 ></v-btn>
             </template>
           </v-data-table>
         </v-card>
       </v-col>
     </v-row>
-  </v-container> 
+  </v-container>
 
-  <!-- <v-container fluid>
-    <v-row>
-      <v-col>
-        <v-btn color="primary" @click="">
-          Add
-        </v-btn>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-table>
-            <thead>
-              <tr>
-                <th class="">
-                  Name
-                </th>
-                <th class="">
-                  Circulatable
-                </th>
-                <th class="">
-                  Created
-                </th>
-                <th class="">
-                  Category
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in assetTypes" :key="item.id">
-                
-                <td class="column">{{ item.name }}</td>
-                <td class="column">{{ item.circulatable }}</td>
-                <td class="column">{{ item.createdAt }}</td>
-                <td class="column">{{ item.category }}</td>
-                <td class="text-right column">
-                  <v-btn color="primary" @click="">
-                    Edit
-                  </v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>  -->
+<!-- Delete Dialog -->
+  <v-dialog v-model="deleteDialogue" persistent max-width="800px">
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete this type?</v-card-title>
+        <v-row justify="center">
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" variant="outlined"  @click="deleteAssetTypes">
+              Yes
+            </v-btn>
+            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-row>
+        
+      </v-container>
+    </v-card>
+  </v-dialog>
 </template>
 
 <style>
