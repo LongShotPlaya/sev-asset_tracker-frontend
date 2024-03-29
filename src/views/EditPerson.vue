@@ -11,8 +11,7 @@
     const message = ref("");
     const person = ref("");
     const personsAssets = ref([]);
-    const select = ref("");
-    const groupName = ref("");
+    const select = ref("Not a user");
     const userGroupId = ref("");
     const assetTypeName = ref("");
     const assetTypeId = ref("");
@@ -34,7 +33,7 @@
         .catch((error) => {
             message.value = error.response.data.message;
         })
-    }
+    };
     
     const getSomeone = (id) => {
         peopleServices.getPerson(id) 
@@ -49,7 +48,8 @@
     const getPersonsAssets = (id) => { 
         assetServices.getAllAssets()
         .then((response) => {
-            // personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
+            personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
+            // allAssetsInDb.value = response.data;
             personsAssets.value = response.data;
             console.log("Person's Assets: ", personsAssets);
         })
@@ -71,31 +71,20 @@
         userServices.getUser(id) 
         .then((response) => {
             userGroupId.value = response.data.groupId; // User's Group Id, permissions
-            console.log("User Group ID: ", userGroupId);
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    }
-
-    const getAssetTypeName = () => {
-        assetTypeServices.getAllAssetTypes()
-        .then((response) => {
-            assetTypeName.value = response.data.name; // get Asset Name
-            assetTypeId.value = response.data.id; // get Asset ID
-            console.log("Asset Type Names: ", assetTypeName );
-            console.log("Asset Type ID: ", assetTypeId);
+            // console.log("User Group ID: ", userGroupId);
         })
         .catch((error) => {
             message.value = error.response.data.message;
         })
     };
 
-    const getGroupName = (id) => {
-        groupServices.getGroup(id)
+    const getAssetTypeName = () => {
+        assetTypeServices.getAllAssetTypes()
         .then((response) => {
-            groupName.value = response.data.name;
-            console.log("Group Name: ", groupName);
+            assetTypeName.value = response.data.name; // get Asset Name
+            assetTypeId.value = response.data.id; // get Asset ID
+            // console.log("Asset Type Names: ", assetTypeName );
+            // console.log("Asset Type ID: ", assetTypeId);
         })
         .catch((error) => {
             message.value = error.response.data.message;
