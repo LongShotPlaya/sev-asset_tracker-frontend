@@ -2,14 +2,21 @@
     import { ref, onMounted } from "vue";
     import { useRouter } from "vue-router";
     import Utils from "../config/utils.js";
-    import peopleServices from "../services/personServices";
+    import peopleServices from "../services/personServices.js";
     import assetServices from "../services/assetServices.js";
     import groupServices from "../services/groupServices.js";
-    import userServices from "../services/userServices";
+    import userServices from "../services/userServices.js";
+    import assetTypeServices from "../services/assetTypeManagementServices.js";
     
     const message = ref("");
     const person = ref("");
     const personsAssets = ref([]);
+    const select = ref("");
+    const groupName = ref("");
+    const userGroupId = ref("");
+    const assetTypeName = ref("");
+    const assetTypeId = ref("");
+
     const user = Utils.getStore("user");
     const router = useRouter();
     
@@ -22,7 +29,7 @@
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
-            select.value=response.data.name; //Was group
+            select.value = response.data.name;
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -38,24 +45,13 @@
                 message.value = error.response.data.message;
             })
     };
-    
-    const assetTypeName = ref("");
-    const getAssetTypeName = (typeId) => {
-        assetServices.getFullAssetType(typeId)
-        .then((response) => {
-            assetTypeName.value = response.data.name;
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    };
 
-    const getPersonsAssets = async (id) => { 
+    const getPersonsAssets = (id) => { 
         assetServices.getAllAssets()
-        .then(async (response) => {
-            personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
+        .then((response) => {
+            // personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
+            personsAssets.value = response.data;
             console.log("Person's Assets: ", personsAssets);
-                await Promise.all(personsAssets.value.map(asset => getAssetTypeName(asset.typeId)));
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -64,17 +60,17 @@
     
     //Asset data table
     const headers = [
-        { title: 'Type', value: 'typeId', width: '30%' },
-        { title: 'ID', value: 'id', width: '30%' },
-        { title: 'Status', value: 'status', width: '30%' },
+        { title: 'Type', value: 'type.name', width: '25%' },
+        { title: 'ID', value: 'id', width: '25%' },
+        { title: 'Status', value: 'status', width: '25%' },
+        { title: "Date?", value: '', width: '25%' },
         { title: '', value: 'actions', align: 'end' },
     ];
 
-    const userGroupId = ref("");
     const getUserGroupId = (id) => {
         userServices.getUser(id) 
         .then((response) => {
-            userGroupId.value = response.data.groupId;
+            userGroupId.value = response.data.groupId; // User's Group Id, permissions
             console.log("User Group ID: ", userGroupId);
         })
         .catch((error) => {
@@ -82,7 +78,19 @@
         })
     }
 
-    const groupName = ref("");
+    const getAssetTypeName = () => {
+        assetTypeServices.getAllAssetTypes()
+        .then((response) => {
+            assetTypeName.value = response.data.name; // get Asset Name
+            assetTypeId.value = response.data.id; // get Asset ID
+            console.log("Asset Type Names: ", assetTypeName );
+            console.log("Asset Type ID: ", assetTypeId);
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    };
+
     const getGroupName = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
@@ -90,64 +98,50 @@
             console.log("Group Name: ", groupName);
         })
         .catch((error) => {
-            message.value = error.reaponse.data.message;
+            message.value = error.response.data.message;
         })
-    }
+    };
 
-    const select = ref("");
     const roles = [
         { title: 'Super User', value: 1 }, 
         { title: 'User', value: 2 }, 
         { title: 'Person', value: 3 }, 
     ];
 
-    // const saveChanges = () => {
-    //     const id = person.value.id;
-    //     const data = { role: select.value };
+    const saveChanges = (id) => { 
+        const userId = id;
+        const data = { groupId: select.value };
 
-    //     groupServices.updateGroup(id, data)
-    //     .then(() => {
-    //         console.log("Group updated successfully: ", data);
-    //     })
-    //     .catch((error) => {
-    //         message.value = error.response.data.message;
-    //     })
-    // };
-
-    const cancel = () => {
-        select.value = getGroup();
-        router.push({ name: "people" });
-    };
-
-    const viewAsset = (id) => {
-        router.push({ name: "asset" }); //Change when page is made. 
-    }
-
-    const test = () => {
-    const assetTypeId = 2;
-    assetServices.getFullAssetType(assetTypeId)
-        .then(response => {
-            console.log("Full Asset Type: ", response.data);
+        userServices.updateUser(userId, data)
+        .then(() => {
+            console.log("Group ID updated successfully: ", data);
         })
-        .catch(error => {
+        .catch((error) => {
             if (error.response.status === 404) {
                 console.error("Asset type not found:", error.response.data.message);
             } else {
                 console.error("Error:", error.message);
-            }
-        });
+            }        
+        })
     };
 
-    
+    const cancel = () => {
+        router.go(-1);
+    };
+
+    const viewAsset = (id) => {
+        router.push({ name: "asset", props: id }); //Change when page is made. 
+    };
+
     onMounted(() => {
         user.value = Utils.getStore("user");
         const id = props.id;
         getGroup(id);
         getSomeone(id);
         getPersonsAssets(id);
-        test(); //Test
-        getUserGroupId(id); //Test
-        getGroupName(id); //Test
+        // getUserGroupId(id); //Test
+        // getGroupName(id); //Test
+        // getAssetTypeName(); //Test
     });
 </script>
 
@@ -156,6 +150,7 @@
     <v-card
     class="mx-auto"
     width="90%"
+    height="92%"
     >
         <v-app
         class="layout">
@@ -164,11 +159,11 @@
             </v-toolbar>
             <v-container
             class="v-container">
-                <v-row style="height: 50%">
+                <v-row style="height: 100%">
                     <v-col cols="3"
                     class="sidePanel">
-                        <v-card class="side">
-                            <v-card-title>Person Role: {{ user.groupId }}
+                        <v-card class="side1">
+                            <v-card-title>Person Role: 
                                 <v-select
                                     v-model="select"
                                     :items="roles"
@@ -191,27 +186,26 @@
                             </table>
                         </v-card>
                         <br>
-                        <v-card class="side">
+                        <v-card class="side2">
                         <v-card-title>Label for third block</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text id="block3txt">Block 3</v-card-text>
                     </v-card>
                         <v-btn
+                            @click="saveChanges(person.id)"
+                            id="btn"
+                            color="green" 
+                            style="margin-top: 3%;"
+                            x-large>
+                            save
+                        </v-btn>
+                        <v-btn
                             @click="cancel()"
                             id="btn"
                             color="#811429" 
-                            style="margin-top: 3%;"
+                            style="margin-top: 3%;  margin-left: 2%;"
                             x-large>
                             cancel
-                        </v-btn>
-                        <!-- saveChanges(person.id, { role: select.value }) -->
-                        <v-btn
-                            @click=""
-                            id="btn"
-                            color="green" 
-                            style="margin-top: 3%; margin-left: 2%;"
-                            x-large>
-                            save
                         </v-btn>
                     </v-col>
 
@@ -223,9 +217,6 @@
                                 :items="personsAssets"
                                 item-key="id"
                             >
-                                <template v-slot:[`item.typeId`]="{ item }">
-                                    {{ assetTypeName }}
-                                </template>
                                 <template v-slot:[`item.actions`]="{ item }">
                                     <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewAsset(item.id)">
                                         <v-icon>mdi-pencil</v-icon> 
@@ -243,32 +234,37 @@
 <style scoped>
 .v-container{
     min-width: 100%;
-    height: 100%;
+    height: 820px; /**auto */
 }
 
 .layout {
-    height: 1000px;
+    min-height: max-content; /**Play with this */
 }
 .sidePanel{
-    height: 100%;
+    height: 96%;
     justify-content: center;
     width: auto;
+    min-height: 725px;
 }
-
 #btn {
     width: 49%;
-    height: 10.5%;
+    height: 5.3%;
     font-size: large;
 }
-
-.side {
-    min-height: 70%;
+.side1 {
+    min-height: 50%;
+    width: 100%;
+}
+.side2 {
+    min-height: 40%;
     width: 100%;
 }
 
 .list {
-    height: 150%;
+    height: 735px;
     width: auto;
+    overflow-y: auto;
+    z-index: 9999;
 }
 
 #contact {
