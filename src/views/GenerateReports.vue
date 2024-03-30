@@ -19,6 +19,7 @@ const typeLoading = ref([]); // A stack to ensure that asynchronous operations w
 const validType = ref(false);
 
 const includeFields = ref([]);
+const validFields = ref(false);
 const fields = ref([]);
 //#endregion
 
@@ -87,6 +88,7 @@ const fetchRelevantFields = async () => {
     typeLoading.value = [];
     fields.value = fields.value.filter(field => !field.value.isField);
     includeFields.value = includeFields.value.filter(field => !field.isField);
+    refreshFields();
     refreshReferences(true);
     return;
   }
@@ -113,8 +115,7 @@ const fetchRelevantFields = async () => {
     
     fields.value.sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
     
-    if (fields.value.length <= 0) includeFields.value.push({ title: "No fields for this asset type!", value: { isField: true } });
-    else includeFields.value = includeFields.value.filter(field => fields.value.some(option => option.value.id == field.id));
+    refreshFields();
     typeLoading.value = [];
   })
   .catch(err => {
@@ -139,11 +140,19 @@ const fetchAlertTypes = async () => {
     }).sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
     
     fields.value.push(...data);
-    if (fields.value.length <= 0) includeFields.value.push({ title: "No fields for this asset type!", value: { isField: true } });
+    // if (fields.value.length <= 0) includeFields.value.push({ title: "No fields for this asset type!", value: { isField: true } });
+    refreshFields()
   })
   .catch(err => {
     console.log("Error retrieving alert types!");
   });
+};
+
+// Refreshes the fields
+const refreshFields = () => {
+  validFields.value = validType.value && fields.value.length > 0;
+  if (!validFields.value) includeFields.value = [{ title: "No fields for this asset type!", value: { isField: true } }];
+  else includeFields.value = includeFields.value.filter(field => fields.value.some(option => option.value.id == field.id && option.value.isField == field.isField));
 };
 //#endregion
 
@@ -212,17 +221,17 @@ const validateFilter = (index) => {
   
         if (!isNaN(parsedMin) && !isNaN(parsedMax))
         {
-          curr.description += parsedMin == parsedMax ? `exactly ${parsedMin}` : `between ${parsedMin} and ${parsedMax}`
+          curr.description += parsedMin == parsedMax ? `exactly ${parsedMin}` : `between ${parsedMin} and ${parsedMax}`;
           curr.valid = true;
         }
         else if (!isNaN(parsedMin))
         {
-          curr.description += `at least ${parsedMin}`
+          curr.description += `at least ${parsedMin}`;
           curr.valid = true;
         }
         else if (!isNaN(parsedMax))
         {
-          curr.description += `at most ${parsedMax}`
+          curr.description += `at most ${parsedMax}`;
           curr.valid = true;
         }
         else
@@ -348,16 +357,16 @@ fetchAlertTypes();
                 <v-row justify="center">
                   <v-col cols="6">
                     <v-combobox
-                      :disabled="fields.length <= 0 || typeLoading.length > 0"
+                      :disabled="fields.length <= 0 || typeLoading.length > 0 || !validType"
                       v-model="includeFields"
                       label="Fields to Report"
-                      :items="fields"
+                      :items="fields.length > 0 && typeLoading.length <= 0 && validType ? fields : []"
                       :return-object="false"
                       @update:modelValue="refreshReferences(true)"
-                      clearable
-                      multiple
-                      chips
+                      :clearable="fields.length > 0 && typeLoading.length <= 0 && validType"
+                      :chips="fields.length > 0 && typeLoading.length <= 0 && validType"
                       closable-chips
+                      multiple
                     />
                   </v-col>
                 </v-row>
@@ -472,7 +481,7 @@ fetchAlertTypes();
                 <br>
                 <v-row justify="center">
                   <v-btn
-                    :disabled="referenceOptions.length <= 0 || !validType"
+                    :disabled="referenceOptions.length <= 0 || !validType || !validFields"
                     color="primary"
                     @click="addFilter"
                   >
