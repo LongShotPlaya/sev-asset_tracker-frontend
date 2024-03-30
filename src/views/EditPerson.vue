@@ -48,9 +48,7 @@
     const getPersonsAssets = (id) => { 
         assetServices.getAllAssets()
         .then((response) => {
-            personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
-            // allAssetsInDb.value = response.data;
-            personsAssets.value = response.data;
+            personsAssets.value = response.data.filter(asset => asset.type.borrowerId == id);
             console.log("Person's Assets: ", personsAssets);
         })
         .catch((error) => {
