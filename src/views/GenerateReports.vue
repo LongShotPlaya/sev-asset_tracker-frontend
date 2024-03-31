@@ -12,6 +12,7 @@ const currTab = ref('report-by-type');
 const category = ref(null);
 const categories = ref([]);
 const catHasTypes = computed(() => types.value.length > 0);
+const catsLoading = ref(false);
 
 const type = ref(null);
 // Dynamically filters the available types based on the selected category
@@ -22,13 +23,14 @@ const types = computed(() => {
   : allTypes.value.slice();
 });
 const allTypes = ref([]);
-const typeLoading = computed(() => typeLoadingStack.value.length > 0);
-const typeLoadingStack = ref([]); // A stack to ensure that asynchronous operations won't cause weird behavior
 const validType = computed(() => !isNaN(parseInt(type.value?.id)));
+const typesLoading = ref(false);
 
 const includeFields = ref([]);
 const validFields = computed(() => validType.value && fields.value.length > 0);
 const fields = ref([]);
+const fieldsLoadingStack = ref([]); // A stack to ensure that asynchronous operations won't cause weird behavior
+const fieldsLoading = computed(() => fieldsLoadingStack.value.length > 0);
 
 // Dynamically ensures that type is valid
 const typeValidator = () => {
@@ -63,11 +65,14 @@ const byTypeHeaders = ref([]);
 // In case someone tries to generate a report, but has changed the type selection (which
 // would prevent us from getting its name otherwise)
 let typeName = "";
+const byTypeReportLoading = ref(false);
 //#endregion
 
 //#region Type selection Functions
 // Grabs all categories from the backend (which the user is able to report) and sorts them by name
 const fetchCategories = async () => {
+  catsLoading.value = true;
+
   ReportServices.getReportableCategories()
   .then(response => {
     const data = response.data ?? [];
@@ -78,14 +83,19 @@ const fetchCategories = async () => {
       };
     })
     .sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
+
+    catsLoading.value = false;
   })
   .catch(err => {
+    catsLoading.value = false;
     console.log("Error retrieving categories!");
   });
 };
 
 // Grabs all asset types from the backend (which the user is able to report) and sorts them by name
 const fetchAssetTypes = async () => {
+  typesLoading.value = true;
+
   ReportServices.getReportableTypes()
   .then(response => {
     const data = response.data ?? [];
@@ -96,8 +106,11 @@ const fetchAssetTypes = async () => {
       };
     })
     .sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
+
+    typesLoading.value = false;
   })
   .catch(err => {
+    typesLoading.value = false;
     console.log("Error retrieving asset types!");
   });
 };
@@ -107,7 +120,7 @@ const fetchRelevantFields = async () => {
   fields.value = fields.value.filter(field => !field.value.isField && field.value.id != "acquisitionDate");
   if (!validType.value)
   {
-    typeLoadingStack.value = [];
+    fieldsLoadingStack.value = [];
     includeFields.value = includeFields.value.filter(field => !field.isField);
     refreshFields();
     refreshReferences(true);
@@ -117,7 +130,7 @@ const fetchRelevantFields = async () => {
 
   // Note: it doesn't actually matter what we push onto the stack, so I tried to make it something that
   // doesn't take too much time or space to push
-  typeLoadingStack.value.push(true);
+  fieldsLoadingStack.value.push(true);
   const typeId = type.value.id;
 
   TypeServices.getFullAssetType(typeId)
@@ -173,11 +186,11 @@ const fetchRelevantFields = async () => {
     fields.value.sort((a, b) => a.title == b.title ? 0 : a.title < b.title ? -1 : 1);
     
     refreshFields();
-    typeLoadingStack.value = [];
+    fieldsLoadingStack.value = [];
   })
   .catch(err => {
     console.log("Error retrieving fields!")
-    typeLoadingStack.value.pop();
+    fieldsLoadingStack.value.pop();
   });
 };
 
@@ -426,6 +439,8 @@ const adjustInput = (index, minimumField) => {
 //#region Reporting
 // Sends the request to the backend to report by asset type
 const reportByAssetType = () => {
+  byTypeReportLoading.value = true;
+
   ReportServices.getAssetReport(type.value.id, {
     fields: includeFields.value,
   })
@@ -505,8 +520,11 @@ const reportByAssetType = () => {
         value: fieldName,
       };
     });
+
+    byTypeReportLoading.value = false;
   })
   .catch(err => {
+    byTypeReportLoading.value = false;
     console.log("Error Reporting By Asset Type!");
   });
 };
@@ -566,11 +584,9 @@ const downloadByAssetTypeReport = () => {
 };
 //#endregion
 
-onMounted(() => {
-  fetchCategories();
-  fetchAssetTypes();
-  fetchAlertTypes();
-});
+fetchCategories();
+fetchAssetTypes();
+fetchAlertTypes();
 </script>
 
 <template>
@@ -611,6 +627,7 @@ onMounted(() => {
                       label="Category"
                       :items="categories"
                       :return-object="false"
+                      :loading="catsLoading"
                       auto-select-first
                       clearable
                     />
@@ -623,7 +640,7 @@ onMounted(() => {
                       label="Asset Type"
                       :items="types"
                       :return-object="false"
-                      :loading="typeLoading"
+                      :loading="typesLoading"
                       auto-select-first
                       clearable
                     />
@@ -632,14 +649,15 @@ onMounted(() => {
                 <v-row justify="center">
                   <v-col cols="6">
                     <v-combobox
-                      :disabled="fields.length <= 0 || typeLoading || !validType"
+                      :disabled="fields.length <= 0 || fieldsLoading || !validType"
                       v-model="includeFields"
                       label="Fields to Report"
-                      :items="fields.length > 0 && !typeLoading && validType ? fields : []"
+                      :items="fields.length > 0 && !fieldsLoading && validType ? fields : []"
                       :return-object="false"
                       @update:modelValue="refreshReferences(true)"
-                      :clearable="fields.length > 0 && !typeLoading && validType"
-                      :chips="fields.length > 0 && !typeLoading && validType"
+                      :clearable="fields.length > 0 && !fieldsLoading && validType"
+                      :chips="fields.length > 0 && !fieldsLoading && validType"
+                      :loading="fieldsLoading"
                       closable-chips
                       multiple
                     />
@@ -793,6 +811,7 @@ onMounted(() => {
                       size="large"
                       @click="reportByAssetType"
                       :disabled="!validType || includeFields.length <= 0 || filters.some(filter => !filter.valid && !filter.nulled)"
+                      :loading="byTypeReportLoading"
                     >
                       <v-icon
                         icon="mdi-clipboard-edit-outline"
