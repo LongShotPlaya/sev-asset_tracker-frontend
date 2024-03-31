@@ -217,9 +217,7 @@ const addFilter = () => {
   refreshReferences(true);
   filters.value.push({
     minimum: null,
-    parsedMin: null,
     maximum: null,
-    parsedMax: null,
     nulled: false,
     valid: false,
     reference: null,
@@ -311,22 +309,43 @@ const validateFilter = (index) => {
       curr.maximum = null;
     }
     
+    let parsedMin = null;
+    let parsedMax = null;
+
+    // Invalid dates can cause the formatter to freak out, so we need to be cautious of them
+    // They need to be checked individually to prevent one causing both to be erased or ignored
+    try {
+      if (!!curr.minimum) format(curr.minimum, { date: "long" });
+      parsedMin = curr.minimum;
+    }
+    catch {
+      parsedMin = null;
+    }
+
+    try {
+      if (!!curr.maximum) format(curr.maximum, { date: "long" });
+      parsedMax = curr.maximum;
+    }
+    catch {
+      parsedMax = null;
+    }
+    
     curr.fieldType = "Alert";
-    if (curr.minimum != null && curr.maximum != null)
+    if (parsedMin != null && parsedMax != null)
     {
-      const actualMin = format(curr.maximum - curr.minimum > 0 ? curr.minimum : curr.maximum, { date: "long" });
-      const actualMax = format(curr.maximum - curr.minimum > 0 ? curr.maximum : curr.minimum, { date: "long" });
-      curr.description += curr.minimum == curr.maximum ? `on the date ${actualMin}` : `between ${actualMin} and ${actualMax}`;
+      const actualMin = format(new Date(parsedMax) > new Date(parsedMin) ? parsedMin : parsedMax, { date: "long" });
+      const actualMax = format(new Date(parsedMax) > new Date(parsedMin) ? parsedMax : parsedMin, { date: "long" });
+      curr.description += parsedMin == parsedMax ? `on the date ${actualMin}` : `between ${actualMin} and ${actualMax}`;
       curr.valid = true;
     }
-    else if (curr.minimum != null)
+    else if (parsedMin != null)
     {
-      curr.description += `on or after ${format(curr.minimum, { date: "long" })}`;
+      curr.description += `on or after ${format(parsedMin, { date: "long" })}`;
       curr.valid = true;
     }
-    else if (curr.maximum != null)
+    else if (parsedMax != null)
     {
-      curr.description += `on or before ${format(curr.maximum, { date: "long" })}`;
+      curr.description += `on or before ${format(parsedMax, { date: "long" })}`;
       curr.valid = true;
     }
     else
@@ -375,6 +394,24 @@ const adjustInput = (index, minimumField) => {
   }
   else if (curr.fieldType == "Alert")
   {
+    // Check min and max to ensure that the formatter will accept them
+    // They need to be checked individually to prevent one causing both to be erased
+    try {
+      let temp;
+      if (!!curr.minimum) temp = format(curr.minimum, { date: "long" });
+    }
+    catch {
+      curr.minimum = null;
+    }
+    
+    try {
+      let temp;
+      if (!!curr.maximum) temp = format(curr.maximum, { date: "long" });
+    }
+    catch {
+      curr.maximum = null;
+    }
+
     // If the minimum and maximum are in the wrong order, switch them
     if (!!curr.minimum && !!curr.maximum && new Date(curr.minimum) - new Date(curr.maximum) > 0)
     {
@@ -477,15 +514,35 @@ const reportByAssetType = () => {
 // Ensures that the target adheres to any constraints specified for it in a list of filters
 const applyFilter = (target, filterList) => {
   const applyOneFilter = (target, filter) => {
-    // Check the types to ensure they match (otherwise, ignore the filter)
+    const targetValue = target.value ?? "";
+    const targetType = getInputType(targetValue);
+
     // For strings: ensure that the value matches
+    if (filter.fieldType == "Text")
+    {
+      return ("" + targetValue) == (filter.minimum ?? "");
+    }
     // For booleans: ensure that the value matches
+    else if (filter.fieldType == "True/False" && targetType == "bool")
+    {
+      return /true/i.test("" + targetValue) == /true/i.test(filter.minimum);
+    }
     // For numbers: ensure that the value falls within the specified range
+    else if (filter.fieldType == "Number" && targetType == "number")
+    {
+      return !((getInputType(filter.minimum) == "number" && parseInt(filter.minimum) > parseInt(targetValue))
+      || (getInputType(filter.maximum) == "number" && parseInt(targetValue) > parseInt(filter.maximum)));
+    }
     // For dates: ensure that the date falls within the specified range
-    return false;
+    else if (filter.fieldType == "Alert" && targetType == "alert")
+    {
+      return !((!!filter.minimum && new Date(targetValue) < new Date(filter.minimum))
+      || (!!filter.maximum && new Date(filter.maximum) < new Date(targetValue)));
+    }
+    return true;
   };
 
-  const targetFilters = filterList.filter(filter => filter.reference?.id == target.id && filter.reference?.isField == target.isField);
+  const targetFilters = filterList.filter(filter => !filter.nulled && filter.reference?.id == target.id && filter.reference?.isField == target.isField);
   return targetFilters.every(filter => applyOneFilter(target, filter));
 };
 
@@ -735,7 +792,7 @@ onMounted(() => {
                       color="primary"
                       size="large"
                       @click="reportByAssetType"
-                      :disabled="!validType || includeFields.length <= 0 || filters.some(filter => !filter.valid)"
+                      :disabled="!validType || includeFields.length <= 0 || filters.some(filter => !filter.valid && !filter.nulled)"
                     >
                       <v-icon
                         icon="mdi-clipboard-edit-outline"
