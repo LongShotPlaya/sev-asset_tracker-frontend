@@ -596,273 +596,273 @@ fetchAlertTypes();
 </script>
 
 <template>
-    <v-container fluid>
-        <v-toolbar>
-          <v-toolbar-title align="center">Generate Reports</v-toolbar-title>
+  <v-container fluid>
+    <v-toolbar>
+      <v-toolbar-title align="center">Generate Reports</v-toolbar-title>
 
-          <!-- This is to extend the toolbar to include the tabs -->
-          <template v-slot:extension>
-            <v-spacer />
-            <v-tabs
-              v-model="currTab"
-              align-tabs="center"
-              justify-content="center"
-            >
-              <v-tab value="report-by-type">
-                By Type
-              </v-tab>
-              <v-tab value="report-by-assignment">
-                By Assignment
-              </v-tab>
-            </v-tabs>
-            <v-spacer />
-          </template>
-        </v-toolbar>
+      <!-- This is to extend the toolbar to include the tabs -->
+      <template v-slot:extension>
+        <v-spacer />
+        <v-tabs
+          v-model="currTab"
+          align-tabs="center"
+          justify-content="center"
+        >
+          <v-tab value="report-by-type">
+            By Type
+          </v-tab>
+          <v-tab value="report-by-assignment">
+            By Assignment
+          </v-tab>
+        </v-tabs>
+        <v-spacer />
+      </template>
+    </v-toolbar>
 
-        <v-window v-model="currTab">
-          <v-window-item value="report-by-type">
-            <v-card>
-              <v-container fluid>
-                <v-card-title align="center">
-                  Asset Selection
-                </v-card-title>
-                <v-row justify="center">
-                  <v-col cols="3">
-                    <v-combobox
-                      v-model="category"
-                      label="Category"
-                      :items="categories"
-                      :return-object="false"
-                      :loading="catsLoading"
-                      auto-select-first
-                      clearable
-                    />
-                  </v-col>
-                  <v-col cols="3">
-                    <v-combobox
-                      :disabled="!catHasTypes"
-                      v-model="type"
-                      @update:modelValue="fetchRelevantFields"
-                      label="Asset Type"
-                      :items="types"
-                      :return-object="false"
-                      :loading="typesLoading"
-                      auto-select-first
-                      clearable
-                    />
-                  </v-col>
-                </v-row>
-                <v-row justify="center">
-                  <v-col cols="6">
-                    <v-combobox
-                      :disabled="fields.length <= 0 || fieldsLoading || !validType"
-                      v-model="includeFields"
-                      label="Fields to Report"
-                      :items="fields.length > 0 && !fieldsLoading && validType ? fields : []"
-                      :return-object="false"
-                      @update:modelValue="refreshReferences(true)"
-                      :clearable="fields.length > 0 && !fieldsLoading && validType"
-                      :chips="fields.length > 0 && !fieldsLoading && validType"
-                      :loading="fieldsLoading"
-                      closable-chips
-                      multiple
-                    />
-                  </v-col>
-                </v-row>
-                <br>
-                <v-card-title align="center">
-                  Asset Filters
-                </v-card-title>
-                <br>
-                <v-row justify="center">
-                  <v-col cols="6">
-                    <v-expansion-panels>
-                      <v-expansion-panel
-                        v-for="(filter, index) in filters"
-                        :key="index"
-                        :value="filter"
-                        justify="center"
-                        :class="filter.nulled ? 'expansion-nulled' : ''"
-                      >
-                        <v-expansion-panel-title>
-                          <template v-slot:default="{ expanded }">
-                            <v-row>
-                              <v-fade-transition leave-absolute>
-                                <v-col
-                                  v-if="expanded"
-                                  key="0"
-                                >
-                                  {{ filter.reference != null ? `Filter For "${filter.reference?.name ?? filter.reference?.label}"` : "New Filter" }}
-                                </v-col>
-                                <v-col
-                                  v-else
-                                  key="1"
-                                >
-                                  {{ filter.nulled ? `Field "${filter.reference?.name ?? filter.reference?.label}" Removed From Selection!` : filter.reference != null ? filter.description : "New Filter" }}
-                                </v-col>
-                              </v-fade-transition>
-                            </v-row>
-                          </template>
-                        </v-expansion-panel-title>
-                        <v-expansion-panel-text>
-                          <v-card-text style="font-weight: bold; font-size: 16px;">
-                            {{ filter.nulled ? `Field "${filter.reference?.name ?? filter.reference?.label}" Removed From Selection!` : filter.description }}
-                          </v-card-text>
-                          <v-row>
-                            <v-col>
-                              <v-select
-                                :disabled="filter.nulled"
-                                v-model="filters[index].reference"
-                                label="Alert Type or Field"
-                                :items="referenceOptions"
-                                :return-object="false"
-                                @update:focused="refreshReferences"
-                                @update:modelValue="validateFilter(index)"
-                                clearable
-                              />
-                            </v-col>
-                            <v-col>
-                              <v-select
-                                v-if="(filter.reference?.isField ?? true)"
-                                :disabled="filter.nulled || !filter.reference"
-                                v-model="filters[index].fieldType"
-                                label="Field Data Type"
-                                :items="['Number', 'Text', 'True/False']"
-                                :return-object="false"
-                                @update:modelValue="changeType(index)"
-                              />
-                            </v-col>
-                            
-                            <v-col cols="1">
-                              <v-btn
-                                class="ma-2"
-                                color="primary"
-                                variant="outlined"
-                                icon="mdi-trash-can"
-                                density="comfortable"
-                                @click="removeFilter(index)"
-                              />
-                            </v-col>
-                          </v-row>
-                          <v-row>
-                            <v-col v-if="filter.fieldType != 'True/False'">
-                              <v-text-field
-                                :disabled="!filter.fieldType || filter.nulled || !filter.reference"
-                                :type="(filter.reference?.isField ?? true) ? 'text' : 'date'"
-                                v-model="filters[index].minimum"
-                                @blur="adjustInput(index, true)"
-                                @update:modelValue="validateFilter(index)"
-                                :label="!(filter.reference?.isField ?? true) ? 'From Date' : filter.fieldType == 'Number' ? 'Minimum Value' : 'Value'"
-                                clearable
-                              />
-                            </v-col>
-                            <v-radio-group
-                              v-else
-                              v-model="filters[index].minimum"
-                              :disabled="!filter.fieldType || filter.nulled || !filter.reference"
-                              @update:modelValue="validateFilter(index)"
-                              inline
-                            >
-                              <v-col>
-                                <v-radio label="Value Must Be False" :value="false" />
-                              </v-col>
-                              <v-col>
-                                <v-radio label="Value Must Be True" :value="true" />
-                              </v-col>
-                            </v-radio-group>
-                            <v-col v-if="filter.fieldType == 'Number' || !(filter.reference?.isField ?? true)">
-                              <v-text-field
-                                :disabled="!filter.fieldType || filter.nulled || !filter.reference"
-                                :type="(filter.reference?.isField ?? true) ? 'text' : 'date'"
-                                v-model="filters[index].maximum"
-                                @blur="adjustInput(index, false)"
-                                @update:modelValue="validateFilter(index)"
-                                :label="!filter.reference?.isField ? 'To Date' : 'Maximum Value'"
-                                clearable
-                              />
-                            </v-col>
-                            <v-col cols="1" />
-                          </v-row>
-                        </v-expansion-panel-text>
-                      </v-expansion-panel>
-                    </v-expansion-panels>
-                  </v-col>
-                </v-row>
-                <br v-if="filters.length > 0">
-                <br>
-                <v-row justify="center">
-                  <v-btn
-                    :disabled="referenceOptions.length <= 0 || filters.some(filter => !filter.valid) || !validType || !validFields"
-                    color="primary"
-                    @click="addFilter"
-                  >
-                    <v-icon
-                      icon="mdi-plus-circle-outline"
-                      color="secondary"
-                      size="x-large"
-                      start
-                    />
-                    Add Filter
-                  </v-btn>
-                </v-row>
-                <br><br>
-                <v-card-title align="center" style="font-size: 28px;">
-                  Reporting
-                </v-card-title>
-                <br>
-                <v-row justify="center">
-                  <v-col align="end" shrink>
-                    <v-btn
-                      color="primary"
-                      size="large"
-                      @click="reportByAssetType"
-                      :disabled="!validType || includeFields.length <= 0 || filters.some(filter => !filter.valid && !filter.nulled)"
-                      :loading="byTypeReportLoading"
-                    >
-                      <v-icon
-                        icon="mdi-clipboard-edit-outline"
-                        size="x-large"
-                        start
-                      />
-                      Generate Report
-                    </v-btn>
-                  </v-col>
-                  <v-col align="start" shrink>
-                    <v-btn
-                      color="secondary"
-                      size="large"
-                      @click="downloadByAssetTypeReport"
-                      :disabled="byTypeReport.length <= 0"
-                    >
-                      <v-icon
-                        icon="mdi-file-download-outline"
-                        size="x-large"
-                        start
-                      />
-                      Download as .CSV
-                    </v-btn>
-                  </v-col>
-                </v-row>
-                <br>
-                <br>
-                <br>
-                <v-data-table
-                  :items="byTypeReport"
-                  :headers="byTypeHeaders"
+    <v-window v-model="currTab">
+      <v-window-item value="report-by-type">
+        <v-card>
+          <v-container fluid>
+            <v-card-title align="center">
+              Asset Selection
+            </v-card-title>
+            <v-row justify="center">
+              <v-col cols="3">
+                <v-combobox
+                  v-model="category"
+                  label="Category"
+                  :items="categories"
+                  :return-object="false"
+                  :loading="catsLoading"
+                  auto-select-first
+                  clearable
                 />
-              </v-container>
-            </v-card>
-          </v-window-item>
+              </v-col>
+              <v-col cols="3">
+                <v-combobox
+                  :disabled="!catHasTypes"
+                  v-model="type"
+                  @update:modelValue="fetchRelevantFields"
+                  label="Asset Type"
+                  :items="types"
+                  :return-object="false"
+                  :loading="typesLoading"
+                  auto-select-first
+                  clearable
+                />
+              </v-col>
+            </v-row>
+            <v-row justify="center">
+              <v-col cols="6">
+                <v-combobox
+                  :disabled="fields.length <= 0 || fieldsLoading || !validType"
+                  v-model="includeFields"
+                  label="Fields to Report"
+                  :items="fields.length > 0 && !fieldsLoading && validType ? fields : []"
+                  :return-object="false"
+                  @update:modelValue="refreshReferences(true)"
+                  :clearable="fields.length > 0 && !fieldsLoading && validType"
+                  :chips="fields.length > 0 && !fieldsLoading && validType"
+                  :loading="fieldsLoading"
+                  closable-chips
+                  multiple
+                />
+              </v-col>
+            </v-row>
+            <br>
+            <v-card-title align="center">
+              Asset Filters
+            </v-card-title>
+            <br>
+            <v-row justify="center">
+              <v-col cols="6">
+                <v-expansion-panels>
+                  <v-expansion-panel
+                    v-for="(filter, index) in filters"
+                    :key="index"
+                    :value="filter"
+                    justify="center"
+                    :class="filter.nulled ? 'expansion-nulled' : ''"
+                  >
+                    <v-expansion-panel-title>
+                      <template v-slot:default="{ expanded }">
+                        <v-row>
+                          <v-fade-transition leave-absolute>
+                            <v-col
+                              v-if="expanded"
+                              key="0"
+                            >
+                              {{ filter.reference != null ? `Filter For "${filter.reference?.name ?? filter.reference?.label}"` : "New Filter" }}
+                            </v-col>
+                            <v-col
+                              v-else
+                              key="1"
+                            >
+                              {{ filter.nulled ? `Field "${filter.reference?.name ?? filter.reference?.label}" Removed From Selection!` : filter.reference != null ? filter.description : "New Filter" }}
+                            </v-col>
+                          </v-fade-transition>
+                        </v-row>
+                      </template>
+                    </v-expansion-panel-title>
+                    <v-expansion-panel-text>
+                      <v-card-text style="font-weight: bold; font-size: 16px;">
+                        {{ filter.nulled ? `Field "${filter.reference?.name ?? filter.reference?.label}" Removed From Selection!` : filter.description }}
+                      </v-card-text>
+                      <v-row>
+                        <v-col>
+                          <v-select
+                            :disabled="filter.nulled"
+                            v-model="filters[index].reference"
+                            label="Alert Type or Field"
+                            :items="referenceOptions"
+                            :return-object="false"
+                            @update:focused="refreshReferences"
+                            @update:modelValue="validateFilter(index)"
+                            clearable
+                          />
+                        </v-col>
+                        <v-col>
+                          <v-select
+                            v-if="(filter.reference?.isField ?? true)"
+                            :disabled="filter.nulled || !filter.reference"
+                            v-model="filters[index].fieldType"
+                            label="Field Data Type"
+                            :items="['Number', 'Text', 'True/False']"
+                            :return-object="false"
+                            @update:modelValue="changeType(index)"
+                          />
+                        </v-col>
+                        
+                        <v-col cols="1">
+                          <v-btn
+                            class="ma-2"
+                            color="primary"
+                            variant="outlined"
+                            icon="mdi-trash-can"
+                            density="comfortable"
+                            @click="removeFilter(index)"
+                          />
+                        </v-col>
+                      </v-row>
+                      <v-row>
+                        <v-col v-if="filter.fieldType != 'True/False'">
+                          <v-text-field
+                            :disabled="!filter.fieldType || filter.nulled || !filter.reference"
+                            :type="(filter.reference?.isField ?? true) ? 'text' : 'date'"
+                            v-model="filters[index].minimum"
+                            @blur="adjustInput(index, true)"
+                            @update:modelValue="validateFilter(index)"
+                            :label="!(filter.reference?.isField ?? true) ? 'From Date' : filter.fieldType == 'Number' ? 'Minimum Value' : 'Value'"
+                            clearable
+                          />
+                        </v-col>
+                        <v-radio-group
+                          v-else
+                          v-model="filters[index].minimum"
+                          :disabled="!filter.fieldType || filter.nulled || !filter.reference"
+                          @update:modelValue="validateFilter(index)"
+                          inline
+                        >
+                          <v-col>
+                            <v-radio label="Value Must Be False" :value="false" />
+                          </v-col>
+                          <v-col>
+                            <v-radio label="Value Must Be True" :value="true" />
+                          </v-col>
+                        </v-radio-group>
+                        <v-col v-if="filter.fieldType == 'Number' || !(filter.reference?.isField ?? true)">
+                          <v-text-field
+                            :disabled="!filter.fieldType || filter.nulled || !filter.reference"
+                            :type="(filter.reference?.isField ?? true) ? 'text' : 'date'"
+                            v-model="filters[index].maximum"
+                            @blur="adjustInput(index, false)"
+                            @update:modelValue="validateFilter(index)"
+                            :label="!filter.reference?.isField ? 'To Date' : 'Maximum Value'"
+                            clearable
+                          />
+                        </v-col>
+                        <v-col cols="1" />
+                      </v-row>
+                    </v-expansion-panel-text>
+                  </v-expansion-panel>
+                </v-expansion-panels>
+              </v-col>
+            </v-row>
+            <br v-if="filters.length > 0">
+            <br>
+            <v-row justify="center">
+              <v-btn
+                :disabled="referenceOptions.length <= 0 || filters.some(filter => !filter.valid) || !validType || !validFields"
+                color="primary"
+                @click="addFilter"
+              >
+                <v-icon
+                  icon="mdi-plus-circle-outline"
+                  color="secondary"
+                  size="x-large"
+                  start
+                />
+                Add Filter
+              </v-btn>
+            </v-row>
+            <br><br>
+            <v-card-title align="center" style="font-size: 28px;">
+              Reporting
+            </v-card-title>
+            <br>
+            <v-row justify="center">
+              <v-col align="end" shrink>
+                <v-btn
+                  color="primary"
+                  size="large"
+                  @click="reportByAssetType"
+                  :disabled="!validType || includeFields.length <= 0 || filters.some(filter => !filter.valid && !filter.nulled)"
+                  :loading="byTypeReportLoading"
+                >
+                  <v-icon
+                    icon="mdi-clipboard-edit-outline"
+                    size="x-large"
+                    start
+                  />
+                  Generate Report
+                </v-btn>
+              </v-col>
+              <v-col align="start" shrink>
+                <v-btn
+                  color="secondary"
+                  size="large"
+                  @click="downloadByAssetTypeReport"
+                  :disabled="byTypeReport.length <= 0"
+                >
+                  <v-icon
+                    icon="mdi-file-download-outline"
+                    size="x-large"
+                    start
+                  />
+                  Download as .CSV
+                </v-btn>
+              </v-col>
+            </v-row>
+            <br>
+            <br>
+            <br>
+            <v-data-table
+              :items="byTypeReport"
+              :headers="byTypeHeaders"
+            />
+          </v-container>
+        </v-card>
+      </v-window-item>
 
-          <v-window-item value="report-by-assignment">
-            <v-card>
-              <v-container>
-                
-              </v-container>
-            </v-card>
-          </v-window-item>
-        </v-window>
-    </v-container>
+      <v-window-item value="report-by-assignment">
+        <v-card>
+          <v-container>
+            
+          </v-container>
+        </v-card>
+      </v-window-item>
+    </v-window>
+  </v-container>
 </template>
 
 <style>
