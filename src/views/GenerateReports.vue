@@ -2,7 +2,7 @@
 import AlertTypeServices from "../services/alertTypeService";
 import TypeServices from "../services/assetTypeManagementServices";
 import ReportServices from "../services/reportServices";
-import { onMounted, ref, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { format } from "@formkit/tempo";
 import Papa from "papaparse";
 
@@ -67,6 +67,12 @@ const byTypeHeaders = ref([]);
 let typeName = "";
 const byTypeReportLoading = ref(false);
 //#endregion
+
+//#region Assignment Selection Variables
+
+//#endregion
+
+
 
 //#region Type selection Functions
 // Grabs all categories from the backend (which the user is able to report) and sorts them by name
@@ -850,8 +856,10 @@ fetchAlertTypes();
 
           <v-window-item value="report-by-assignment">
             <v-card>
+              <v-container>
+                
+              </v-container>
             </v-card>
-            <v-card-text>This is another test, but for tabs 2!</v-card-text>
           </v-window-item>
         </v-window>
     </v-container>
