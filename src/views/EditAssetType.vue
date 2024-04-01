@@ -25,7 +25,7 @@ const typeLoading = ref(false);
 const categories = ref([]);
 const catsLoading = ref(false);
 
-const identifierSelectionDisabled = ref(false);
+const identifierSelectionEnabled = ref(false);
 const identifierSelection = computed(() => {
     const result = assetType.value.fields.map(field => {
         return {
@@ -35,9 +35,9 @@ const identifierSelection = computed(() => {
         };
     });
 
-    identifierSelectionDisabled.value = result.length > 0;
+    identifierSelectionEnabled.value = result.length > 0;
 
-    return identifierSelectionDisabled.value ? result : [{
+    return identifierSelectionEnabled.value ? result : [{
         title: "There are no fields for this asset type!",
         value: null,
     }];
@@ -226,7 +226,7 @@ onMounted(() => {
                 <v-row>
                     <v-col>
                         <v-select
-                            :disabled="identifierSelectionDisabled"
+                            :disabled="!identifierSelectionEnabled"
                             :loading="typeLoading"
                             label="Identifier"
                             hint="The field which can uniquely identify assets of this type"
