@@ -4,6 +4,9 @@ export default {
     getAllAssets() {
         return apiClient.get(`/assets`);
     },
+    getFullAsset(id) {
+        return apiClient.get(`/assets/${id}?full`);
+    },
     getAsset(assetId) {
         return apiClient.get(`/assets/${assetId}`);
     },
@@ -17,6 +20,6 @@ export default {
         return apiClient.put(`/assets/${assetId}`, data);
     },
     deleteAsset(assetId) {
-        return apiClient.delete(`assets/${assetId}`);
+        return apiClient.delete(`/assets/${assetId}`);
     },
 };
