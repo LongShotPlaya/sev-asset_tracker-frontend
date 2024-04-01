@@ -64,6 +64,11 @@ const router = createRouter({
       component: AssetTypeManagement,
     },
     {
+      path: "/asset-type/add",
+      name: "asset-type-add",
+      component: EditAssetType,
+    },
+    {
       path: "/asset-type/:id",
       name: "asset-type-edit",
       component: EditAssetType,
