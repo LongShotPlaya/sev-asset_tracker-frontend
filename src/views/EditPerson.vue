@@ -1,3 +1,4 @@
+<script setup> 
     import { ref, onMounted } from "vue";
     import { useRouter } from "vue-router";
     import Utils from "../config/utils.js";
@@ -6,6 +7,7 @@
     import groupServices from "../services/groupServices.js";
     import userServices from "../services/userServices.js";
     import assetTypeServices from "../services/assetTypeManagementServices.js";
+import personServices from "../services/personServices.js";
     
     const message = ref("");
     const person = ref("");
@@ -15,6 +17,7 @@
     const assetTypeName = ref("");
     const assetTypeId = ref("");
     const setPersonId = ref("Not a User");
+    const fullPerson = ref();
 
     const user = Utils.getStore("user");
     const router = useRouter();
@@ -61,18 +64,6 @@
         })
     };
 
-    const getPersonsAssets = (id) => { 
-        assetServices.getAllAssets()
-        .then((response) => {
-            // personsAssets.value = response.data;
-            personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
-            console.log("Person's Assets: ", personsAssets);
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    };
-
     const getUserGroupId = (id) => {
         userServices.getUser(id) //Non-exsistant user ID being called here: For non-user
         .then((response) => {
@@ -96,6 +87,19 @@
             message.value = error.response.data.message;
         })
     };
+
+    const getFullPerson = (id) => {
+        personServices.getFullPerson(id) 
+        .then((response) => {
+            fullPerson.value = response.data;
+            personsAssets.value = response.data.borrowedAssets;
+            console.log("Full person: ", fullPerson);
+            console.log("Full persons assets: ", personsAssets);
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    }
 
     //Asset data table
     const headers = [
@@ -142,10 +146,10 @@
         const id = props.id;
         getGroup(id);
         getSomeone(id);
-        getPersonsAssets(id);
         getPersonId(id);
         getUserGroupId(id); //Test
         getAssetTypeName(); //Test
+        getFullPerson(id); //Test
     });
 </script>
 
@@ -154,7 +158,7 @@
     <v-card
     class="mx-auto"
     width="90%"
-    height="90%"
+    height="88%"
     >
         <v-app
         class="layout">
@@ -231,7 +235,6 @@
                                     </v-btn>
                                 </template>
                             </v-data-table>
-                            
                         </v-card>
                     </v-col>
                 </v-row>
@@ -261,16 +264,16 @@
     font-size: large;
 }
 .side1 {
-    min-height: 50%;
+    min-height: 40%;
     width: 100%;
 }
 .side2 {
-    min-height: 40%;
+    min-height: 49.5%;
     width: 100%;
 }
 
 .list {
-    height: 735px;
+    height: 730px;
     width: auto;
     overflow-y: auto;
     z-index: 9999;
