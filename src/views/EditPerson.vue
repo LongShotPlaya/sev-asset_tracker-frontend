@@ -15,6 +15,7 @@
     const userGroupId = ref("");
     const assetTypeName = ref("");
     const assetTypeId = ref("");
+    const setPersonId = ref("Not a User");
 
     const user = Utils.getStore("user");
     const router = useRouter();
@@ -25,10 +26,15 @@
       },
     });
 
+    // if (select == "Not a user")
+    //     id = id;
+    // else
+    //     id = setPersonId;
+
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
-            select.value = response.data.name;
+            select.value = response.data.name; // Non-exsistant group Id being called here: For non-user
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -45,28 +51,31 @@
             })
     };
 
+    const getPersonId = (id) => {
+        userServices.getUser(id)
+        .then((response) => {
+            setPersonId.value = response.data.personId; // Non-exsistant user id being called here: For non-user
+            console.log("Person ID: ", setPersonId); 
+        })
+        .catch((error) => {
+            message.value = error.response.data.message;
+        })
+    };
+
     const getPersonsAssets = (id) => { 
         assetServices.getAllAssets()
         .then((response) => {
-            personsAssets.value = response.data.filter(asset => asset.type.borrowerId == id);
+            // personsAssets.value = response.data;
+            personsAssets.value = response.data.filter(asset => asset.borrowerId == id);
             console.log("Person's Assets: ", personsAssets);
         })
         .catch((error) => {
             message.value = error.response.data.message;
         })
     };
-    
-    //Asset data table
-    const headers = [
-        { title: 'Type', value: 'type.name', width: '25%' },
-        { title: 'ID', value: 'id', width: '25%' },
-        { title: 'Status', value: 'status', width: '25%' },
-        { title: "Date?", value: '', width: '25%' },
-        { title: '', value: 'actions', align: 'end' },
-    ];
 
     const getUserGroupId = (id) => {
-        userServices.getUser(id) 
+        userServices.getUser(id) //Non-exsistant user ID being called here: For non-user
         .then((response) => {
             userGroupId.value = response.data.groupId; // User's Group Id, permissions
             // console.log("User Group ID: ", userGroupId);
@@ -88,6 +97,15 @@
             message.value = error.response.data.message;
         })
     };
+
+    //Asset data table
+    const headers = [
+        { title: 'Type', value: 'type.name', width: '25%' },
+        { title: 'ID', value: 'id', width: '25%' },
+        { title: 'Status', value: 'status', width: '25%' },
+        { title: "Date?", value: '', width: '25%' },
+        { title: '', value: 'actions', align: 'end' },
+    ];
 
     const roles = [
         { title: 'Super User', value: 1 }, 
@@ -126,9 +144,9 @@
         getGroup(id);
         getSomeone(id);
         getPersonsAssets(id);
-        // getUserGroupId(id); //Test
-        // getGroupName(id); //Test
-        // getAssetTypeName(); //Test
+        getPersonId(id);
+        getUserGroupId(id); //Test
+        getAssetTypeName(); //Test
     });
 </script>
 
@@ -137,7 +155,7 @@
     <v-card
     class="mx-auto"
     width="90%"
-    height="92%"
+    height="90%"
     >
         <v-app
         class="layout">
@@ -161,14 +179,18 @@
                             <v-divider></v-divider>
                             <table id="contact">
                                 <tr>
-                                    <td>ID: </td>
-                                    <td>{{ person.id }}</td>
-                                </tr>
-                                <tr>
                                     <td>Email: </td>
                                     <td>
                                         <a :href=" 'https://mail.google.com/mail/?view=cm&fs=1&to=' + person.email" target="_blank">{{ person.email }}</a>
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td>Person ID: </td>
+                                    <td>{{ person.id }}</td>
+                                </tr>
+                                <tr>
+                                    <td>User ID: </td>
+                                    <td>{{ setPersonId }}</td>
                                 </tr>
                             </table>
                         </v-card>
@@ -177,7 +199,7 @@
                         <v-card-title>Label for third block</v-card-title>
                         <v-divider></v-divider>
                         <v-card-text id="block3txt">Block 3</v-card-text>
-                    </v-card>
+                        </v-card>
                         <v-btn
                             @click="saveChanges(person.id)"
                             id="btn"
@@ -210,6 +232,7 @@
                                     </v-btn>
                                 </template>
                             </v-data-table>
+                            
                         </v-card>
                     </v-col>
                 </v-row>
@@ -221,7 +244,7 @@
 <style scoped>
 .v-container{
     min-width: 100%;
-    height: 820px; /**auto */
+    height: 820px; /**auto*/
 }
 
 .layout {
