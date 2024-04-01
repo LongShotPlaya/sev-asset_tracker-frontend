@@ -25,13 +25,20 @@ const typeLoading = ref(false);
 const categories = ref([]);
 const catsLoading = ref(false);
 
-const identifierSelection = computed(() => assetType.value.fields.map(field => {
-    return {
-        title: field.label,
-        value: field.id ?? field.label,
-        valid: !!field.label,
+const identifierSelection = computed(() => {
+    const result = assetType.value.fields.map(field => {
+        return {
+            title: field.label,
+            value: field.id ?? field.label,
+            valid: !!field.label,
+        };
+    });
+
+    return result.length > 0 ? result : {
+        title: "There are no fields for this asset type!",
+        value: null,
     };
-}));
+});
 const fieldsValid = computed(() => identifierSelection.value.every(selection => selection.valid));
 const fieldGridCols = ref(0);
 const fieldGridRef = ref([]);
@@ -288,7 +295,7 @@ onMounted(() => {
                             :disabled="fieldIsIdentifier(column)"
                             density="compact"
                             class="smaller-checkbox"
-                            label="Field is required to be completed for every asset"
+                            label="Field is required to be completed for every asset under this type"
                             v-model="fieldGridRef[rowIndex][colIndex].required"
                         />
                         <v-checkbox
@@ -296,7 +303,7 @@ onMounted(() => {
                             :disabled="fieldIsIdentifier(column)"
                             density="compact"
                             class="smaller-checkbox"
-                            label="Field is able to be used in asset templates"
+                            label="Field is able to be used in asset templates under this asset type"
                             v-model="fieldGridRef[rowIndex][colIndex].templateField"
                         />
                     </v-col>
