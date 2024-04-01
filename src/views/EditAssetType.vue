@@ -34,10 +34,10 @@ const identifierSelection = computed(() => {
         };
     });
 
-    return result.length > 0 ? result : {
+    return result.length > 0 ? result : [{
         title: "There are no fields for this asset type!",
         value: null,
-    };
+    }];
 });
 const fieldsValid = computed(() => identifierSelection.value.every(selection => selection.valid));
 const fieldGridCols = ref(0);
