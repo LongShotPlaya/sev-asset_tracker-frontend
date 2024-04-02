@@ -127,16 +127,17 @@
 	};
 
 	const findPermissions = (groupId) => {
-		var perms;
+		let perms;
 		groupServices.getGroupWithPermissions(groupId.value)
 			.then((response) => {
 				displayPermissions.value = response.data;
+				//console.log(displayPermissions.value)
 			})
 			.catch((e) => {
 				message.value = e.response.data.message;
 			});
 		perms = displayPermissions.value.permissions;
-		message.value = perms.value;//.value.permissions;
+		message.value = displayPermissions.value.permissions;//.value.permissions;
 		//message.value = message.value.name;
 	};
 
@@ -177,13 +178,13 @@
 			<v-data-table :headers ="headers" :items ="groups">
 				<template v-slot:[`item.actions`]="{ item }">
 					<v-btn class="ma-2" color="primary"
-					icon="mdi-format-list-bulleted-type" @click="openDialog('view', 1)">
+					icon="mdi-format-list-bulleted-type" @click="openDialog('view', item.id)">
 					</v-btn>
 					<v-btn class="ma-2" color="primary"
 					icon="mdi-pencil" @click="openDialog('edit', item.id)">
 					</v-btn>
 					<v-btn class="ma-2" color="primary" variant="outlined"
-					icon="mdi-trash-can" @click="openDialog('delete', 2)">
+					icon="mdi-trash-can" @click="openDialog('delete', item.id)">
 					</v-btn>
 				</template>
         	</v-data-table>
@@ -233,8 +234,8 @@
 							<v-card-title> Permissions Allowed </v-card-title>
 						</v-row>
 						<v-list lines="two">
-							<v-list-item v-for="(item, index) in displayPermissions" :key="index"
-								title="item.name" subtitle="item.description">
+							<v-list-item v-for="(item, index) in displayPermissions.permissions" :key="index"
+								:title="item.name" :subtitle="item.clearance == 'full' ? `` : `${item.clearance}, ${item.report ? 'can report' : 'cannot report'}`">
 							</v-list-item>
 						</v-list>
 					</v-col>
