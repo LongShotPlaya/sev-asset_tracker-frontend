@@ -12,8 +12,8 @@
 
 	const links = ref([
 		"assets", "", "",
-		"assetTemplate", "assetType", "assetCategory", "buildings",
-		"", "people", "groups","vendors", "alertType",
+		"asset-templates", "asset-type", "asset-categories", "buildings",
+		"", "people", "groups", "vendors", "alert-types",
 	]);
 		
 	const configureScreen = () => {
