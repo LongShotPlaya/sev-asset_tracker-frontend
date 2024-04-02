@@ -165,6 +165,7 @@ const saveAssetType = async () => {
         const resultingType = await TypeServices.createAssetType({ ...assetType.value, id: null, identifierId: null })
         .catch(err => {
             error = true;
+            assetTypeSaving.value = false;
             console.log(err?.response?.data?.message ?? "Error creating asset type!");
         });
         
