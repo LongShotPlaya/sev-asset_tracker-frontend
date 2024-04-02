@@ -278,8 +278,9 @@ onMounted(() => {
             </v-card-text>
             
             <v-container>
-                <v-row v-for="(row, rowIndex) in fieldGrid" justify="center">
+                <v-row v-for="(row, rowIndex) in fieldGrid" :key=rowIndex justify="center">
                     <v-col v-for="(column, colIndex) in row"
+                        :key="colIndex"
                         :cols="Math.round((fieldGridCols - column.columnSpan) / fieldGridCols * 12)"
                         class="display-col"
                     >
