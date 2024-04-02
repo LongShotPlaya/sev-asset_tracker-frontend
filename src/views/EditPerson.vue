@@ -28,11 +28,6 @@ import personServices from "../services/personServices.js";
       },
     });
 
-    // if (select == "Not a user")
-    //     id = id;
-    // else
-    //     id = setPersonId;
-
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
@@ -177,6 +172,7 @@ import personServices from "../services/personServices.js";
                                     :items="roles"
                                     return-object
                                     single-line
+                                    :disabled="select === 'Not a user'"
                                     ></v-select>
                             </v-card-title>
                             <v-divider></v-divider>
