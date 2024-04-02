@@ -10,6 +10,7 @@ import Home from "./views/Home.vue";
 // import EditLesson from "./views/EditLesson.vue";
 import AllAssets from "./views/AllAssets.vue";
 import AssetData from "./views/AssetData.vue";
+import AssetManagement from "./views/AssetManagement.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/ManageAssetCategories.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
@@ -49,6 +50,12 @@ const router = createRouter({
       path: "/assets",
       name: "assets",
       component: AllAssets,
+    },
+    {
+      path: "/asset/:id",
+      name: "asset",
+      component: AssetManagement,
+      props: true,
     },
     {
       path: "/asset-data",
