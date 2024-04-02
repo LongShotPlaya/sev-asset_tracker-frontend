@@ -10,6 +10,9 @@ export default {
     getAsset(assetId) {
         return apiClient.get(`/assets/${assetId}`);
     },
+    getFullAssetType(id) {
+        return apiClient.get(`/assets/${id}?full`);
+    },
     createAsset(data) {
         return apiClient.post(`/assets/`, data);
     },
