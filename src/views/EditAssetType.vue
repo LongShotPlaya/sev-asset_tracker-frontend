@@ -40,6 +40,7 @@ const identifierSelection = computed(() => {
     return identifierSelectionEnabled.value ? result : [{
         title: "There are no fields for this asset type!",
         value: null,
+        valid: true,
     }];
 });
 const fieldsValid = computed(() => identifierSelection.value.every(selection => selection.valid));
