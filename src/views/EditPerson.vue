@@ -18,6 +18,7 @@ import personServices from "../services/personServices.js";
     const assetTypeId = ref("");
     const setPersonId = ref("Not a User");
     const fullPerson = ref();
+    const assetsDue = ref([]);
 
     const user = Utils.getStore("user");
     const router = useRouter();
@@ -90,18 +91,29 @@ import personServices from "../services/personServices.js";
             personsAssets.value = response.data.borrowedAssets;
             console.log("Full person: ", fullPerson);
             console.log("Full persons assets: ", personsAssets);
+            getSoonDueAssets();
         })
         .catch((error) => {
             message.value = error.response.data.message;
         })
-    }
+    };
+
+    const getSoonDueAssets = () => {
+        const today = new Date();
+        const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+        const dueAssets = personsAssets.value.filter(asset => {
+            const dueDate = new Date(asset.dueDate);
+            return dueDate <= nextMonth;
+        });
+        console.log("Assets due soon: ", dueAssets);
+    };
 
     //Asset data table
     const headers = [
-        { title: 'Type', value: 'type.name', width: '25%' },
+        { title: 'Name', value: 'type.name', width: '25%' },
         { title: 'ID', value: 'id', width: '25%' },
         { title: 'Status', value: 'status', width: '25%' },
-        { title: "Date?", value: '', width: '25%' },
+        { title: "Date Asset Last Updated", value: '', width: '25%' },
         { title: '', value: 'actions', align: 'end' },
     ];
 
@@ -142,9 +154,11 @@ import personServices from "../services/personServices.js";
         getGroup(id);
         getSomeone(id);
         getPersonId(id);
-        getUserGroupId(id); //Test
-        getAssetTypeName(); //Test
-        getFullPerson(id); //Test
+        getSoonDueAssets();
+        getFullPerson(id);
+        // getUserGroupId(id); //Test
+        // getAssetTypeName(); //Test
+
     });
 </script>
 
@@ -157,8 +171,11 @@ import personServices from "../services/personServices.js";
     >
         <v-app
         class="layout">
-            <v-toolbar>
-                <v-toolbar-title>{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
+            <v-toolbar
+            style="padding: .5%;">
+                <v-toolbar-title
+                style="font-size: 28px;"
+                >{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
             </v-toolbar>
             <v-container
             class="v-container">
@@ -184,21 +201,42 @@ import personServices from "../services/personServices.js";
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Person ID: </td>
+                                    <td>Student ID: </td>
                                     <td>{{ person.id }}</td>
-                                </tr>
-                                <tr>
-                                    <td>User ID: </td>
-                                    <td>{{ setPersonId }}</td>
                                 </tr>
                             </table>
                         </v-card>
-                        <br>
+                    <br>
                         <v-card class="side2">
-                        <v-card-title>Label for third block</v-card-title>
-                        <v-divider></v-divider>
-                        <v-card-text id="block3txt">Block 3</v-card-text>
-                        </v-card>
+                            <v-card-title>Upcoming Assets Due</v-card-title>
+                                <v-divider></v-divider>
+                                    <v-card-text id="block3txt">
+                                        <v-table
+                                        class="assetsDue">
+                                            <thead>
+                                                <tr>
+                                                    <th>Days until due</th>
+                                                    <th>Due Date</th>
+                                                    <th>ID</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <template v-if="assetsDue.length > 0">
+                                                    <tr v-for="asset in assetsDue" :key="asset.id">
+                                                        <td>{{ daysUntilDue(asset.dueDate) }}</td>
+                                                        <td>{{ asset.dueDate }}</td>
+                                                        <td>{{ asset.id }}</td>
+                                                    </tr>
+                                                </template>
+                                                <template v-else>
+                                                    <tr>
+                                                        <td colspan="3">No assets due in the next month</td>
+                                                    </tr>
+                                                </template>
+                                            </tbody>
+                                        </v-table>
+                                    </v-card-text>
+                                </v-card>
                         <v-btn
                             @click="saveChanges(person.id)"
                             id="btn"
@@ -260,12 +298,14 @@ import personServices from "../services/personServices.js";
     font-size: large;
 }
 .side1 {
-    min-height: 40%;
+    min-height: 30%;
     width: 100%;
 }
 .side2 {
-    min-height: 49.5%;
+    min-height: 59.3%;
     width: 100%;
+    overflow-y: auto;
+    z-index: 9999;
 }
 
 .list {
