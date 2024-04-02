@@ -23,6 +23,7 @@ import TemplateDataManagement from "./views/TemplateDataManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
 import Alerts from "./views/AlertManagement.vue";
 import AlertTypeManagement from "./views/AlertTypeManagement.vue";
+import AddEditAssetType from "./views/EditAssetType.vue";
 import FieldList from "./views/fieldLists.vue";
 import FieldListOptions from "./views/fieldListOptions.vue";
 import Logs from "./views/logs.vue";
@@ -30,6 +31,7 @@ import Notifications from "./views/notificationsManagement.vue";
 import Permissions from "./views/permissionManagement.vue";
 import Users from "./views/userManagement.vue";
 import GenerateReports from "./views/GenerateReports.vue";
+import EditAssetType from "./views/EditAssetType.vue";
 
 
 const router = createRouter({
@@ -60,6 +62,12 @@ const router = createRouter({
       path: "/asset-type",
       name: "asset-type",
       component: AssetTypeManagement,
+    },
+    {
+      path: "/asset-type/:id",
+      name: "asset-type-edit",
+      component: EditAssetType,
+      props: true,
     },
     {
       path: "/asset-categories",
