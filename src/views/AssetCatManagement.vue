@@ -169,9 +169,9 @@ const closeDialog = () => {
 }
 
 const headers = [
-  {title: 'Name', value: 'name'},
-  {title: 'Description', value: 'description'},
-  {title: '', value: 'actions', align: 'end'},
+  {title: 'Name', value: 'name', sortable: true },
+  {title: 'Description', value: 'description', sortable: true },
+  {title: '', value: 'actions', align: 'end', sortable: false},
 ];
 
 
