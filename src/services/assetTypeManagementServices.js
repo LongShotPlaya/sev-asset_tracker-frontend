@@ -7,13 +7,16 @@ export default {
     getAssetType(assetTypeId) {
         return apiClient.get(`/asset-types/${assetTypeId}`);
     },
+    getFullAssetType(assetTypeId) {
+        return apiClient.get(`/asset-types/${assetTypeId}?full`);
+    },
     createAssetType(data) {
-        return apiClient.post(`/assetType/`, data);
+        return apiClient.post(`/asset-types/`, data);
     },
     updateAssetType(assetTypeId, data) {
-        return apiClient.put(`/assetType/${assetTypeId}`, data);
+        return apiClient.put(`/asset-types/${assetTypeId}`, data);
     },
     deleteAssetType(assetTypeId) {
-        return apiClient.delete(`/assetType/${assetTypeId}`);
+        return apiClient.delete(`/asset-types/${assetTypeId}`);
     },
 };

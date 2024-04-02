@@ -5,15 +5,15 @@ export default {
         return apiClient.get(`/alerts`);
     },
     getAlert(alertId) {
-        return apiClient.get(`/alert/${alertId}`);
+        return apiClient.get(`/alerts/${alertId}`);
     },
     createAlert(data) {
-        return apiClient.post(`/alert`, data);
+        return apiClient.post(`/alerts/`, data);
     },
     updateAlert(alertId, data) {
-        return apiClient.put(`/alert/${alertId}`, data);
+        return apiClient.put(`/alerts/${alertId}`, data);
     },
     deleteAlert(alertId) {
-        return apiClient.delete(`/alert/${alertId}`);
+        return apiClient.delete(`/alerts/${alertId}`);
     },
 };

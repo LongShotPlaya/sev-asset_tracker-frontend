@@ -1,45 +1,42 @@
 <template>
-  <v-toolbar>
-    <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
-  </v-toolbar>
+ 
 
-  <v-container fluid>
+  <v-container class="space">
+    <v-toolbar>
+      <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
+    </v-toolbar>
+    <br>
     <v-row>
-      <v-col>
+      <v-spacer></v-spacer>
+      <v-col align="right">
         <v-btn color="primary" @click="openDialog(null)">
           Add
         </v-btn>
       </v-col>
     </v-row>
+    
     <v-row>
       <v-col>
         <v-card>
-          <v-table>
-            <thead>
-              <tr>
-                <th class="text-left column">
-                  Name
-                </th>
-                <th class="text- column">
-                  Description
-                </th>
-                <th class="text-right column">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in assetcategories" :key="item.id">
-                <td class="column">{{ item.name }}</td>
-                <td class="column">{{ item.description }}</td>
-                <td class="text-right column">
-                  <v-btn color="primary" @click="openDialog(item.id)">
-                    Edit
-                  </v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </v-table>
+          <v-data-table
+            :headers ="headers"
+            :items ="assetcategories"
+            item-key ="id"
+          >
+
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="openDialog(item.id)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                      class="ma-2"
+                      color="primary"
+                      variant="outlined"
+                      icon="mdi-trash-can"
+                      @click="openDeleteDialogue(item.id)"
+                    ></v-btn>
+            </template>
+          </v-data-table>
         </v-card>
       </v-col>
     </v-row>
@@ -79,6 +76,27 @@
     </v-card>
   </v-dialog>
 
+  <!-- delete pop-up -->
+  <v-dialog v-model="deleteDialogue" persistent max-width="800px">
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete this category?</v-card-title>
+        <v-row justify="center">
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" variant="outlined"  @click="deleteAssetCats">
+              Yes
+            </v-btn>
+            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-row>
+        
+      </v-container>
+    </v-card>
+  </v-dialog>
+
   <!-- edit pop-up -->
   <v-dialog v-model="editDialogue" persistent max-width="800px">
     
@@ -103,9 +121,6 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" variant="outlined" @click="deleteAssetCats">
-            Delete
-          </v-btn>
           <v-btn color="green" variant="outlined" @click="updateAssetCats">
             Save
           </v-btn>
@@ -132,7 +147,11 @@ import { useRouter } from "vue-router";
 const assetcategories = ref([]);
 const editDialogue = ref(false)
 const addDialogue = ref(false)
+const deleteDialogue = ref(false)
 const item = ref({})
+
+
+
 
 const router = useRouter();
 const tutorials = ref([]);
@@ -160,18 +179,28 @@ const addAssetCats = (data) => {
 };
 
 const deleteAssetCats = () => {
-  CatServices.deleteAssetCat()
-    .then(() => {
-      retrieveAssetCats();
-    })
-    .catch((e) => {
-      message.value = e.response.data.message;
-    });
+  if(!isNaN(parseInt(item.value.id))){
+    CatServices.deleteAssetCat(item.value.id)
+      .then(() => {
+        retrieveAssetCats();
+        deleteDialogue.value = false;
+      })
+      .catch((e) => {
+        message.value = e.response.data.message;
+        deleteDialogue.value = false;
+      });
+  }
+  else{
+    deleteDialogue.value = false;
+  }
 };
+
+
 
 const retrieveAssetCats = () => {
   CatServices.getAllAssetCats()
     .then((response) => {
+      const allItems = response.data;
       assetcategories.value = response.data;
     })
     .catch((e) => {
@@ -189,12 +218,24 @@ const openDialog = (itemId) => {
   }
 }
 
+const openDeleteDialogue = (itemId) =>{
+  item.value = assetcategories.value?.find(cat => cat.id == itemId);
+  deleteDialogue.value = true;
+}
+
 
 const closeDialog = () => {
   editDialogue.value = false;
   addDialogue.value = false;
+  deleteDialogue.value = false;
   item.value = {}; // Reset item
 }
+
+const headers = [
+  {title: 'Name', value: 'name'},
+  {title: 'Description', value: 'description'},
+  {title: '', value: 'actions', align: 'end'},
+];
 
 
 onMounted(() => {
@@ -209,14 +250,17 @@ onMounted(() => {
     width: 33.3%;
   }
   .space{
-    margin-left: 2%;
-    margin-right: 2%;
-    margin-top: 2%;
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-top: 1%;
   }
 
   .space2{
-    margin-left: 2%;
-    margin-right: 93.6%;
-    margin-top: 2%;
+    margin-bottom: 4%;
+    margin-top: 1%;
+  }
+
+  .fontcolor{
+    color: rgb(255, 255, 255);
   }
 </style>

@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/logs/${id}`);
     },
     createLog(data) {
-        return apiClient.post(`/logs/${data}`);
+        return apiClient.post(`/logs/`, data);
     },
-    updateLog(id) {
-        return apiClient.put(`/logs/${id}`);
+    updateLog(id, data) {
+        return apiClient.put(`/logs/${id}`, data);
     },
     deleteLog(id) {
         return apiClient.delete(`/logs/${id}`);

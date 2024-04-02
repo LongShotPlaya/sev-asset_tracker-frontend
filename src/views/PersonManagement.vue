@@ -1,10 +1,8 @@
 <script setup>
-
 import { ref, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import Utils from "../config/utils.js";
 import peopleServices from "../services/personServices";
-import personEditDialog from "../components/personEditDialog.vue";
 
 const router = useRouter();
 const user = Utils.getStore("user");
@@ -13,11 +11,6 @@ const search = ref("");
 const person = ref("");
 let people = ref([]);
 const filteredPeople = ref([]);
-const selectedPerson = ref(null);
-
-const openDialog = (person) => {
-  selectedPerson.value = person;
-}
 
 const getPeople = () => { 
   peopleServices.getAllPeople()
@@ -28,7 +21,6 @@ const getPeople = () => {
       person.value = response.data;
       people.value = response.data;
       filterPeople();
-      console.log(response.data);
     })
     .catch((e) => {
       message.value = e.response.data.message;
@@ -43,13 +35,30 @@ const filterPeople = () => {
     });
   } 
   else {
+    const searchString = search.value.trim().toLowerCase();
       filteredPeople.value = people.value.filter(person => {
-        return person.fName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
-               person.lName.toLowerCase().includes(search.value.trim().toLowerCase()) ||
-               person.email.toLowerCase().includes(search.value.trim().toLowerCase());
+        const idString = person.id.toString().toLowerCase();
+        return person.fName.toLowerCase().includes(searchString) ||
+               person.lName.toLowerCase().includes(searchString) ||
+               person.email.toLowerCase().includes(searchString) ||
+               idString.includes(searchString) ||
+               idString.endsWith(searchString);
       });
   }
 };
+
+const viewPerson = (id) => {
+  router.push({ name: 'person', params: { id }});
+}
+
+
+const headers = [
+  { title: 'Last Name', value: 'lName', width: '20%' },
+  { title: 'First Name', value: 'fName', width: '20%' },
+  { title: 'ID', value: 'id', width: '20%' },
+  { title: 'Email', value: 'email', width: '20%' },
+  { title: '', value: 'actions', align: 'end' },
+];
 
 onMounted(() => {
   user.value = Utils.getStore("user");
@@ -60,15 +69,15 @@ watch(search, filterPeople);
 </script>
 
 <template>
-  <v-toolbar>
-    <v-toolbar-title>Find People</v-toolbar-title>
-  </v-toolbar>
-  <br>
-  <v-card
-  flat
-  title="" class="title"
-  >
-    <v-text-field
+  <v-app>
+
+  <v-card flat title="" class="title">
+    <v-toolbar>
+      <v-toolbar-title>Find Person</v-toolbar-title>
+    </v-toolbar>
+    <br>
+
+    <v-text-field class="searchBar"
       v-model="search"
       label="Search"
       prepend-inner-icon="mdi-magnify"
@@ -76,60 +85,37 @@ watch(search, filterPeople);
       variant="outlined"
       hide-details
     ></v-text-field>
-</v-card>
+  </v-card>
 
-<v-card class="table">
-    <v-table>
-      <thead class="header">
-        <tr>
-          <th>
-            <h4>First Name</h4>
-          </th>
-          <th>
-            <h4>Last Name</h4>
-          </th>
-          <th>
-            <h4>Email</h4>
-          </th>
-          <th>
-            <h4></h4>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="person in filteredPeople" :key="person.id" @click="openDialog(person.id)">
-          <td class="column">{{ person.fName}}</td>
-          <td class="column">{{ person.lName}}</td>
-          <td class="column">{{ person.email }}</td>
-          <td class="column" style="text-align: right; padding-right: .5%;"><v-btn color="primary" @click="">
-              View
-          </v-btn></td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-card> 
-    
+  <div class="table">
+    <v-data-table
+      :headers="headers"
+      :items="filteredPeople"
+      item-key="id"
+    >
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewPerson(item.id)">
+                <v-icon>mdi-pencil</v-icon> 
+            </v-btn>
+        </template>
+  </v-data-table>
+  </div>
+</v-app>
+
 </template>
 
 <style>
-    .title{
-      padding-left: 5%;
-      padding-right: 5%;
-    }
-    .table{
-      margin-left: 5%;
-      margin-right: 5%;
-      margin-top: 1%;
-      margin-bottom: 20%;
-      border-radius: 5px;
-    }
-    .header{
-      background-color: #811429;
-    }
-    .header h4{
-      color: white;
-    }
-    /* .button-column{
-      text-align: right;
-    } */
+.searchBar{
+  margin-left: 5%;
+  margin-right: 5%;
+}
+.title {
+  padding-left: 5%;
+  padding-right: 5%;
+}
+.table {
+  margin-top: 1%;
+  padding-left: 5%;
+  padding-right: 5%;
+}
 </style>
