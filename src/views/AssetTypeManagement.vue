@@ -67,8 +67,11 @@ const closeDialog = () => {
   item.value = {}; // Reset item
 }
 
-const addEditLink = () => {
-
+const addEditLink = (id) => {
+    router.push({
+        name: "asset-type-edit",
+        params: {id},
+    });
 }
 
 const retrieveAssetTypes = async () => {
@@ -87,6 +90,7 @@ const retrieveAssetTypes = async () => {
             categoryName: assetcategories.value.find(cat => cat.id == assetType.categoryId)?.name,
         };
       });
+      assetTypes.value.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
       console.log(assetTypes.value)
     })
     .catch((e) => {
@@ -128,7 +132,7 @@ onMounted(() => {
     <v-row>
       <v-spacer></v-spacer>
       <v-col align="right">
-        <v-btn color="primary" @click="openDialog(null)">
+        <v-btn color="primary" @click="addEditLink('add')">
           Add
         </v-btn>
       </v-col>
@@ -144,7 +148,7 @@ onMounted(() => {
           >
 
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="addEditLink()">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="addEditLink(item.id)">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn
