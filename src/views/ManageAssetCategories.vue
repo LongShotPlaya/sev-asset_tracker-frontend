@@ -234,7 +234,7 @@ const closeDialog = () => {
 const headers = [
   {title: 'Name', value: 'name'},
   {title: 'Description', value: 'description'},
-  {title: '', value: 'actions'},
+  {title: '', value: 'actions', align: 'end'},
 ];
 
 
