@@ -184,8 +184,7 @@ const saveAssetType = async () => {
     TypeServices.updateAssetType(assetType.value.id, assetType.value)
     .then(response => {
         assetTypeSaving.value = false;
-        if (!added || keepAdding.value) router.go(0);
-        else router.push({ name: "asset-type-edit", params: { id: assetType.value.id }}).then(() => router.go(0));
+        refreshPage();
     })
     .catch(err => {
         console.log(err?.response?.data?.message ?? "Error saving asset type!");
@@ -193,9 +192,13 @@ const saveAssetType = async () => {
     });
 };
 
-onMounted(() => {
+const refreshPage = () => {
     retrieveAssetType();
     retrieveAssetCategories();
+};
+
+onMounted(() => {
+    refreshPage();
 })
 </script>
 
