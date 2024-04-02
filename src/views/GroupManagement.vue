@@ -35,6 +35,7 @@
 
 	const displayUsers = ref([]);
 	const displayPeople = ref([]);
+	const displayPermissions = ref([]);
 
 	const retrieveGroups = () => {
 		groupServices.getAllGroups()
@@ -90,7 +91,10 @@
 	};
 
 	const deleteGroup = (id) => {
-		groupServices.deleteGroup(id);
+		if (id == 1)
+			console.log("Cannot delete the Super User");
+		else
+			groupServices.deleteGroup(id);
 		deleteDialogue.value = false;
 	};
 
@@ -123,13 +127,17 @@
 	};
 
 	const findPermissions = (groupId) => {
+		var perms;
 		groupServices.getGroupWithPermissions(groupId.value)
 			.then((response) => {
-				message.value = response.data;
+				displayPermissions.value = response.data;
 			})
 			.catch((e) => {
 				message.value = e.response.data.message;
 			});
+		perms = displayPermissions.value.permissions;
+		message.value = perms.value;//.value.permissions;
+		//message.value = message.value.name;
 	};
 
 	const openDialog = (action, id) => {
@@ -226,7 +234,7 @@
 						</v-row>
 						<v-list lines="two">
 							<v-list-item v-for="(item, index) in displayPermissions" :key="index"
-								:title="item.name" :subtitle="item.description">
+								title="item.name" subtitle="item.description">
 							</v-list-item>
 						</v-list>
 					</v-col>
