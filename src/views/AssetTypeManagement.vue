@@ -148,7 +148,7 @@ onMounted(() => {
           >
 
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="addEditLink(item.id)">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="addEditLink(item.id)">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn
