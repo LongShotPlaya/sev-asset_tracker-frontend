@@ -7,7 +7,7 @@
     <v-row>
       <v-spacer></v-spacer>
       <v-col align="right">
-        <v-btn color="primary" @click="openDialog(null)">
+        <v-btn color="primary" @click="addAssetCats">
           Add
         </v-btn>
       </v-col>
@@ -21,63 +21,23 @@
             :items ="assetcategories"
             item-key ="id"
           >
-
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="openDialog(item.id)">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="openDialog(item)">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn
-                      class="ma-2"
-                      color="primary"
-                      variant="outlined"
-                      icon="mdi-trash-can"
-                      @click="openDeleteDialogue(item.id)"
-                    ></v-btn>
+                class="ma-2"
+                color="primary"
+                variant="outlined"
+                icon="mdi-trash-can"
+                @click="openDeleteDialogue(item.id)"
+              ></v-btn>
             </template>
           </v-data-table>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
-  
-  <!-- add pop-up -->
-  <v-dialog v-model="addDialogue" persistent max-width="800px">
-  
-<!--Call the AssetCatAddEdit component-->
-  <v-dialog v-model="dialog" persistent max-width="800px">  
-    <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveAssetCat" :edit-function="editAssetCat"/> 
-  </v-dialog>
-    <v-card>
-      <v-container>
-        <v-card-title class="text-h5">Add</v-card-title>
-        <v-text-field
-          v-model="item.name"
-          id="name"
-          :counter="50"
-          label="Name"
-          required
-        ></v-text-field>
-        
-        <v-textarea
-          v-model="item.description"
-          id="description"
-          :counter="50"
-          label="Description"
-          required
-        ></v-textarea>
-      
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" variant="outlined" @click="addAssetCats">
-            Save
-          </v-btn>
-          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
-            Cancel
-          </v-btn>
-        </v-card-actions>
-      </v-container>
-    </v-card>
-  </v-dialog>
 
   <!-- delete pop-up -->
   <v-dialog v-model="deleteDialogue" persistent max-width="800px">
@@ -101,43 +61,9 @@
   </v-dialog>
 
   <!-- edit pop-up -->
-  <v-dialog v-model="editDialogue" persistent max-width="800px">
-    
-    <v-card>
-      <v-container>
-        <v-card-title class="text-h5">Edit</v-card-title>
-        <v-text-field
-          v-model="item.name"
-          id="name"
-          :counter="50"
-          label="Name"
-          required
-        ></v-text-field>
-        
-        <v-textarea
-          v-model="item.description"
-          id="description"
-          :counter="50"
-          label="Description"
-          required
-        ></v-textarea>
-      
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="green" variant="outlined" @click="updateAssetCats">
-            Save
-          </v-btn>
-          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
-            Cancel
-          </v-btn>
-        </v-card-actions>
-      </v-container>
-    </v-card>
-  </v-dialog> -->
-
-  <v-btn color="primary" @click="addAssetCats">
-    Add
-  </v-btn>
+  <v-dialog v-model="dialog" persistent max-width="800px">  
+    <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveAssetCat" :edit-function="editAssetCat"/> 
+  </v-dialog>
 </template>
 
 
@@ -150,8 +76,7 @@ import { useRouter } from "vue-router";
 import AssetCatAddEdit from "../components/AssetCatAddEdit.vue"; 
 
 const assetcategories = ref([]);
-const editDialogue = ref(false)
-const addDialogue = ref(false)
+const dialog = ref(false);
 const deleteDialogue = ref(false)
 const item = ref({})
 
@@ -172,7 +97,7 @@ const updateAssetCats = async (id) => {
   try {
     const response = await CatServices.update(props.id, data);
     assetcategories.value.id = response.data.id; //check to see if the cat id matches the responce id
-    router.push({ name: "asset-category" });  //then push the reponse to asset cat
+    router.push({ name: "asset-categories" });  //then push the reponse to asset cat
   } catch (e) {
     message.value = e.response.data.message;
   }
@@ -238,8 +163,7 @@ const openDeleteDialogue = (itemId) =>{
 
 
 const closeDialog = () => {
-  editDialogue.value = false;
-  addDialogue.value = false;
+  dialog.value = false;
   deleteDialogue.value = false;
   item.value = {}; // Reset item
 }

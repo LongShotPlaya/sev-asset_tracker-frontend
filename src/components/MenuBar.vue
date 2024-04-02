@@ -21,7 +21,7 @@
 	];
 	const assetOrg = [
 		{ bannerName: 'Asset Categories', routeName: "asset-categories", permission: "any" },
-		{ bannerName: 'Asset Types', routeName: "asset-type", permission: "any" },
+		{ bannerName: 'Asset Types', routeName: "asset-types", permission: "any" },
 		{ bannerName: 'Asset Templates', routeName: "asset-templates", permission: "any" },
 		{ bannerName: 'Facilities', routeName: "buildings", permission: "any" },
 		{ bannerName: 'Custom Dropdowns', routeName: "home", permission: "any" },
@@ -162,11 +162,11 @@
 	<!-- Mini profile popup -->
 	<v-menu bottom min-width="200px" rounded offset-y v-if="user">
 		<template v-slot:activator="{ props }">
-		<v-btn v-bind="props" icon x-large>
-			<v-avatar v-if="user" color="secondary">
-			<span class="accent--text font-weight-bold">{{ initials }}</span>
-			</v-avatar>
-		</v-btn>
+			<v-btn v-bind="props" icon x-large>
+				<v-avatar v-if="user" color="secondary">
+				<span class="accent--text font-weight-bold">{{ initials }}</span>
+				</v-avatar>
+			</v-btn>
 		</template>
 		<v-card>
 		<v-card-text>
