@@ -12,7 +12,7 @@ const user = ref({});
 const loginWithGoogle = () => {
   window.handleCredentialResponse = handleCredentialResponse;
   const client = import.meta.env.VITE_APP_CLIENT_ID;
-  console.log(client);
+  // console.log(client);
   window.google.accounts.id.initialize({
     client_id: client,
     cancel_on_tap_outside: false,
@@ -38,7 +38,7 @@ const handleCredentialResponse = async (response) => {
       Utils.setStore("user", user.value);
       fName.value = user.value.fName;
       lName.value = user.value.lName;
-      router.push({ name: "tutorials" });
+      router.push({ name: "home" });
     })
     .catch((error) => {
       console.log("error", error);

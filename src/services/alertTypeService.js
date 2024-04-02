@@ -2,9 +2,9 @@ import apiClient from "./services";
 
 export default {
     getAllAlertTypes() {
-        return apiClient.get(`/alert-types`);
+        return apiClient.get(`/alert-types/`);
     },
-    getAlertType(alertId) {
+    getAlertTypes(alertId) {
         return apiClient.get(`/alert-types/${alertId}`);
     },
     createAlertType(data) {
@@ -13,8 +13,7 @@ export default {
     updateAlertType(alertId, data) {
         return apiClient.put(`/alert-types/${alertId}`, data);
     },
-    deleteAlertType(alertId) {
+    deleteAlertTypes(alertId) {
         return apiClient.delete(`/alert-types/${alertId}`);
-    },
-    
-}
+    },  
+};

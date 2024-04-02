@@ -16,5 +16,4 @@ export default {
     deleteAssetData(assetDataId) {
         return apiClient.delete(`/asset-data/${assetDataId}`);
     },
-
 };
