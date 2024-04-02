@@ -179,7 +179,7 @@ import personServices from "../services/personServices.js";
                             <table id="contact">
                                 <tr>
                                     <td>Email: </td>
-                                    <td>
+                                    <td style="padding-right: 5%;">
                                         <a :href=" 'https://mail.google.com/mail/?view=cm&fs=1&to=' + person.email" target="_blank">{{ person.email }}</a>
                                     </td>
                                 </tr>
