@@ -811,7 +811,7 @@ fetchAlertTypes();
             </v-card-title>
             <br>
             <v-row justify="center">
-              <v-col align="end" shrink>
+              <v-col class="text-right">
                 <v-btn
                   color="primary"
                   size="large"
