@@ -153,7 +153,7 @@ import personServices from "../services/personServices.js";
     <v-card
     class="mx-auto"
     width="90%"
-    height="88%"
+    height="90%"
     >
         <v-app
         class="layout">
