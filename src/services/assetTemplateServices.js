@@ -8,12 +8,12 @@ export default{
         return apiClient.get(`/asset-templates/${assetTemplateId}`);
     },
     createAssetTemplate(data) {
-        return apiClient.post(`/assetTemplate/`, data);
+        return apiClient.post(`/asset-templates/`, data);
     },
     updateAssetTemplate(assetTemplateId, data) {
-        return apiClient.put(`/assetTemplate/${assetTemplateId}`, data);
+        return apiClient.put(`/asset-templates/${assetTemplateId}`, data);
     },
     deleteAssetTemplate(assetTemplateId) {
-        return apiClient.delete(`/assetTemplate/${assetTemplateId}`);
+        return apiClient.delete(`/asset-templates/${assetTemplateId}`);
     },
 };

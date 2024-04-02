@@ -8,10 +8,10 @@ export default {
         return apiClient.get(`/field-lists/${fieldListId}`);
     },
     createFieldList(data) {
-        return apiClient.post(`/field-lists/${data}`);
+        return apiClient.post(`/field-lists/`, data);
     },
-    updateFieldList(fieldListId) {
-        return apiClient.put(`/field-lists/${fieldListId}`);
+    updateFieldList(fieldListId, data) {
+        return apiClient.put(`/field-lists/${fieldListId}`, data);
     },
     deleteFieldList(fieldListId) {
         return apiClient.delete(`/field-lists/${fieldListId}`);

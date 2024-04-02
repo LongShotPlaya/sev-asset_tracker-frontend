@@ -1,49 +1,60 @@
 <template>
-  <v-toolbar>
-    <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
-  </v-toolbar>
-  <v-card>
-    <v-table>
-      <thead>
-        <tr>
-          <th class="text-left column">
-            Name
-          </th>
-          <th class="text- column">
-            Description
-          </th>
-          <th class="text-left column">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in categories" :key="item.name">
-          <td class="column">{{ item.name }}</td>
-          <td class="column">{{ item.description }}</td>
-          <td class="column">
-            <v-btn color="primary" @click="openDialog(item)">
-              Edit
-            </v-btn>
-          </td>
-        </tr>
-      </tbody>
-    </v-table>
-  </v-card>
-  
+ 
 
-  <v-dialog v-model="dialog" persistent max-width="800px">
+  <v-container class="space">
+    <v-toolbar>
+      <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
+    </v-toolbar>
+    <br>
+    <v-row>
+      <v-spacer></v-spacer>
+      <v-col align="right">
+        <v-btn color="primary" @click="openDialog(null)">
+          Add
+        </v-btn>
+      </v-col>
+    </v-row>
+    
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-data-table
+            :headers ="headers"
+            :items ="assetcategories"
+            item-key ="id"
+          >
+
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="openDialog(item.id)">
+                <v-icon>mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn
+                      class="ma-2"
+                      color="primary"
+                      variant="outlined"
+                      icon="mdi-trash-can"
+                      @click="openDeleteDialogue(item.id)"
+                    ></v-btn>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+  
+  <!-- add pop-up -->
+  <v-dialog v-model="addDialogue" persistent max-width="800px">
     <v-card>
       <v-container>
-        <v-card-title class="text-h5">
-          <v-text-field
-            v-model="item.name"
-            id="name"
-            :counter="50"
-            label="Name"
-            required
-          ></v-text-field>
-        </v-card-title>
+        <v-card-title class="text-h5">Add</v-card-title>
+        <v-text-field
+          v-model="item.name"
+          id="name"
+          :counter="50"
+          label="Name"
+          required
+        ></v-text-field>
+        
         <v-textarea
           v-model="item.description"
           id="description"
@@ -54,13 +65,10 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red" variant="text" @click="saveChanges">
-            Delete
-          </v-btn>
-          <v-btn color="green-darken-1" variant="text" @click="saveChanges">
+          <v-btn color="primary" variant="outlined" @click="addAssetCats">
             Save
           </v-btn>
-          <v-btn color="orange" variant="text" @click="closeDialog">
+          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
             Cancel
           </v-btn>
         </v-card-actions>
@@ -68,104 +76,191 @@
     </v-card>
   </v-dialog>
 
-  <!-- Add button to trigger the "Add" functionality -->
-  <v-btn color="primary" @click="addCategory">
-    Add
-  </v-btn>
+  <!-- delete pop-up -->
+  <v-dialog v-model="deleteDialogue" persistent max-width="800px">
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete this category?</v-card-title>
+        <v-row justify="center">
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" variant="outlined"  @click="deleteAssetCats">
+              Yes
+            </v-btn>
+            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+              No
+            </v-btn>
+          </v-card-actions>
+        </v-row>
+        
+      </v-container>
+    </v-card>
+  </v-dialog>
+
+  <!-- edit pop-up -->
+  <v-dialog v-model="editDialogue" persistent max-width="800px">
+    
+    <v-card>
+      <v-container>
+        <v-card-title class="text-h5">Edit</v-card-title>
+        <v-text-field
+          v-model="item.name"
+          id="name"
+          :counter="50"
+          label="Name"
+          required
+        ></v-text-field>
+        
+        <v-textarea
+          v-model="item.description"
+          id="description"
+          :counter="50"
+          label="Description"
+          required
+        ></v-textarea>
+      
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="green" variant="outlined" @click="updateAssetCats">
+            Save
+          </v-btn>
+          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-container>
+    </v-card>
+  </v-dialog>
+
+  
+  
 </template>
+
+
 
 <script setup>
 import Utils from "../config/utils.js";
-import { ref } from "vue";
+import CatServices from "../services/assetCatServices.js";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 
-const categories = ref([
-  {
-    name: 'Vehicle',
-    description: 'For vehicle-based assets. This description is super long because I want to see if the text wraps. If this keeps going than it did not wrap which will need to be fixed because no one wants a really wide web page.',
-  },
-  {
-    name: 'Electronics',
-    description: 'For electronic-based assets.',
-  },
-  {
-    name: 'Building',
-    description: 'For building-based assets.',
-  },
-])
-const dialog = ref(false)
+const assetcategories = ref([]);
+const editDialogue = ref(false)
+const addDialogue = ref(false)
+const deleteDialogue = ref(false)
 const item = ref({})
+
+
+
 
 const router = useRouter();
 const tutorials = ref([]);
 const user = Utils.getStore("user");
 const message = ref("Search, Edit or Delete Tutorials");
 
-const editTutorial = (tutorial) => {
-  router.push({ name: "edit", params: { id: tutorial.id } });
+const updateAssetCats = async (id) => {
+  const data = {
+    name: assetcategories.value.name,
+    description: assetcategories.value.description,
+  };
+  try {
+    const response = await CatServices.update(props.id, data);
+    assetcategories.value.id = response.data.id;
+    router.push({ name: "asset-category" });
+  } catch (e) {
+    message.value = e.response.data.message;
+  }
+  closeDialog();
 };
 
-const viewTutorial = (tutorial) => {
-  router.push({ name: "view", params: { id: tutorial.id } });
+const addAssetCats = (data) => {
+  router.push({ name: "asset-category", params: { assetId: props.id } });
+  closeDialog();
 };
 
-const deleteTutorial = (tutorial) => {
-  TutorialServices.delete(tutorial.id)
-    .then(() => {
-      retrieveTutorials();
+const deleteAssetCats = () => {
+  if(!isNaN(parseInt(item.value.id))){
+    CatServices.deleteAssetCat(item.value.id)
+      .then(() => {
+        retrieveAssetCats();
+        deleteDialogue.value = false;
+      })
+      .catch((e) => {
+        message.value = e.response.data.message;
+        deleteDialogue.value = false;
+      });
+  }
+  else{
+    deleteDialogue.value = false;
+  }
+};
+
+
+
+const retrieveAssetCats = () => {
+  CatServices.getAllAssetCats()
+    .then((response) => {
+      const allItems = response.data;
+      assetcategories.value = response.data;
     })
     .catch((e) => {
       message.value = e.response.data.message;
     });
 };
 
-// const retrieveTutorials = () => {
-//   TutorialServices.getAllForUser(user.userId)
-//     .then((response) => {
-//       tutorials.value = response.data;
-//     })
-//     .catch((e) => {
-//       message.value = e.response.data.message;
-//     });
-// };
-
-const openDialog = (item) => {
-  item.value = { ...item };
-  dialog.value = true;
-}
-
-const saveChanges = () => {
-  // Handle save logic here
-  if (categories.value.includes(item.value)) {
-    // Update existing item
-    // const index = categories.value.indexOf(item.value);
-    // this.$set(this.categories, index, { ...item.value });
-  } else {
-    // Add new item
-    //categories.value.push({ ...item.value });
+const openDialog = (itemId) => {
+  if (itemId != undefined && itemId != null){
+    item.value = assetcategories.value?.find(cat => cat.id == itemId);
+    editDialogue.value = true;
   }
-
-
-  closeDialog();
+  else {
+    addDialogue.value = true;
+  }
 }
+
+const openDeleteDialogue = (itemId) =>{
+  item.value = assetcategories.value?.find(cat => cat.id == itemId);
+  deleteDialogue.value = true;
+}
+
 
 const closeDialog = () => {
-  dialog.value = false;
+  editDialogue.value = false;
+  addDialogue.value = false;
+  deleteDialogue.value = false;
   item.value = {}; // Reset item
 }
 
-const addCategory = () => {
-  // Initialize item for adding a new category
-  item.value = { name: '', description: '' };
-  dialog.value = true;
-}
+const headers = [
+  {title: 'Name', value: 'name'},
+  {title: 'Description', value: 'description'},
+  {title: '', value: 'actions', align: 'end'},
+];
 
-//retrieveTutorials();
+
+onMounted(() => {
+  retrieveAssetCats();
+}) 
+
 </script>
 
 <style>
   th.column,
   td.column{
-    width: auto;
+    width: 33.3%;
+  }
+  .space{
+    padding-left: 5%;
+    padding-right: 5%;
+    margin-top: 1%;
+  }
+
+  .space2{
+    margin-bottom: 4%;
+    margin-top: 1%;
+  }
+
+  .fontcolor{
+    color: rgb(255, 255, 255);
   }
 </style>
