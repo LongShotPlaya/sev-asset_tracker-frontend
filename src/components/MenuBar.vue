@@ -12,7 +12,7 @@
 	const logoURL = ref("");
 	const bannerName = ref("Testing");
 	const drawer = ref(false);
-	let alertNum = ref(50);
+	let alertNum = ref(null);
 	let alertActive = ref();
 
 	const checkouts = [
@@ -25,12 +25,14 @@
 		{ bannerName: 'Asset Templates', routeName: "asset-templates", permission: "any" },
 		{ bannerName: 'Facilities', routeName: "buildings", permission: "any" },
 		{ bannerName: 'Custom Dropdowns', routeName: "home", permission: "any" },
-	];	const management = [
+	];
+	const management = [
 		{ bannerName: 'All Assets', routeName: "assets", permission: "any" },
 		{ bannerName: 'Groups', routeName: "groups", permission: "any" },
 		{ bannerName: 'People', routeName: "people", permission: "any" },
 		{ bannerName: 'Vendors', routeName: "vendors", permission: "any" },
 		{ bannerName: 'Alerts', routeName: "alert-types", permission: "any" },
+		{ bannerName: 'Generate Reports', routeName: "reports", permission: "any" },
 	];
 
 	const checkoutsAllowed = ref([]);
@@ -146,7 +148,7 @@
 	<!-- App bar things -->
 	<v-app-bar app color="primary" :elevation="4">
 	<v-app-bar-nav-icon @click.stop = "drawer = !drawer"></v-app-bar-nav-icon>
-	<v-app-bar-title class="text-center">{{ bannerName }}</v-app-bar-title>
+	<v-app-bar-title class="text-left">OC Asset Tracker</v-app-bar-title>
 	<div class="mr-2">
 		<v-btn :ripple="false" icon="" @click="router.push({name: ''})">
 			<v-icon v-show=!alertActive icon="mdi-bell"></v-icon>
@@ -188,11 +190,11 @@
 	<v-navigation-drawer color="grey-darken-3" v-model="drawer" :elevation="6" temporary>
 		<v-row>
 		<v-list class="mt-1">
-			<v-btn text color="grey-lighten-4" block class="font-weight-regular text-h6 rounded-0"
+			<v-btn text color="grey-lighten-4" block class="font-weight-regular rounded-0"
 			size="large" variant="text" @click = "router.push({name: 'home'})">
 			<div class="mr-16 pr-16"><p class="mr-13">Home</p></div></v-btn>
 			<v-expansion-panels variant="accordion" color="grey-darken-3">
-				<v-expansion-panel title="Checkouts">
+				<!--<v-expansion-panel title="Checkouts">
 					<v-expansion-panel-text class="ml-0 pt-0 pr-0">
 					<v-row no-gutters class="pl-0 pr-0">
 						<v-col>
@@ -208,14 +210,14 @@
 						</v-col>
 					</v-row>
 					</v-expansion-panel-text>
-				</v-expansion-panel>
+				</v-expansion-panel> -->
 				<v-expansion-panel title="Management">
 					<v-expansion-panel-text class="ml-0 pt-0 pr-0">
 					<v-row no-gutters class="pl-0 pr-0">
 						<v-col>
 							<v-list class="pt-0 pb-0">
 							<v-list-item class="pt-0 pb-0 pl-0 pr-0" v-for="(item, i) in managementAllowed" :key = "i">
-								<v-btn text color="grey-darken-4" class="font-weight-regular text-h6 rounded-0 pl-0"
+								<v-btn text color="grey-darken-4" class="font-weight-regular rounded-0 pl-0"
 								size="large" variant="text"
 								@click = "router.push({name: item.routeName})">
 									{{ item.bannerName }}
@@ -232,7 +234,7 @@
 						<v-col>
 							<v-list class="pt-0 pb-0">
 							<v-list-item class="pt-0 pb-0 pl-0 pr-0" v-for="(item, i) in assetOrgAllowed" :key = "i">
-								<v-btn text color="grey-darken-4" class="font-weight-regular text-h6 rounded-0 pl-0"
+								<v-btn text color="grey-darken-4" class="font-weight-regular rounded-0 pl-0"
 								size="large" variant="text"
 								@click = "router.push({name: item.routeName})">
 									{{ item.bannerName }}

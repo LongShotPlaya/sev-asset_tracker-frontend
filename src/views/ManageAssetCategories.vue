@@ -1,6 +1,4 @@
 <template>
- 
-
   <v-container class="space">
     <v-toolbar>
       <v-toolbar-title>Manage Asset Categories</v-toolbar-title>
@@ -44,6 +42,11 @@
   
   <!-- add pop-up -->
   <v-dialog v-model="addDialogue" persistent max-width="800px">
+  
+<!--Call the AssetCatAddEdit component-->
+  <v-dialog v-model="dialog" persistent max-width="800px">  
+    <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveAssetCat" :edit-function="editAssetCat"/> 
+  </v-dialog>
     <v-card>
       <v-container>
         <v-card-title class="text-h5">Add</v-card-title>
@@ -130,10 +133,11 @@
         </v-card-actions>
       </v-container>
     </v-card>
-  </v-dialog>
+  </v-dialog> -->
 
-  
-  
+  <v-btn color="primary" @click="addAssetCats">
+    Add
+  </v-btn>
 </template>
 
 
@@ -143,6 +147,7 @@ import Utils from "../config/utils.js";
 import CatServices from "../services/assetCatServices.js";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import AssetCatAddEdit from "../components/AssetCatAddEdit.vue"; 
 
 const assetcategories = ref([]);
 const editDialogue = ref(false)
@@ -156,7 +161,8 @@ const item = ref({})
 const router = useRouter();
 const tutorials = ref([]);
 const user = Utils.getStore("user");
-const message = ref("Search, Edit or Delete Tutorials");
+const message = ref("Search, Edit or Delete Categories");
+
 
 const updateAssetCats = async (id) => {
   const data = {
@@ -165,8 +171,8 @@ const updateAssetCats = async (id) => {
   };
   try {
     const response = await CatServices.update(props.id, data);
-    assetcategories.value.id = response.data.id;
-    router.push({ name: "asset-category" });
+    assetcategories.value.id = response.data.id; //check to see if the cat id matches the responce id
+    router.push({ name: "asset-category" });  //then push the reponse to asset cat
   } catch (e) {
     message.value = e.response.data.message;
   }
@@ -174,9 +180,20 @@ const updateAssetCats = async (id) => {
 };
 
 const addAssetCats = (data) => {
-  router.push({ name: "asset-category", params: { assetId: props.id } });
-  closeDialog();
+  openDialog({});
 };
+
+// save function
+const saveAssetCat = async (newItemData) => {
+  retrieveAssetCats();
+};
+
+//edit function 
+const editAssetCat = (itemData) => {
+  console.log('Editing asset:', itemData);
+  closeDialog(); 
+};
+
 
 const deleteAssetCats = () => {
   if(!isNaN(parseInt(item.value.id))){
@@ -208,14 +225,10 @@ const retrieveAssetCats = () => {
     });
 };
 
-const openDialog = (itemId) => {
-  if (itemId != undefined && itemId != null){
-    item.value = assetcategories.value?.find(cat => cat.id == itemId);
-    editDialogue.value = true;
-  }
-  else {
-    addDialogue.value = true;
-  }
+const openDialog = (itemData) => { 
+  const newItem = { ...itemData }; // Copy the item data 
+  item.value = newItem;  // Update the item value with the new copy
+  dialog.value = true;
 }
 
 const openDeleteDialogue = (itemId) =>{
@@ -234,7 +247,7 @@ const closeDialog = () => {
 const headers = [
   {title: 'Name', value: 'name'},
   {title: 'Description', value: 'description'},
-  {title: '', value: 'actions'},
+  {title: '', value: 'actions', align: 'end'},
 ];
 
 

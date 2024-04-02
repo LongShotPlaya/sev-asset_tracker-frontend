@@ -3,11 +3,10 @@
     import { useRouter } from "vue-router";
     import Utils from "../config/utils.js";
     import peopleServices from "../services/personServices.js";
-    import assetServices from "../services/assetServices.js";
     import groupServices from "../services/groupServices.js";
     import userServices from "../services/userServices.js";
     import assetTypeServices from "../services/assetTypeManagementServices.js";
-import personServices from "../services/personServices.js";
+    import personServices from "../services/personServices.js";
     
     const message = ref("");
     const person = ref("");
@@ -125,11 +124,11 @@ import personServices from "../services/personServices.js";
 
     const saveChanges = (id) => { 
         const userId = id;
-        const data = { groupId: select.value };
+        const data = { groupId: select.value.value }; //Dont touch!!!
 
         userServices.updateUser(userId, data)
         .then(() => {
-            console.log("Group ID updated successfully: ", data);
+            console.log("Group ID updated successfully! User ID: ", id, "Data: ", data);
         })
         .catch((error) => {
             if (error.response.status === 404) {
