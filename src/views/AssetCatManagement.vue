@@ -22,7 +22,7 @@
             item-key ="id"
           >
             <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" size="small" @click="openDialog(item)">
+              <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="openDialog(item)">
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn
@@ -169,9 +169,9 @@ const closeDialog = () => {
 }
 
 const headers = [
-  {title: 'Name', value: 'name'},
-  {title: 'Description', value: 'description'},
-  {title: '', value: 'actions', align: 'end'},
+  {title: 'Name', value: 'name', sortable: true },
+  {title: 'Description', value: 'description', sortable: true },
+  {title: '', value: 'actions', align: 'end', sortable: false},
 ];
 
 
