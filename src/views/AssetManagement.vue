@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, onMounted } from "vue";
+    import { ref, onMounted, computed } from "vue";
     import { useRouter } from "vue-router";
     import Utils from "../config/utils.js";
     import assetServices from "../services/assetServices.js";
@@ -8,7 +8,8 @@
     const router = useRouter();
     const message = ref("");
     const fullAsset = ref("");
-    const mode = ref("");
+    const assetId = ref(null);
+    const mode = computed(() => assetId.value ? 'edit' : 'add');
     
     const props = defineProps({
       id: {
@@ -16,12 +17,8 @@
       },
     });
 
-    const setMode = (id) => {    
-        if (isNaN(id)){
-            return mode == "add";
-        } else {
-            return mode == "edit";
-        }
+    const setMode = (id) => {
+        assetId.value = id; // Set assetId based on the provided ID
     };
 
     const getFullAssetDetails = (id) => {
@@ -47,6 +44,11 @@
     <v-toolbar>
         <v-toolbar-title>Welcome</v-toolbar-title>
     </v-toolbar>
+
+    <div>
+        <h1>{{ mode === 'edit' ? 'Edit Asset' : 'Add Asset' }}</h1>
+        <!-- Your asset details form goes here -->
+    </div>
 
 </template>
 
