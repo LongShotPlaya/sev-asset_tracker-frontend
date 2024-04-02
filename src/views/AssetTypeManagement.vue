@@ -4,6 +4,7 @@ import TypeServices from "../services/assetTypeManagementServices.js";
 import CatServices from "../services/assetCatServices.js";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { format } from "@formkit/tempo";
 
 const assetTypes = ref([]);
 const assetcategories = ref([]);
@@ -15,10 +16,10 @@ const router = useRouter();
 const user = Utils.getStore("user");
 const message = ref("Search, Edit or Delete Tutorials");
 const headers = [
-    {title: 'Name', value: 'name'},
-    {title: 'Circulatable', value: 'circulatable'},
-    {title: 'Created', value: 'createdAt'},
-    {title: 'Category', value: 'categoryName'},
+    {title: 'Name', value: 'name', sortable: true },
+    {title: 'Circulatable', value: 'circulatable', sortable: true },
+    {title: 'Created', value: 'createdAt', sortable: true },
+    {title: 'Category', value: 'categoryName', sortable: true },
     {title: '', value: 'actions', align: 'end'},
 ];
 
@@ -86,8 +87,9 @@ const retrieveAssetTypes = async () => {
       assetTypes.value = response.data;
       assetTypes.value = assetTypes.value.map(assetType => {
         return {
-            ...assetType,
-            categoryName: assetcategories.value.find(cat => cat.id == assetType.categoryId)?.name,
+          ...assetType,
+          categoryName: assetcategories.value.find(cat => cat.id == assetType.categoryId)?.name,
+          createdAt: format(assetType.createdAt, "YYYY-MM-DD"),
         };
       });
       assetTypes.value.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
