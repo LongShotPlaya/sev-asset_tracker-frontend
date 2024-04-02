@@ -185,6 +185,7 @@ const saveAssetType = async () => {
     .then(response => {
         assetTypeSaving.value = false;
         refreshPage();
+        router.go(0);
     })
     .catch(err => {
         console.log(err?.response?.data?.message ?? "Error saving asset type!");
