@@ -1,6 +1,8 @@
 <script setup>
     import { ref, onMounted, computed } from "vue";
     import { useRouter } from "vue-router";
+    import { format } from "@formkit/tempo";
+
     import Utils from "../config/utils.js";
     import assetServices from "../services/assetServices.js";
 
@@ -22,13 +24,13 @@
     });
 
     const formatDate = (datetime) => {
-    if (datetime !== null && !isNaN(datetime)){
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        return new Date(datetime).toLocaleDateString(undefined, options);
-    } else {
-        return "No return Date"; 
-    }
-};
+        if (datetime !== null && !isNaN(datetime)){
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(datetime).toLocaleDateString(undefined, options);
+        } else {
+            return null; 
+        }
+    };
 
     const setMode = (id) => {
         assetId.value = id; // Set assetId based on the provided ID
@@ -47,6 +49,8 @@
         })
     };
 
+    const tab = ref('alerts');
+
     const cancel = () => {
         router.go(-1);
     };
@@ -59,141 +63,225 @@
     })
 </script>
 
-<template>
-    <br>
+<template><br>
+    <v-toolbar
+    style="
+    padding-top: 2%;
+    padding-left: .5%;
+    padding-right: .5%;
+    ">
+        <v-toolbar-title
+        style="font-size: 28px;"
+        >
+        General Asset Info: 
+            <div class="buttons">     
+                <v-btn
+                    @click=""
+                    id="btn"
+                    color="green" 
+                    x-large>
+                    save
+                </v-btn>
+                <v-btn
+                    @click="cancel()"
+                    id="btn"
+                    color="#811429" 
+                    style= "margin-left: 2%;"
+                    x-large>
+                    cancel
+                </v-btn>
+            </div>
+        </v-toolbar-title>
+    </v-toolbar>
     <v-card
     class="mx-auto"
     width="90%"
-    height="85%"
+    >
+        <v-container v-if="mode == 'edit'" fluid>
+            <v-row>
+            </v-row>
+            <v-row>
+                <v-col> 
+                    <v-card>
+                        <v-card-text>Type: </v-card-text>
+                        <v-card-text>{{ fullAsset?.type?.name }}</v-card-text>
+                            <!-- <table id="info">
+                            <tr>
+                                <td class="label">Type: </td>
+                                <td>{{ fullAsset?.type?.name }}</td>
+                            </tr>
+                        </table> -->
+                    </v-card><br>
+                </v-col>
+                <v-col>
+                    <v-card>
+                        <v-divider></v-divider>
+                        <!-- <table id="info"> 
+                            <tr>
+                                <td class="label">Aquisition Date: </td>
+                                <td>{{ format(fullAsset.acquisitionDate) }}</td>
+                            </tr>
+                        </table> -->
+                    </v-card><br>
+                </v-col>
+                <v-col>
+                    <v-card>
+                        <v-divider></v-divider>
+                        <!-- <table id="info">
+                            <tr>
+                                <td class="label">Aquisition Price: </td>
+                                <td>{{ "$" + fullAsset.acquisitionPrice }}</td>
+                            </tr>
+                        </table> -->
+                    </v-card>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-card>
+                        <v-divider></v-divider>
+                            <!-- <table id="info">
+                                <tr>
+                                    <td class="label">Template: </td>
+                                    <td>{{ fullAsset.template }}</td>
+                                </tr>
+                            </table> -->
+                    </v-card>
+                </v-col>                                                   
+            </v-row>
+        </v-container>
+        <!-- <v-if mode="edit">
+        </v-if> -->
+    </v-card><br>
+<!--------------------------------------------------------------Main Block 2----------------------------------------------------------->
+    <v-card
+    class="mx-auto"
+    width="90%"
     >    
-        <v-app>
-            <v-toolbar
-            style="padding: .5%;">
-                <v-toolbar-title
-                style="font-size: 28px;">
-                {{ mode === 'edit' ? 'Edit Asset' : 'Add Asset' }}     
-                    <v-btn
-                        @click=""
-                        id="btn"
-                        color="green" 
-                        x-large>
-                        save
-                    </v-btn>
-                    <v-btn
-                        @click="cancel()"
-                        id="btn"
-                        color="#811429" 
-                        style= "margin-left: 2%;"   
-                        x-large>
-                        cancel
-                    </v-btn>
-                </v-toolbar-title>
-            </v-toolbar>
-            <v-if mode="edit">
-                <v-container>
-                    <v-row>
-                        <v-col cols="3" id="sideBar">
-                            <v-card id="box">
-                                <v-card-title>Asset Info:</v-card-title>
-                                <v-divider></v-divider>
-                                    <table id="info">
-                                    <tr>
-                                        <td>Type: </td>
-                                        <td>{{ fullAsset?.type?.name }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Asset ID: </td>
-                                        <td>{{ fullAsset.id }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Aquisition Price: </td>
-                                        <td>{{ "$" + fullAsset.acquisitionPrice }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Return Date:</td>
-                                        <td>
-                                            <v-text-box>{{ formatDate(fullAsset.dueDate) }}</v-text-box> <!--Make this work-->
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Location: </td>
-                                        <td>{{ location }}</td> <!--Also make this editable text box-->
-                                    </tr>
-                                </table>
-                            </v-card>
-                                <br>
-                            <v-card id="box">
-                                <v-card-title>Borrower Info:</v-card-title>
-                                <v-divider></v-divider>
+        <v-toolbar
+        style="padding: .5%;">
+            <v-toolbar-title
+            style="font-size: 28px;">
+            Fields: 
+            </v-toolbar-title>
+        </v-toolbar>
+            <v-container>
+                <br>
+                <v-row>
+                    <v-col cols="6" id="sideBar">
+                        <v-card id="topBox">
                                 <table id="info">
-                                    <tr>
-                                        <td>Name: </td>
-                                        <td>{{ currentBorrower.fName + " " + currentBorrower.lName }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Student ID: </td>
-                                        <td>{{ currentBorrower.id }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Email: </td>
-                                        <td style="padding-right: 1%;">
-                                            <a :href=" 'https://mail.google.com/mail/?view=cm&fs=1&to=' + currentBorrower.email" target="_blank">{{ currentBorrower.email }}</a>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </v-card>
-                        <br>
-                        </v-col>
+                                <tr>
+                                    <td>Type: </td>
+                                    <td>{{ fullAsset?.type?.name }}</td>
+                                </tr>
+                            </table>
+                        </v-card>
+                            <br>
+                        <v-card id="topBox">
+                            <v-divider></v-divider>
+                            <table id="info">
+                                <tr>
+                                    <td>Aquisition Date: </td>
+                                    <td>{{ formatDate(fullAsset.acquisitionDate) }}</td>
+                                </tr>
+                            </table>
+                        </v-card>
+                    <br>
+                </v-col>
 
-                        <!-----------------------------------------------------------------------Right Half of Page----------------------------------------------------------------------------------------------->
+                <v-col cols="6" id="templateBar">
+                    <v-card id="topBox">
+                        <v-divider></v-divider>
+                        <table id="info">
+                            <tr>
+                                <td>Template: </td>
+                                <td>{{ fullAsset.template }}</td>
+                            </tr>
+                        </table>
+                    </v-card><br>
+                    <v-card id="topBox">
+                        <v-divider></v-divider>
+                        <table id="info">
+                            <tr>
+                                <td>Aquisition Price: </td>
+                                <td>{{ "$" + fullAsset.acquisitionPrice }}</td>
+                            </tr>
+                        </table>
+                    </v-card>                        
+                </v-col>                                                   
+            </v-row>
+        </v-container>
+    </v-card><br>
+    <v-card 
+    style="width: 90%; margin-left: 5%;">
+        <v-tabs
+        v-model="tab"
+        id="tabsBlock"
+        >
+            <v-tab value="alerts">Alerts</v-tab> 
+            <v-tab value="logs">Logs</v-tab> 
+        </v-tabs>
 
-                        <v-col cols="9" id="rightSideBar">
-                            <v-card id="box">
-                                <v-card-title>Alerts & Logs:</v-card-title>
-                                <v-divider></v-divider>
-                                   
-                            </v-card>
-                                <br>
-                            <v-card id="box">
-                                <v-card-title>Costomize Section Based on Type:</v-card-title>
-                                <v-divider></v-divider>
-                                
-                            </v-card>                        
-                        </v-col>                                                   
-                    </v-row>
-                </v-container>
-            </v-if>
-            <v-else>
+        <v-card-text>
+            <v-window v-model="tab">
+                <v-window-item value="alerts">
+                <!-- Put your content for Alerts here -->
+                <!-- For example: -->
+                <div>Content for Alerts</div>
+                </v-window-item>
 
-            </v-else>
-        </v-app>
-    </v-card>    
+                <v-window-item value="logs">
+                <!-- Put your content for Logs here -->
+                <!-- For example: -->
+                <div>Content for Logs</div>
+                </v-window-item>
+            </v-window>
+        </v-card-text>
+    </v-card>
 </template>
 
 <style>
-
+/* big blocks */
+.mx-auto{ 
+    max-height: 22%;
+}
+.tabsBlock{
+    width: 90%;
+}
 #sideBar{
-    justify-content: center;
-    width: auto;
-}
-#rightSideBar{
-    justify-content: center;
-    width: auto;
-}
-#box{
+    justify-content: left;
     width: 100%;
-    height: 75%;
+}
+#templateBar{
+    justify-content: center;
+    justify-items: center;
+    width: auto;
+}
+#topBox{
+    width: 100%;
+    height: 100%;
+    /* justify-content: start; */
+    align-content: center;
+}
+#topbox tr{
+    margin: 5%;
 }
 #info{
     margin: 5%;
     width: 70%;
 }
+#buttons{ /**Try background color change */
+
+}
 #btn{
     font-size: large;
-    justify-items: end;
-    justify-content: end;
-    justify-self: end;
-    left: 78%;
+}
+td{
+    font-size: x-large;
+}
+.label{
+    text-align: left;
 }
 
 </style>

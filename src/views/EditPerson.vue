@@ -157,7 +157,6 @@
         getFullPerson(id);
         // getUserGroupId(id); //Test
         // getAssetTypeName(); //Test
-
     });
 </script>
 
@@ -178,7 +177,7 @@
             </v-toolbar>
             <v-container
             class="v-container">
-                <v-row style="height: 100%;">
+                <v-row style="height: 100%">
                     <v-col cols="3"
                     class="sidePanel">
                         <v-card class="side1">
