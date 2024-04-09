@@ -15,6 +15,7 @@ import Login from "./views/Login.vue";
 import PersonManagement from "./views/PersonManagement.vue";
 import VendorManagement from "./views/VendorManagement.vue";
 import ViewPerson from './views/EditPerson.vue';
+import DropDownManagement from "./views/DropdownManagement.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -96,6 +97,11 @@ const router = createRouter({
       path: "/vendors",
       name: "vendors",
       component: VendorManagement,
+    },
+    {
+      path: "/dropdowns",
+      name: "dropdowns",
+      component: DropDownManagement,
     },
   ],
 });
