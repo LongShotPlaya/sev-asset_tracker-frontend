@@ -1,35 +1,43 @@
 <script setup>
-import LessonServices from "../services/lessonServices";
+//This is referencing EditLesson.vue
+import assetCatServices from "../services/assetCatServices";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
+// The purpose of this page is to allow a user with the proper permissions to
+// be able to add or edit a currently existing asset categories name and desc
+
+
+//Copy Jess's assetcatmanagement branch and input this code in her diologboxes
+///Note: she does not have a diologbox for her cancel? delete? function yet
+
 const router = useRouter();
 const valid = ref(true);
-const lesson = ref({
+const asset = ref({
   id: null,
-  title: "",
+  name: "",
   description: "",
   published: false,
 });
 const message = ref("Enter data and click save");
 
 const props = defineProps({
-  tutorialId: {
+  assetId: {
     required: true,
   },
 });
 
-const saveLesson = () => {
+const saveAsset = () => {
   const data = {
-    title: lesson.value.title,
-    description: lesson.value.description,
-    tutorialId: props.tutorialId,
+    name: asset.value.name,
+    description: asset.value.description,
+    assetId: props.assetId,
   };
-  LessonServices.createLesson(props.tutorialId, data)
+  assetCatServices.createAssetCat(data)
     .then((response) => {
-      lesson.value.id = response.data.id;
+      asset.value.id = response.data.id;
 
-      router.push({ name: "view", params: { id: props.tutorialId } });
+      router.push({ name: "view", params: { id: props.assetId } });
     })
     .catch((e) => {
       message.value = e.response.data.message;
@@ -37,7 +45,7 @@ const saveLesson = () => {
 };
 
 const cancel = () => {
-  router.push({ name: "view", params: { id: props.tutorialId } });
+  router.push({ name: "view", params: { id: props.assetId } });
 };
 </script>
 
@@ -45,23 +53,25 @@ const cancel = () => {
   <div>
     <v-container>
       <v-toolbar>
-        <v-toolbar-title>Lesson Edit</v-toolbar-title>
+        <v-toolbar-title>Asset Category Add/Edit</v-toolbar-title>
       </v-toolbar>
       <br />
       <h4>{{ message }}</h4>
       <br />
-      <h4>Tutorial: {{ tutorialId }}</h4>
+      <h4>Asset: {{ assetId }}</h4>
       <br />
       <v-form ref="form" v-model="valid" lazy validation>
+        <!-- Edit the asset category name -->
         <v-text-field
-          v-model="lesson.title"
+          v-model="asset.name"
           id="title"
           :counter="50"
           label="Title"
           required
         ></v-text-field>
+        <!-- Edit the asset category description -->
         <v-text-field
-          v-model="lesson.description"
+          v-model="asset.description"
           id="description"
           :counter="50"
           label="Description"
@@ -72,7 +82,7 @@ const cancel = () => {
           :disabled="!valid"
           color="success"
           class="mr-4"
-          @click="saveLesson"
+          @click="saveAsset"
         >
           Save
         </v-btn>
