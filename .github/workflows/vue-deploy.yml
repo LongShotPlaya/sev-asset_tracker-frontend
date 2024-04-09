@@ -28,7 +28,7 @@ jobs:
           echo VITE_APP_CLIENT_URL="$VITE_APP_CLIENT_URL" >> .env
           echo VITE_APP_SITE_URL=asset.eaglesoftwareteam.com >> .env
 
-      - run: npm install
+      - run: npm install --force
       - run: npm run build
       - run: npm run bundle
 

@@ -1,5 +1,5 @@
 {
-  "name": "tutorial-frontend-vue3",
+  "name": "oc-asset-tracker-frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,11 +12,13 @@
     "test:open": "cypress open"
   },
   "dependencies": {
+    "@formkit/tempo": "^0.0.19",
     "@mdi/font": "^7.0.96",
     "axios": "^1.1.3",
     "dotenv": "^16.0.3",
     "eslint": "^8.28.0",
     "eslint-plugin-vue": "^9.7.0",
+    "papaparse": "^5.4.1",
     "vite-plugin-vuetify": "^1.0.0",
     "vue": "^3.2.47",
     "vue-router": "^4.2.5",
