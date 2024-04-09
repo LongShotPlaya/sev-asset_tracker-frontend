@@ -10,4 +10,10 @@ export default {
     createPermission(data) {
         return apiClient.post(`/permissions/`, data);
     },
-}
+    updatePermission(id, data) {
+        return apiClient.put(`/permissions/${id}`, data);
+    },
+    deletePermission(id) {
+        return apiClient.delete(`/permissions/${id}`);
+    },
+};

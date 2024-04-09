@@ -11,9 +11,9 @@
 	const linksAllowed = ref([]);
 
 	const links = ref([
-		"assets", "", "",
-		"assetTemplate", "assetType", "assetCategory", "buildings",
-		"", "people", "groups","vendors", "alertType",
+		"assets", "people", "reports",
+		"asset-templates", "asset-types", "asset-categories", "buildings",
+		"", "people", "groups", "vendors", "alert-types",
 	]);
 		
 	const configureScreen = () => {
@@ -39,7 +39,9 @@
 		}
 	};
 
-	onMounted(() => {
+	onMounted(async () => {
+		await AuthServices.authorizeUser();
+
 		configureScreen();
 	});
 
@@ -51,10 +53,40 @@
 		<v-col>
 			<h2 class="text-center">Welcome, {{ user.fName }}!</h2>
 		</v-col>
-		<v-row class="mt-2">
-			<v-spacer></v-spacer>
+		<br>
+		<v-row justify="center">
+			<v-col>
+				<v-img src="oc-logo-large.png" height="100%" />
+			</v-col>
+			<v-col class="text-center">
+				<v-btn class="text-center mt-1" min-width="550" min-height="100" variant="outlined"
+				@click = "router.push({name: links[0]})">
+					<v-col>
+						<h3>View Assets</h3>
+						<br/>
+						<p>See all currently held assets</p>
+					</v-col>
+				</v-btn>
+				<v-btn class="text-center mt-8 mb-8" min-width="550" min-height="100" variant="outlined"
+				@click = "router.push({name: links[1]})">
+					<v-col>
+						<h3>Search Person</h3>
+						<br/>
+						<p>Search for a specific person</p>
+					</v-col>
+				</v-btn>
+				<v-btn class="text-center" min-width="550" min-height="100" variant="outlined"
+				@click = "router.push({name: links[2]})">
+					<v-col>
+						<h3>Create Report</h3>
+						<br/>
+						<p>Generate an asset report</p>
+					</v-col>
+				</v-btn>
+			</v-col>
+			<!--<v-spacer></v-spacer>
 			<v-card class="text-center" min-width="200" min-height="200"
-			title="All Assets" text="See all currently held assets" variant="outlined">
+			title="View Assets" text="See all currently held assets" variant="outlined">
 				<v-card-actions>
 					<v-row justify="center">
 						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
@@ -68,7 +100,7 @@
 				<v-card-actions>
 					<v-row justify="center">
 						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[8]})">Go!</v-btn>
+						@click = "router.push({name: links[1]})">Go!</v-btn>
 					</v-row>
 				</v-card-actions>
 			</v-card>
@@ -82,9 +114,9 @@
 					</v-row>
 				</v-card-actions>
 			</v-card>
-			<v-spacer></v-spacer>
+			<v-spacer></v-spacer>-->
 		</v-row>
-		<v-col>
+		<!--<v-col>
 			<v-card min-height="300" title="Asset Organization" variant="flat" class="text-center mt-6">
 				<v-row class="mt-4">
 					<v-spacer></v-spacer>
@@ -129,29 +161,53 @@
 					<v-spacer></v-spacer>
 				</v-row>
 			</v-card>
-		</v-col>
+		</v-col>-->
     </v-container>
-	<v-card min-height="200" title="Management" variant="flat"
+	<br><br><br>
+	<v-card min-height="400" title="Management" variant="flat"
 	color="grey-darken-3" class="text-center rounded-0">
 		<v-row class="mt-6" justify="center">
-			<v-spacer></v-spacer>
-			<v-btn max-width="150" min-height="50" variant="outlined"
-			@click = "router.push({name: links[7]})">
-				<p class="text-wrap">Custom Dropdown</p>
-			</v-btn>
-			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined"
-			@click = "router.push({name: links[8]})">People</v-btn>
-			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined"
-			@click = "router.push({name: links[9]})">Groups</v-btn>
-			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined"
-			@click = "router.push({name: links[10]})">Vendors</v-btn>
-			<v-spacer></v-spacer>
-			<v-btn min-width="150" min-height="50" variant="outlined"
-			@click = "router.push({name: links[11]})">Alerts</v-btn>
-			<v-spacer></v-spacer>
+			<v-col cols="2" />
+			<v-col>
+				<v-btn max-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[7]})">
+					<p class="text-wrap">Custom Dropdown</p>
+				</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[11]})">Alerts</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[9]})">Groups</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[10]})">Vendors</v-btn>
+			</v-col>
+			<v-col cols="2" />
+		</v-row>
+		<br><br>
+		<v-row>
+			<v-col cols="2" />
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[3]})">Asset Templates</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[4]})">Asset Types</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[5]})">Asset Categories</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: links[6]})">Buildings</v-btn>
+			</v-col>
+			<v-col cols="2" />
 		</v-row>
 	</v-card>
   </div>
