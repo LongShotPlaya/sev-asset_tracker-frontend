@@ -1,20 +1,5 @@
-<!-- Things to do
-    -replace or change everything relating to categories DONE
-    -make sure the ties to the backend are correct for dropdowns
-    -remember, this page doesn't handle the add/edit/delete functionality, 
-    but it does lead to the pop-up that does
-
-    allows the fields to change dynamically with what asset type it is 
-    -have to know what asset type it is to change, but that is more of the popup functionality 
-    
-  conditions for dropdowns
-    new, good, lost, damaged, checked out, worn, out of commision 
-    check the ERD planning document for what dropdowns should appear 
- -->
-
  <template>
     <v-container class="space">
-      <br><br>
       <v-toolbar>
         <v-toolbar-title>Manage Custom Dropdowns</v-toolbar-title>
       </v-toolbar>
@@ -77,7 +62,7 @@
   
     <!-- edit pop-up -->
     <v-dialog v-model="dialog" persistent max-width="800px">  
-       <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveDropdown" :edit-function="editDropdown"/> 
+       <!-- <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveDropdown" :edit-function="editDropdown"/>  -->
     </v-dialog>
   </template>
   
@@ -86,7 +71,7 @@
   <script setup>
   import Utils from "../config/utils.js";
   //the imported services I need for this are fieldListServices and fieldListOptionServices 
-  import DropdownServices from "../services/fieldListOptionServices.js";
+  import DropdownServices from "../services/fieldListServices.js";
   import { onMounted, ref } from "vue";
   import { useRouter } from "vue-router";
 
@@ -153,7 +138,7 @@
   
   
   const retrieveDropdown = () => {
-    DropdownServices.getAllDropdowns() //plural**
+    DropdownServices.getAllFieldLists() 
       .then((response) => {
         const allItems = response.data;
         dropdownfields.value = response.data;
