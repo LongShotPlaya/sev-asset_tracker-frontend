@@ -10,7 +10,7 @@
     const message = ref("");
 
     const fullAsset = ref("");
-    const assetId = ref(null);
+    const assetId = ref("No ID found");
     const currentBorrower = ref("Not in circulation");
     const assetType = ref("No type found");
     const accPrice = ref(null);
