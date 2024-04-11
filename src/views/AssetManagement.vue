@@ -276,7 +276,7 @@
 .mx-auto{ 
     max-height: 22%;
 }
-.tabsBlock{
+.tabsBlock{ /**Def need this */
     width: 90%;
 }
 #sideBar{
@@ -300,12 +300,6 @@
 #info{
     margin: 5%;
     width: 70%;
-}
-#buttons{ /**Try background color change */
-
-}
-#btn{
-    font-size: large;
 }
 td{
     font-size: x-large;
