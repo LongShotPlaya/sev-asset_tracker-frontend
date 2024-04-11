@@ -113,16 +113,18 @@
                 id="btn"
                 color="#811429" 
                 style= "margin-left: 2%;
-                float: right"
-                x-large>
+                float: right;
+                font-size: large;
+                ">
                 cancel
             </v-btn>
             <v-btn
                 @click="save(id)"
                 id="btn"
                 color="green" 
-                x-large
-                style="float: right;">
+                style="float: right;
+                font-size: large;
+                ">
                 save
             </v-btn>
         </v-toolbar-title>
