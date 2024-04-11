@@ -138,7 +138,7 @@
         <v-container v-if="mode == 'edit'" 
         fluid 
         style="
-            height: 850px;
+            height: 700px;
         ">
         <v-title 
         style="
@@ -147,12 +147,11 @@
             <v-row>
                 <v-col> 
                     <v-autocomplete
-                        v-model="assetType"
-                        :items="itemTypes"
-                        return-object
-                        single-line
+                    :items="itemTypes"
+                    return-object
+                    single-line
+                    v-model="assetType"
                     ></v-autocomplete>
-                    <br>
                 </v-col>
                 <v-col>
                     <v-textarea
@@ -165,11 +164,11 @@
                 </v-col>
                 <v-col>
                     <v-textarea
-                        append-inner-icon="mdi-calendar"
-                        class="mx-2"
-                        label="Aquistion Date"
-                        rows="1"
-                        v-model="accDate"
+                    append-inner-icon="mdi-calendar"
+                    class="mx-2"
+                    label="Aquistion Date"
+                    rows="1"
+                    v-model="accDate"
                         >
                     </v-textarea>
                 </v-col>
