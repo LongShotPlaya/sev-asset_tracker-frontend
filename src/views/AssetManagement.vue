@@ -108,7 +108,7 @@
     ">
         <v-toolbar-title
         style="font-size: 28px;"
-        >Asset: {{ id }}<v-btn
+        >Asset ID: #{{ id }}<v-btn
                 @click="cancel()"
                 id="btn"
                 color="#811429" 
