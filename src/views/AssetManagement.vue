@@ -219,7 +219,6 @@
                         </v-card>
                     <br>
                 </v-col>
-
                 <v-col cols="6" id="templateBar">
                     <v-card id="topBox">
                         <v-divider></v-divider>
