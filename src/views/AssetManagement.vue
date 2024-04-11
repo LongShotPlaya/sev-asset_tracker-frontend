@@ -52,7 +52,7 @@
         })
     };
 
-    const itemTypes = [
+    const itemTypes = [ //Update this to take straight from database
         { title: 'Chair', value: 1 },
         { title: 'Key', value: 2 },
         { title: 'Sofa', value: 3 },
