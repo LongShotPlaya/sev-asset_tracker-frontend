@@ -16,6 +16,7 @@
     const accPrice = ref(null);
     const accDate = ref("");
     const tab = ref('alerts');
+    const assetTemplate = ref("")
 
     const newAccDate = ref("");
     const dueDate = ref("");
@@ -43,6 +44,8 @@
             console.log("Accqsition Date: ", accDate);
             accPrice.value = response.data.acquisitionPrice;
             console.log("Asset Price: ", accPrice);
+            assetTemplate.value = response.data.template;
+            console.log("Asset Template: ", assetTemplate);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -97,7 +100,7 @@
 <template><br>
     <v-toolbar
     style="
-    padding-top: 2%;
+    padding-top: .5%;
     padding-left: .5%;
     padding-right: .5%;
     width: 90%;
@@ -105,25 +108,23 @@
     ">
         <v-toolbar-title
         style="font-size: 28px;"
-        >
-        General Asset Info: 
-            <div class="buttons">     
-                <v-btn
-                    @click="save(id)"
-                    id="btn"
-                    color="green" 
-                    x-large>
-                    save
-                </v-btn>
-                <v-btn
-                    @click="cancel()"
-                    id="btn"
-                    color="#811429" 
-                    style= "margin-left: 2%;"
-                    x-large>
-                    cancel
-                </v-btn>
-            </div>
+        >Asset:<v-btn
+                @click="cancel()"
+                id="btn"
+                color="#811429" 
+                style= "margin-left: 2%;
+                float: right"
+                x-large>
+                cancel
+            </v-btn>
+            <v-btn
+                @click="save(id)"
+                id="btn"
+                color="green" 
+                x-large
+                style="float: right;">
+                save
+            </v-btn>
         </v-toolbar-title>
     </v-toolbar>
     <br>
@@ -139,7 +140,7 @@
         <v-title 
         style="
         font-size: x-large;
-        ">Asset</v-title><br><br>
+        ">General Asset Info</v-title><br><br>
             <v-row>
                 <v-col> 
                     <v-autocomplete
