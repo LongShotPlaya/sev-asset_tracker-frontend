@@ -243,6 +243,7 @@
             </v-row>
         </v-container>
     </v-card><br>
+<!-------------------------------------------------------------Alerts and Logs------------------------------->
     <v-card 
     style="width: 90%; margin-left: 5%;">
         <v-tabs
