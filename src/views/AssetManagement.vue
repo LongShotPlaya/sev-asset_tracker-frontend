@@ -5,15 +5,22 @@
 
     import Utils from "../config/utils.js";
     import assetServices from "../services/assetServices.js";
-
     const user = Utils.getStore("user");
     const router = useRouter();
     const message = ref("");
+
     const fullAsset = ref("");
     const assetId = ref(null);
     const currentBorrower = ref("Not in circulation");
+    const assetType = ref("No type found");
+    const accPrice = ref(null);
+    const accDate = ref("");
+    const tab = ref('alerts');
+
+    const newAccDate = ref("");
     const dueDate = ref("");
     const location = ref("With a user");
+    const due = ref(null);
 
     const mode = computed(() => assetId.value ? 'edit' : 'add');
     
@@ -23,19 +30,6 @@
       },
     });
 
-    const formatDate = (datetime) => {
-        if (datetime !== null && !isNaN(datetime)){
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return new Date(datetime).toLocaleDateString(undefined, options);
-        } else {
-            return null; 
-        }
-    };
-
-    const setMode = (id) => {
-        assetId.value = id; // Set assetId based on the provided ID
-    };
-
     const getFullAssetDetails = (id) => {
         assetServices.getFullAsset(id)
         .then(response => {
@@ -43,16 +37,53 @@
             console.log("Full Asset Details: ", fullAsset);
             currentBorrower.value = response.data.borrower;
             console.log("Full Borrower: ", currentBorrower);
+            assetType.value = response.data.type.name;
+            console.log("Asset Type:", assetType);
+            accDate.value = format(response.data.acquisitionDate);
+            console.log("Accqsition Date: ", accDate);
+            accPrice.value = response.data.acquisitionPrice;
+            console.log("Asset Price: ", accPrice);
         })
         .catch(error => {
             message.value = error.response.data.message;
         })
     };
 
-    const tab = ref('alerts');
+    const itemTypes = [
+        { title: 'Chair', value: 1 },
+        { title: 'Key', value: 2 },
+        { title: 'Sofa', value: 3 },
+        { title: 'Laptop', value: 4 },
+        { title: 'Matteress', value: 5 },
+        { title: 'Phone', value: 6 },
+        { title: 'Projector', value: 7 },
+        { title: 'Books', value: 8 },
+        { title: 'Whiteboard Accessaries', value: 9 },
+        { title: 'Rooftop Unit', value: 10 },
+        { title: 'Smoke Detector', value: 11 },
+    ];
 
     const cancel = () => {
         router.go(-1);
+    };
+
+    const save = (id) => {
+        assetId = id;
+        data = {};
+
+        const updateAsset = (assetId, data) => {
+            assetServices.updateAsset(assetId, data)
+            .then(() => {
+                console.log("Updated Asset info: ", data);
+            })
+            .catch((error) => {
+                message.value = error.response.data.message;
+            })
+        };
+    };
+
+    const setMode = (id) => {
+        assetId.value = id; // Set assetId based on the provided ID
     };
 
     onMounted(() => {
@@ -60,7 +91,7 @@
         const id = props.id;
         getFullAssetDetails(id);
         setMode(id);
-    })
+    });
 </script>
 
 <template><br>
@@ -69,6 +100,8 @@
     padding-top: 2%;
     padding-left: .5%;
     padding-right: .5%;
+    width: 90%;
+    margin-left: 5%;
     ">
         <v-toolbar-title
         style="font-size: 28px;"
@@ -76,7 +109,7 @@
         General Asset Info: 
             <div class="buttons">     
                 <v-btn
-                    @click=""
+                    @click="save(id)"
                     id="btn"
                     color="green" 
                     x-large>
@@ -93,59 +126,55 @@
             </div>
         </v-toolbar-title>
     </v-toolbar>
+    <br>
     <v-card
     class="mx-auto"
     width="90%"
     >
-        <v-container v-if="mode == 'edit'" fluid>
-            <v-row>
-            </v-row>
+        <v-container v-if="mode == 'edit'" 
+        fluid 
+        style="
+            height: 850px;
+        ">
+        <v-title 
+        style="
+        font-size: x-large;
+        ">Asset</v-title><br><br>
             <v-row>
                 <v-col> 
-                    <v-card>
-                        <v-card-text>Type: </v-card-text>
-                        <v-card-text>{{ fullAsset?.type?.name }}</v-card-text>
-                            <!-- <table id="info">
-                            <tr>
-                                <td class="label">Type: </td>
-                                <td>{{ fullAsset?.type?.name }}</td>
-                            </tr>
-                        </table> -->
-                    </v-card><br>
+                    <v-autocomplete
+                        v-model="assetType"
+                        :items="itemTypes"
+                        return-object
+                        single-line
+                    ></v-autocomplete>
+                    <br>
                 </v-col>
                 <v-col>
-                    <v-card>
-                        <v-divider></v-divider>
-                        <!-- <table id="info"> 
-                            <tr>
-                                <td class="label">Aquisition Date: </td>
-                                <td>{{ format(fullAsset.acquisitionDate) }}</td>
-                            </tr>
-                        </table> -->
-                    </v-card><br>
+                    <v-textarea
+                        class="mx-2"
+                        label="Aquisition Price"
+                        prepend-inner-icon="mdi-currency-usd"
+                        rows="1"
+                        v-model="accPrice"
+                    ></v-textarea>
                 </v-col>
                 <v-col>
-                    <v-card>
-                        <v-divider></v-divider>
-                        <!-- <table id="info">
-                            <tr>
-                                <td class="label">Aquisition Price: </td>
-                                <td>{{ "$" + fullAsset.acquisitionPrice }}</td>
-                            </tr>
-                        </table> -->
-                    </v-card>
+                    <v-textarea
+                        append-inner-icon="mdi-calendar"
+                        class="mx-2"
+                        label="Aquistion Date"
+                        rows="1"
+                        v-model="accDate"
+                        >
+                    </v-textarea>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
                     <v-card>
-                        <v-divider></v-divider>
-                            <!-- <table id="info">
-                                <tr>
-                                    <td class="label">Template: </td>
-                                    <td>{{ fullAsset.template }}</td>
-                                </tr>
-                            </table> -->
+                        <v-card-text>Template: </v-card-text>
+                        <v-card-text>{{ fullAsset.template }}</v-card-text>
                     </v-card>
                 </v-col>                                                   
             </v-row>
@@ -183,7 +212,7 @@
                             <table id="info">
                                 <tr>
                                     <td>Aquisition Date: </td>
-                                    <td>{{ formatDate(fullAsset.acquisitionDate) }}</td>
+                                    <!-- <td>{{ formatDate(fullAsset.acquisitionDate) }}</td> -->
                                 </tr>
                             </table>
                         </v-card>
