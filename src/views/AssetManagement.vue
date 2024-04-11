@@ -115,6 +115,7 @@
                 style= "margin-left: 2%;
                 float: right;
                 font-size: large;
+                margin-right: 1%;
                 ">
                 cancel
             </v-btn>
