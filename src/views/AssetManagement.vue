@@ -110,7 +110,6 @@
         style="font-size: 28px;"
         >Asset ID: #{{ id }}<v-btn
                 @click="cancel()"
-                id="btn"
                 color="#811429" 
                 style= "margin-left: 2%;
                 float: right;
@@ -121,7 +120,6 @@
             </v-btn>
             <v-btn
                 @click="save(id)"
-                id="btn"
                 color="green" 
                 style="float: right;
                 font-size: large;
