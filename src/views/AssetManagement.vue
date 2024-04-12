@@ -5,6 +5,11 @@
 
     import Utils from "../config/utils.js";
     import assetServices from "../services/assetServices.js";
+    import assetTypeServices from "../services/assetTypeManagementServices.js";
+    import alertServices from "../services/alertServices.js";
+    import logServices from "../services/logServices.js";
+    import alertTypeService from "../services/alertTypeService";
+
     const user = Utils.getStore("user");
     const router = useRouter();
     const message = ref("");
@@ -16,7 +21,10 @@
     const accPrice = ref(null);
     const accDate = ref("");
     const tab = ref('alerts');
-    const assetTemplate = ref("")
+    const assetTemplate = ref("");
+    const allAssetTypes = ref([]);
+    const alerts = ref([]);
+    const logs = ref([]);
 
     const newAccDate = ref("");
     const dueDate = ref("");
@@ -52,6 +60,42 @@
         })
     };
 
+    const getItemTypes = () => {
+        assetTypeServices.getAllAssetTypes() 
+        .then(response => {
+            allAssetTypes.value = response.data;
+            console.log("All Assets Array: ", allAssetTypes);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const getAllAlerts = (id) => {
+        alertServices.getAllAlerts()
+        .then(response => {
+            alerts.value = response.data.filter(alert => alert.id == id); //Not tested
+            console.log("Alerts for Asset: ", alerts);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const getAllLogs = (id) => {
+        logServices.getAllLogs()
+        .then(response => {
+            logs.value = response.data.filter(log => log.assetId == id); //Tested
+            console.log("Logs for asset: ", logs);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    // const itemTypes = [ //Update this to take straight from database
+
+    // ];
     const itemTypes = [ //Update this to take straight from database
         { title: 'Chair', value: 1 },
         { title: 'Key', value: 2 },
@@ -94,6 +138,9 @@
         const id = props.id;
         getFullAssetDetails(id);
         setMode(id);
+        getItemTypes();
+        getAllAlerts(id);
+        getAllLogs(id);
     });
 </script>
 
@@ -136,7 +183,7 @@
         <v-container v-if="mode == 'edit'" 
         fluid 
         style="
-            height: 700px;
+            min-height: 950px;
         ">
         <v-title 
         style="
@@ -167,8 +214,7 @@
                     label="Aquistion Date"
                     rows="1"
                     v-model="accDate"
-                        >
-                    </v-textarea>
+                    ></v-textarea>
                 </v-col>
             </v-row>
             <v-row>
@@ -177,7 +223,7 @@
                         <v-card-text>Template: </v-card-text>
                         <v-card-text>{{ fullAsset.template }}</v-card-text>
                     </v-card>
-                </v-col>                                                   
+                </v-col>                                            
             </v-row>
         </v-container>
         <!-- <v-if mode="edit">
@@ -187,60 +233,16 @@
     <v-card
     class="mx-auto"
     width="90%"
-    >    
-        <v-toolbar
-        style="padding: .5%;">
-            <v-toolbar-title
-            style="font-size: 28px;">
-            Fields: 
-            </v-toolbar-title>
-        </v-toolbar>
-            <v-container>
-                <br>
+    ><v-title 
+        style="
+        font-size: x-large;
+        margin: 1%;
+        ">Fields</v-title>
+            <v-container><br>
                 <v-row>
-                    <v-col cols="6" id="sideBar">
-                        <v-card id="topBox">
-                                <table id="info">
-                                <tr>
-                                    <td>Type: </td>
-                                    <td>{{ fullAsset?.type?.name }}</td>
-                                </tr>
-                            </table>
-                        </v-card>
-                            <br>
-                        <v-card id="topBox">
-                            <v-divider></v-divider>
-                            <table id="info">
-                                <tr>
-                                    <td>Aquisition Date: </td>
-                                    <!-- <td>{{ formatDate(fullAsset.acquisitionDate) }}</td> -->
-                                </tr>
-                            </table>
-                        </v-card>
-                    <br>
-                </v-col>
-                <v-col cols="6" id="templateBar">
-                    <v-card id="topBox">
-                        <v-divider></v-divider>
-                        <table id="info">
-                            <tr>
-                                <td>Template: </td>
-                                <td>{{ fullAsset.template }}</td>
-                            </tr>
-                        </table>
-                    </v-card><br>
-                    <v-card id="topBox">
-                        <v-divider></v-divider>
-                        <table id="info">
-                            <tr>
-                                <td>Aquisition Price: </td>
-                                <td>{{ "$" + fullAsset.acquisitionPrice }}</td>
-                            </tr>
-                        </table>
-                    </v-card>                        
-                </v-col>                                                   
-            </v-row>
-        </v-container>
+                                                  
+                </v-row>
+            </v-container>
     </v-card><br>
 <!-------------------------------------------------------------Alerts and Logs------------------------------->
     <v-card 
