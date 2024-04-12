@@ -60,7 +60,7 @@
       </v-card>
     </v-dialog>
   
-    <!-- edit pop-up -->
+    <!-- custom pop-up -->
     <v-dialog v-model="dialog" persistent max-width="800px">  
        <!-- <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveDropdown" :edit-function="editDropdown"/>  -->
     </v-dialog>
@@ -70,7 +70,6 @@
   
   <script setup>
   import Utils from "../config/utils.js";
-  //the imported services I need for this are fieldListServices and fieldListOptionServices 
   import DropdownServices from "../services/fieldListServices.js";
   import { onMounted, ref } from "vue";
   import { useRouter } from "vue-router";
@@ -101,7 +100,7 @@
     closeDialog();
   };
   
-  //OG=addAssetCats from the popup
+ 
   const addDropdown = (data) => {
     openDialog({});
   };
@@ -120,7 +119,7 @@
   
   const deleteFieldList = () => {
     if(!isNaN(parseInt(item.value.id))){
-      DropdownServices.deleteFieldList(item.value.id)//check DropdownServices **
+      DropdownServices.deleteFieldList(item.value.id)
         .then(() => {
           retrieveDropdown();
           deleteDialogue.value = false;
