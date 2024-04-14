@@ -8,6 +8,7 @@
     import assetTypeServices from "../services/assetTypeManagementServices.js";
     import alertServices from "../services/alertServices.js";
     import logServices from "../services/logServices.js";
+    // import addEditDialog from "../components/ManageAssetDialog.vue"; //Importing Dialog component
     // import alertTypeService from "../services/alertTypeService"; Do I need this???
 
     const user = Utils.getStore("user");
@@ -25,6 +26,7 @@
     const allAssetTypes = ref([]);
     const alerts = ref([]);
     const logs = ref([]);
+    const allAssetTypeNames = ref([]);
 
     const newAccDate = ref("");
     const dueDate = ref("");
@@ -65,6 +67,8 @@
         .then(response => {
             allAssetTypes.value = response.data;
             console.log("All Assets Array: ", allAssetTypes);
+            allAssetTypeNames.value = response.data;
+            console.log("All Asset Type Names: ", allAssetTypeNames);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -74,7 +78,7 @@
     const getAllAlerts = (id) => {
         alertServices.getAllAlerts()
         .then(response => {
-            alerts.value = response.data.filter(alert => alert.id == id); //Not tested
+            alerts.value = response.data.filter(alert => alert.assetId == id); //Not tested
             console.log("Alerts for Asset: ", alerts);
         })
         .catch(error => {
@@ -85,7 +89,7 @@
     const getAllLogs = (id) => {
         logServices.getAllLogs()
         .then(response => {
-            logs.value = response.data.filter(log => log.assetId == id); //Tested
+            logs.value = response.data.filter(logs => logs.assetId == id); //Tested
             console.log("Logs for asset: ", logs);
         })
         .catch(error => {
@@ -128,6 +132,21 @@
             })
         };
     };
+
+    const logHeaders = ref([
+        { title: "Time Stamp", value: "date", sortable: true },
+        { title: "Description", value: "description" },
+        { title: "Type", value: "type" },
+        { title: "Condition", value: "condition" },
+        { title: "Status", value: "circulationStatus" },
+    ]);
+
+    const alertHeaders = ref([
+        { title: "Time Stamp", value: "date", sortable: true },
+        { title: "Description", value: "description" },
+        { title: "Status", value: "status" },
+        { title: "Time Updated", value: "updatedAt" },
+    ]);
 
     const setMode = (id) => {
         assetId.value = id; // Set assetId based on the provided ID
@@ -244,9 +263,10 @@
                 </v-row>
             </v-container>
     </v-card><br>
-<!-------------------------------------------------------------Alerts and Logs------------------------------->
+<!------------------------------------------------------------Alerts and Logs------------------------------->
     <v-card 
-    style="width: 90%; margin-left: 5%;">
+    style="width: 90%; 
+    margin-left: 5%;">
         <v-tabs
         v-model="tab"
         id="tabsBlock"
@@ -254,19 +274,33 @@
             <v-tab value="alerts">Alerts</v-tab> 
             <v-tab value="logs">Logs</v-tab> 
         </v-tabs>
-
         <v-card-text>
             <v-window v-model="tab">
                 <v-window-item value="alerts">
-                <!-- Put your content for Alerts here -->
-                <!-- For example: -->
-                <div>Content for Alerts</div>
+                    <v-data-table
+                        :headers="alertHeaders"
+                        :items="alerts"
+                        :sortBy="[{ key: 'date', order: 'asc' }]"
+                    >
+                        <template #item.date="{ item }">
+                            {{ format(item.date) }}
+                        </template>
+                        <template #item.updatedAt="{ item }">
+                            {{ format(item.updtatedAt) }}
+                        </template>
+                    </v-data-table>
                 </v-window-item>
 
                 <v-window-item value="logs">
-                <!-- Put your content for Logs here -->
-                <!-- For example: -->
-                <div>Content for Logs</div>
+                    <v-data-table
+                        :headers="logHeaders"
+                        :items="logs"
+                        :sort-by="[{ key: 'date', order: 'asc' }]"
+                    >
+                        <template #item.date="{ item }">
+                            {{ format(item.date) }}
+                        </template>
+                    </v-data-table>
                 </v-window-item>
             </v-window>
         </v-card-text>

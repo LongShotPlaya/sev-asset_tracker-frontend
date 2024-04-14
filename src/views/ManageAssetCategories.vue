@@ -147,7 +147,7 @@ import Utils from "../config/utils.js";
 import CatServices from "../services/assetCatServices.js";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
-import AssetCatAddEdit from "../components/AssetCatAddEdit.vue"; 
+// import AssetCatAddEdit from "../components/AssetCatAddEdit.vue"; 
 
 const assetcategories = ref([]);
 const editDialogue = ref(false)
