@@ -64,10 +64,21 @@ const filteredAssets = computed(() => {
         //  Types: =, != [equality], <, >, >=, <= [range]
         const isRange = /^[^<>=]*[^<>=\s][^<>=]*(((<=|>=)[\s\S]*\S\s*)|([<>]([^=\s]|[^=]\S)[\s\S]*))+$/i.test(filter);
         const isInequality = !isRange && /^[^<>=]*[^<>=\s][^<>=]*!=[\s\S]+$/i.test(filter);
-        const isEquality = !isRange && !isInequality && /^[^<>=]*[^<>=\s][^<>=]*(=[\s\S]+)?$/i.test(filter);
+        const isEquality = !isRange && !isInequality && /^[^<>=]*[^<>=\s][^<>=]*=[\s\S]+$/i.test(filter);
         let isAlert = false;
         
-        if (!isRange && !isEquality && !isInequality) return;
+        if (!isRange && !isEquality && !isInequality)
+        {
+            filters.push(asset => {
+                const filterTest = new RegExp(filter, "i");
+                return filterTest.test(asset.assetCategory)
+                || filterTest.test(asset.assetType)
+                || filterTest.test(asset.assetIdentifier)
+                || filterTest.test(asset.location)
+                || asset.alerts.some(alert => filterTest.test(alert.type) || filterTest.test(alert.date));
+            });
+            return;
+        }
         let filterKey = filter.match(/^[^<>=]*[^<>=\s!][^<>=!]*/i)?.[0]?.trim()?.toLowerCase();
         let filterValue = filter.match(isRange
         ? /(((<=|>=)[\s\S]*\S\s*)|([<>]([^=\s]|[^=]\S)[\s\S]*))+$/i
@@ -76,9 +87,9 @@ const filteredAssets = computed(() => {
         // Step 2: determine if filter key is valid
         if (filterNameToKey?.[filterKey] === undefined)
         {
-            if ((filterKey.match(/^alerts\.[\s\S]+/i)?.[0] ?? null) !== null)
+            if ((filterKey.match(/^\s*alerts\s*\.[\s\S]+/i)?.[0] ?? null) !== null)
             {
-                filterKey = filterKey.substring(7);
+                filterKey = filterKey.match(/\.[\s\S]+$/i)[0].substring(1).trim();
                 isAlert = true;
             }
             else return;
@@ -86,22 +97,21 @@ const filteredAssets = computed(() => {
         else filterKey = filterNameToKey[filterKey];
 
         // Step 3: create function which takes in the asset and outputs a boolean based on filter value and add it to filters
-        console.log(isInequality)
         if (isEquality)
         {
             filterValue = filterValue.replace(/^=/i, "")?.trim();
-            filters.push((asset) => {
-                const value = asset[filterKey];
-                return new RegExp(value, "i").test(filterValue) || new RegExp(filterValue, "i").test(value);
-            });
+            filters.push(isAlert
+                ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && new RegExp(filterValue, "i").test(alert.date))
+                : asset => new RegExp(`^${asset[filterKey]}$`, "i").test(filterValue)
+            );
         }
         else if (isInequality)
         {
-            filterValue = filterValue.replace(/^!=/i, "")?.trim();
-            filters.push(asset => {
-                const value = asset[filterKey];
-                return !(new RegExp(value, "i").test(filterValue) || new RegExp(filterValue, "i").test(value));
-            })
+            filterValue = filterValue.replace(/^=/i, "")?.trim();
+            filters.push(isAlert
+                ? asset => !asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && new RegExp(filterValue, "i").test(alert.date))
+                : asset => !(new RegExp(`^${asset[filterKey]}$`, "i").test(filterValue))
+            );
         }
         else if (isRange)
         {
@@ -112,7 +122,6 @@ const filteredAssets = computed(() => {
 
             while ((filterValue?.length ?? 0) > 0)
             {
-                console.log("Testing...")
                 if (filterValue.startsWith(">="))
                 {
                     filterValue = filterValue.substring(2);
@@ -144,10 +153,28 @@ const filteredAssets = computed(() => {
                 else filterValue = filterValue.substring(1);
             }
 
-            if (gte.length > 0) console.log(gte);
-            if (lte.length > 0) console.log(lte);
-            if (gt.length > 0) console.log(gt);
-            if (lt.length > 0) console.log(lt);
+            filters.push(
+                ...gte.map(value => {
+                    return isAlert
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` >= value)
+                    : asset => `${asset[filterKey]}` >= value;
+                }),
+                ...lte.map(value => {
+                    return isAlert
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` <= value)
+                    : asset => `${asset[filterKey]}` <= value;
+                }),
+                ...gt.map(value => {
+                    return isAlert
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` > value)
+                    : asset => `${asset[filterKey]}` > value;
+                }),
+                ...lt.map(value => {
+                    return isAlert
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` < value)
+                    : asset => `${asset[filterKey]}` < value;
+                }),
+            );
         }
     });
 
@@ -180,9 +207,9 @@ const retrieveAssets = () => {
                 assetCategory: asset.type.category.name,
                 assetType: asset.type.name,
                 assetIdentifier: asset.type.identifier?.assetData?.value,
-                // For location, we're adding the tilde to be removed when displaying since only sorting against borrower names causes a weird-looking sort, which the tilde fixes
-                location: !!asset.location ? `${asset.location.building.abbreviation} ${asset.location.name}` : !!asset.borrower ? `${asset.borrower.fName} ${asset.borrower.lName}` : `~No location`,
+                location: !!asset.location ? `${asset.location.building.abbreviation} ${asset.location.name}` : !!asset.borrower ? `Checked Out to ${asset.borrower.fName} ${asset.borrower.lName}` : `No location`,
                 borrowerId: asset.borrower?.id,
+                borrowerName: `${asset.borrower?.fName} ${asset.borrower?.lName}`,
                 alerts: asset.alerts.map(alert => { return { id: alert.id, type: alert.type.name, date: format(alert.date) } }),
             };
 
@@ -273,13 +300,13 @@ retrieveAssets();
             >
                 <template v-slot:item.location="{ item }">
                     <td v-if="(item.borrowerId ?? null) !== null">
-                        Checked Out to 
+                        {{ item.location.substring(0, item.location.length - item.borrowerName.length) }}
                         <router-link :to="router.resolve({ name: 'person', params: { id: item.borrowerId }})">
-                            {{ item.location }}
+                            {{ item.borrowerName }}
                         </router-link>
                     </td>
                     <td v-else>
-                        {{ (item.location?.match("~No location")?.length ?? 0) > 0 ? item.location.replace("~", "") : item.location }}
+                        {{ item.location }}
                     </td>
                 </template>
                 <template v-slot:expanded-row="{ columns, item }">
