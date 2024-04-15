@@ -62,7 +62,7 @@
   
     <!-- custom pop-up -->
     <v-dialog v-model="dialog" persistent max-width="800px">  
-       <!-- <AssetCatAddEdit :item="item" @close="closeDialog" :save-function="saveDropdown" :edit-function="editDropdown"/>  -->
+       <CustomDropdown :item="item" @close="closeDialog" :save-function="saveDropdown" :edit-function="editDropdown"/>
     </v-dialog>
   </template>
   
@@ -73,6 +73,9 @@
   import DropdownServices from "../services/fieldListServices.js";
   import { onMounted, ref } from "vue";
   import { useRouter } from "vue-router";
+  //import AssetCatAddEdit from "../components/AssetCatAddEdit.vue"; 
+  import CustomDropdown from "../components/CustomDropdown.vue"; //Import the custom dropdown component
+
 
   // const assetcategories = ref([]);
   const dropdownfields = ref([]);
