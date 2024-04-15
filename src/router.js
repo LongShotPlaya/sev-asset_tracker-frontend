@@ -1,37 +1,40 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Login from "./views/Login.vue";
-import Home from "./views/Home.vue";
+import AlertTypeManagement from "./views/AlertTypeManagement.vue";
 import AllAssets from "./views/AllAssets.vue";
-import AssetData from "./views/AssetData.vue";
-import AssetManagement from "./views/AssetManagement.vue";
+import AssetManagement from "./views/AssetManagement.vue"
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
-import AssetCatManagement from "./views/ManageAssetCategories.vue";
+import AssetCatManagement from "./views/AssetCatManagement.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
-import AssetFieldManagement from "./views/AssetFieldManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
-import GroupManagement from "./views/GroupManagement.vue";
-import PersonManagement from "./views/PersonManagement.vue";
-import ViewPerson from './views/EditPerson.vue';
-import RoomManagement from "./views/RoomManagement.vue";
-import TemplateDataManagement from "./views/TemplateDataManagement.vue";
-import VendorManagement from "./views/VendorManagement.vue";
-import GenerateReports from "./views/GenerateReports.vue";
 import EditAssetType from "./views/EditAssetType.vue";
+import FieldListManagement from "./views/FieldListManagement.vue";
+import GenerateReports from "./views/GenerateReports.vue";
+import GroupManagement from "./views/GroupManagement.vue";
+import Home from "./views/Home.vue";
+import Login from "./views/Login.vue";
+import PersonManagement from "./views/PersonManagement.vue";
+import VendorManagement from "./views/VendorManagement.vue";
+import ViewPerson from './views/EditPerson.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: "/",
-      alias: "/login",
+      alias: "/home",
+      name: "home",
+      component: Home,
+    },
+    {
+      path: "/login",
       name: "login",
       component: Login,
     },
     {
-      path: "/home",
-      name: "home",
-      component: Home,
+      path: "/alert-types",
+      name: "alert-types",
+      component: AlertTypeManagement,
     },
     {
       path: "/assets",
@@ -39,23 +42,17 @@ const router = createRouter({
       component: AllAssets,
     },
     {
-      path: "/asset/:id?",
+      path: "/asset/:id",
       name: "asset",
       component: AssetManagement,
-      props: true,
     },
-    {
-      path: "/asset-data",
-      name: "asset-data",
-      component: AssetData,
-    },
-    {
-      path: "/asset-type",
-      name: "asset-type",
+    {//---------------------------------------------------------------------------------------------------
+      path: "/asset-types",
+      name: "asset-types",
       component: AssetTypeManagement,
     },
     {
-      path: "/asset-type/:id",
+      path: "/asset-types/:id",
       name: "asset-type-edit",
       component: EditAssetType,
       props: true,
@@ -71,14 +68,14 @@ const router = createRouter({
       component: AssetTemplateManagement,
     },
     {
-      path: "/asset-fields",
-      name: "asset-fields",
-      component: AssetFieldManagement,
-    },
-    {
       path: "/buildings",
       name: "buildings",
       component: BuildingManagement,
+    },
+    {
+      path: "/field-list",
+      name: "field-list",
+      component: FieldListManagement,
     },
     {
       path: "/groups",
@@ -91,7 +88,7 @@ const router = createRouter({
       component: PersonManagement,
     },
     {
-      path: "/person/:id", 
+      path: "/people/:id", 
       name: "person",
       component: ViewPerson,
       props: true,
@@ -100,16 +97,6 @@ const router = createRouter({
       path: "/reports",
       name: "reports",
       component: GenerateReports,
-    },
-    {
-      path: "/rooms",
-      name: "rooms",
-      component: RoomManagement,
-    },
-    {
-      path: "/template-data",
-      name: "template-data",
-      component: TemplateDataManagement,
     },
     {
       path: "/vendors",
