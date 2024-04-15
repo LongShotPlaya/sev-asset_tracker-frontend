@@ -8,6 +8,7 @@
     import assetTypeServices from "../services/assetTypeManagementServices.js";
     import alertServices from "../services/alertServices.js";
     import logServices from "../services/logServices.js";
+    import assetFieldServices from"../services/fieldListServices.js";
     // import addEditDialog from "../components/ManageAssetDialog.vue"; //Importing Dialog component
     // import alertTypeService from "../services/alertTypeService"; Do I need this???
 
@@ -27,11 +28,10 @@
     const alerts = ref([]);
     const logs = ref([]);
     const allAssetTypeNames = ref([]);
-
-    const newAccDate = ref("");
-    const dueDate = ref("");
-    const location = ref("With a user");
-    const due = ref(null);
+    const template = ref({});
+    const assetTemplateId = ref();
+    const assetFields = ref();
+    const assetTypeId = ref();
 
     const mode = computed(() => assetId.value ? 'edit' : 'add');
     
@@ -56,6 +56,21 @@
             console.log("Asset Price: ", accPrice);
             assetTemplate.value = response.data.template;
             console.log("Asset Template: ", assetTemplate);
+            assetTemplateId.value = response.data.template.id;
+            console.log("Asset Template ID: ", assetTemplateId);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const getAsset = (id) => {
+        assetServices.getAsset(id)
+        .then(response => {
+            assetTemplateId.value = response.data.templateId;
+            console.log("Asset Template ID: ", assetTemplateId);
+            assetTypeId.value = response.data.typeId;
+            console.log("Asset Type ID: ", assetTypeId);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -78,7 +93,7 @@
     const getAllAlerts = (id) => {
         alertServices.getAllAlerts()
         .then(response => {
-            alerts.value = response.data.filter(alert => alert.assetId == id); //Not tested
+            alerts.value = response.data.filter(alert => alert.assetId == id); //Tested
             console.log("Alerts for Asset: ", alerts);
         })
         .catch(error => {
@@ -91,6 +106,17 @@
         .then(response => {
             logs.value = response.data.filter(logs => logs.assetId == id); //Tested
             console.log("Logs for asset: ", logs);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const getAssetFields = (id) => {
+        assetFieldServices.getOneFieldList(id)
+        .then(response => {
+            assetFields.value = response.data;
+            console.log("Asset Fields: ", assetFields);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -160,6 +186,8 @@
         getItemTypes();
         getAllAlerts(id);
         getAllLogs(id);
+        getAsset(id);
+        getAssetFields(assetTypeId);
     });
 </script>
 
@@ -219,11 +247,11 @@
                 </v-col>
                 <v-col>
                     <v-textarea
-                        class="mx-2"
-                        label="Aquisition Price"
-                        prepend-inner-icon="mdi-currency-usd"
-                        rows="1"
-                        v-model="accPrice"
+                    class="mx-2"
+                    label="Aquisition Price"
+                    prepend-inner-icon="mdi-currency-usd"
+                    rows="1"
+                    v-model="accPrice"
                     ></v-textarea>
                 </v-col>
                 <v-col>
@@ -248,7 +276,7 @@
         <!-- <v-if mode="edit">
         </v-if> -->
     </v-card><br>
-<!--------------------------------------------------------------Main Block 2----------------------------------------------------------->
+<!--------------------------------------------------------------Fields Block----------------------------------------------------------->
     <v-card
     class="mx-auto"
     width="90%"
@@ -257,11 +285,16 @@
         font-size: x-large;
         margin: 1%;
         ">Fields</v-title>
-            <v-container><br>
+            <v-container
+            fluid>
                 <v-row>
-                                                  
+                    <v-col>
+                        <v-card>
+                            <v-card-text>{{ assetFields }}</v-card-text>
+                        </v-card>
+                    </v-col>                     
                 </v-row>
-            </v-container>
+            </v-container><br>
     </v-card><br>
 <!------------------------------------------------------------Alerts and Logs------------------------------->
     <v-card 
@@ -281,7 +314,7 @@
                         :headers="alertHeaders"
                         :items="alerts"
                         :sortBy="[{ key: 'date', order: 'asc' }]"
-                    >
+                        >
                         <template #item.date="{ item }">
                             {{ format(item.date) }}
                         </template>
@@ -290,12 +323,11 @@
                         </template>
                     </v-data-table>
                 </v-window-item>
-
                 <v-window-item value="logs">
                     <v-data-table
-                        :headers="logHeaders"
-                        :items="logs"
-                        :sort-by="[{ key: 'date', order: 'asc' }]"
+                    :headers="logHeaders"
+                    :items="logs"
+                    :sort-by="[{ key: 'date', order: 'asc' }]"
                     >
                         <template #item.date="{ item }">
                             {{ format(item.date) }}
