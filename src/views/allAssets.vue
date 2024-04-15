@@ -329,9 +329,7 @@ retrieveAssets();
                         class="ma-2"
                         color="accent"
                         @click="checkInAsset(item.id)"
-                    >
-                        Check In
-                    </v-btn>
+                    >Check In</v-btn>
                     <v-btn
                         class="ma-2"
                         color="primary"
