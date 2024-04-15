@@ -4,13 +4,6 @@ import assetCatServices from "../services/assetCatServices";
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 
-// The purpose of this page is to allow a user with the proper permissions to
-// be able to add or edit a currently existing asset categories name and desc
-
-
-//Copy Jess's assetcatmanagement branch and input this code in her diologboxes
-///Note: she does not have a diologbox for her cancel? delete? function yet
-
 const router = useRouter();
 const valid = ref(true);
 const asset = ref({

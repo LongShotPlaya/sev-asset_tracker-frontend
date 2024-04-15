@@ -7,7 +7,7 @@ import AssetCatManagement from "./views/AssetCatManagement.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import EditAssetType from "./views/EditAssetType.vue";
-import FieldListManagement from "./views/FieldListManagement.vue";
+import FieldListManagement from "./views/FieldListManagement.vue";//here for dropdowns
 import GenerateReports from "./views/GenerateReports.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import Home from "./views/Home.vue";
