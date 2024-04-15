@@ -45,8 +45,9 @@ const router = createRouter({
       path: "/asset/:id",
       name: "asset",
       component: AssetManagement,
+      props: true,
     },
-    {//---------------------------------------------------------------------------------------------------
+    {
       path: "/asset-types",
       name: "asset-types",
       component: AssetTypeManagement,
