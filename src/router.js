@@ -40,7 +40,7 @@ const router = createRouter({
       name: "assets",
       component: AllAssets,
     },
-    {//---------------------------------------------------------------------------------------------------
+    {
       path: "/asset-types",
       name: "asset-types",
       component: AssetTypeManagement,

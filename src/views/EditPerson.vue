@@ -157,7 +157,6 @@
         getFullPerson(id);
         // getUserGroupId(id); //Test
         // getAssetTypeName(); //Test
-
     });
 </script>
 
