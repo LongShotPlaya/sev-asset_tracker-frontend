@@ -2,6 +2,7 @@
     import { ref, onMounted, computed } from "vue";
     import { useRouter } from "vue-router";
     import { format } from "@formkit/tempo";
+    import { VBtn, VDatePicker } from 'vuetify/components'; // Import components from Vuetify
 
     import Utils from "../config/utils.js";
     import assetServices from "../services/assetServices.js";
@@ -27,14 +28,19 @@
     const allAssetTypes = ref([]);
     const alerts = ref([]);
     const logs = ref([]);
-    const allAssetTypeNames = ref([]);
     const template = ref({});
     const assetTemplateId = ref();
     const assetFields = ref();
     const assetTypeId = ref();
+    const showDatePicker = ref(false);
+    const selectedDate = ref(null);
 
     const mode = computed(() => assetId.value ? 'edit' : 'add');
-    
+
+    const toggleDatePicker = () => {
+        showDatePicker.value = !showDatePicker.value;
+    };
+
     const props = defineProps({
       id: {
         required: true,
@@ -80,10 +86,8 @@
     const getItemTypes = () => {
         assetTypeServices.getAllAssetTypes() 
         .then(response => {
-            allAssetTypes.value = response.data;
-            console.log("All Assets Array: ", allAssetTypes);
-            allAssetTypeNames.value = response.data;
-            console.log("All Asset Type Names: ", allAssetTypeNames);
+            allAssetTypes.value = response.data; //Use map for list when in add mode
+            console.log("All Assets Types: ", allAssetTypes);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -93,7 +97,7 @@
     const getAllAlerts = (id) => {
         alertServices.getAllAlerts()
         .then(response => {
-            alerts.value = response.data.filter(alert => alert.assetId == id); //Tested
+            alerts.value = response.data.filter(alert => alert.assetId == id);
             console.log("Alerts for Asset: ", alerts);
         })
         .catch(error => {
@@ -104,7 +108,7 @@
     const getAllLogs = (id) => {
         logServices.getAllLogs()
         .then(response => {
-            logs.value = response.data.filter(logs => logs.assetId == id); //Tested
+            logs.value = response.data.filter(logs => logs.assetId == id);
             console.log("Logs for asset: ", logs);
         })
         .catch(error => {
@@ -238,12 +242,19 @@
         ">General Asset Info</v-title><br><br>
             <v-row>
                 <v-col> 
-                    <v-autocomplete
-                    :items="itemTypes"
+                    <!-- <v-autocomplete //Use this for add page
+                    :items="allAssetTypes"
                     return-object
                     single-line
                     v-model="assetType"
-                    ></v-autocomplete>
+                    ></v-autocomplete> -->
+                    <v-textarea
+                    class="mx-2"
+                    label="Asset Type"
+                    rows="1"
+                    v-model="assetType"
+                    readonly
+                    ></v-textarea>
                 </v-col>
                 <v-col>
                     <v-textarea
@@ -254,14 +265,34 @@
                     v-model="accPrice"
                     ></v-textarea>
                 </v-col>
-                <v-col>
-                    <v-textarea
-                    append-inner-icon="mdi-calendar"
+                <v-col style="position: relative;">
+                    <!-- append-inner-icon="mdi-calendar" -->
+                    <!-- <v-textarea
                     class="mx-2"
                     label="Aquistion Date"
                     rows="1"
                     v-model="accDate"
-                    ></v-textarea>
+                    > -->
+                    <!-- </v-textarea> -->
+                    <div class="d-flex align-items-center">
+                        <v-text-field
+                            class="mx-2"
+                            label="Acquisition Date"
+                            v-model="accDate"
+                            readonly
+                        />
+                        <v-btn
+                            icon
+                            @click="toggleDatePicker">
+                            <v-icon>mdi-calendar</v-icon>
+                        </v-btn>
+                    </div>
+                    <v-date-picker style="position: absolute; z-index: 9999;"
+                    elevation="12"
+                    v-if="showDatePicker"
+                    v-model="selectedDate"
+                    @input="showDatePicker = false"
+                    />
                 </v-col>
             </v-row>
             <v-row>
@@ -272,7 +303,7 @@
                     </v-card>
                 </v-col>                                            
             </v-row>
-        </v-container>
+        </v-container><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
         <!-- <v-if mode="edit">
         </v-if> -->
     </v-card><br>
