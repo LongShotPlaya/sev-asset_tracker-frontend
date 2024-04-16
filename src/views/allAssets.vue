@@ -57,7 +57,7 @@ const retrieveAssets = () => {
                 id: asset.id,
                 assetCategory: asset.type.category.name,
                 assetType: asset.type.name,
-                assetIdentifier: asset.type.identifier?.assetData,
+                assetIdentifier: asset.type.identifier?.assetData?.value,
                 location: !!asset.location ? `${asset.location.building.abbreviation} ${asset.location.name}` : `No location`,
                 alerts: asset.alerts.map(alert => { return { id: alert.id, type: alert.type.name, date: format(alert.date) } }),
             };
