@@ -50,7 +50,8 @@
             assetType.value = response.data.type.name;
             console.log("Asset Type:", assetType);
             // accDate.value = format(response.data.acquisitionDate);
-            accDate.value = response.data.acquisitionDate;
+            const acquisitionDate = new Date(response.data.acquisitionDate);
+            accDate.value = acquisitionDate.toISOString().split('T')[0];
             console.log("Accqsition Date: ", accDate);
             accPrice.value = response.data.acquisitionPrice;
             console.log("Asset Price: ", accPrice);
@@ -216,72 +217,57 @@
         <v-container 
         fluid 
         style="
-            min-height: 950px;
-        ">
+            min-height: 900px;
+        ">  
         <v-title 
         style="
         font-size: x-large;
         ">General Asset Info</v-title><br><br>
             <v-row>
                 <v-col> 
-                    <v-autocomplete
+                    <v-combobox
                     :items="allAssetTypes"
-                    return-object
-                    single-line
-                    v-model="assetType"
-                    ></v-autocomplete>
-                    <!-- <v-textarea
-                    class="mx-2"
+                    variant="outlined"
                     label="Asset Type"
-                    rows="1"
+                    return-object
+                    auto-select-first
                     v-model="assetType"
-                    :readonly
-                    ></v-textarea> -->
+                    ></v-combobox>
                 </v-col>
                 <v-col>
-                    <v-textarea
+                    <v-text-field
                     class="mx-2"
+                    variant="outlined"
                     label="Aquisition Price"
                     prepend-inner-icon="mdi-currency-usd"
                     rows="1"
                     v-model="accPrice"
-                    ></v-textarea>
+                    ></v-text-field>
                 </v-col>
-                <v-col style="position: relative;">
+                <v-col 
+                style="position: relative;">
                     <v-text-field
+                    variant="outlined"
                     type="date"
-                    hint="Acquisition Date"
+                    label="Acquisition Date"
                     v-model="accDate"
                     ></v-text-field>
-                    <!-- <div class="d-flex align-items-center">
-                        <v-text-field
-                            class="mx-2"
-                            label="Acquisition Date"
-                            v-model="accDate"
-                        />
-                        <v-btn
-                            icon
-                            @click="toggleDatePicker">
-                            <v-icon>mdi-calendar</v-icon>
-                        </v-btn>
-                    </div>
-                    <v-date-picker style="position: absolute; z-index: 9999;"
-                    elevation="12"
-                    v-if="showDatePicker"
-                    v-model="selectedDate"
-                    @input="showDatePicker = false"
-                    /> -->
                 </v-col>
             </v-row>
             <v-row>
                 <v-col>
-                    <v-card>
+                    <v-select
+                    variant="outlined"
+                    label="Template"
+                    >
+                    </v-select>
+                    <!-- <v-card>
                         <v-card-text>Template: </v-card-text>
                         <v-card-text>{{ fullAsset.template }}</v-card-text>
-                    </v-card>
+                    </v-card> -->
                 </v-col>                                            
             </v-row>
-        </v-container><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        </v-container>
     </v-card><br>
 <!--------------------------------------------------------------Fields Block----------------------------------------------------------->
     <v-card
@@ -301,7 +287,7 @@
                         </v-card>
                     </v-col>                     
                 </v-row>
-            </v-container><br>
+            </v-container>
     </v-card><br>
 <!------------------------------------------------------------Alerts and Logs------------------------------->
     <v-card 
