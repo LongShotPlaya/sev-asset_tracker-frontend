@@ -155,24 +155,28 @@ const filteredAssets = computed(() => {
 
             filters.push(
                 ...gte.map(value => {
+                    value = value.toLowerCase();
                     return isAlert
-                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` >= value)
-                    : asset => `${asset[filterKey]}` >= value;
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}`.toLowerCase() >= value)
+                    : asset => `${asset[filterKey]}`.toLowerCase() >= value;
                 }),
                 ...lte.map(value => {
+                    value = value.toLowerCase();
                     return isAlert
-                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` <= value)
-                    : asset => `${asset[filterKey]}` <= value;
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}`.toLowerCase() <= value)
+                    : asset => `${asset[filterKey]}`.toLowerCase() <= value;
                 }),
                 ...gt.map(value => {
+                    value = value.toLowerCase();
                     return isAlert
-                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` > value)
-                    : asset => `${asset[filterKey]}` > value;
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}`.toLowerCase() > value)
+                    : asset => `${asset[filterKey]}`.toLowerCase() > value;
                 }),
                 ...lt.map(value => {
+                    value = value.toLowerCase();
                     return isAlert
-                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}` < value)
-                    : asset => `${asset[filterKey]}` < value;
+                    ? asset => asset.alerts.some(alert => new RegExp(`^${filterKey}$`, "i").test(alert.type) && `${alert.date}`.toLowerCase() < value)
+                    : asset => `${asset[filterKey]}`.toLowerCase() < value;
                 }),
             );
         }
@@ -210,7 +214,7 @@ const retrieveAssets = () => {
                 location: !!asset.location ? `${asset.location.building.abbreviation} ${asset.location.name}` : !!asset.borrower ? `Checked Out to ${asset.borrower.fName} ${asset.borrower.lName}` : `No location`,
                 borrowerId: asset.borrower?.id,
                 borrowerName: `${asset.borrower?.fName} ${asset.borrower?.lName}`,
-                alerts: asset.alerts.map(alert => { return { id: alert.id, type: alert.type.name, date: format(alert.date) } }),
+                alerts: asset.alerts.map(alert => { return { id: alert.id, type: alert.type.name, date: format(alert.date, "YYYY-MM-DD") } }),
             };
 
             if ((result.borrowerId ?? null) !== null)
@@ -256,6 +260,14 @@ const deleteAsset = (assetId) => {
 
 const checkInAsset = (assetId) => {
     console.log("Checking in asset with id of " + assetId);
+    AssetServices.checkInAsset(assetId)
+    .then(response => {
+        console.log("Successfully checked in asset!");
+        retrieveAssets();
+    })
+    .catch(err => {
+        console.log(err?.data?.response?.message ?? "Error checking in asset!");
+    });
 };
 
 retrieveAssets();
@@ -309,7 +321,7 @@ retrieveAssets();
                         {{ item.location }}
                     </td>
                 </template>
-                <template v-slot:expanded-row="{ columns, item }">
+                <template v-slot:expanded-row="{ item }">
                     <tr
                         v-for="alert in item.alerts"
                         :key="alert.id"

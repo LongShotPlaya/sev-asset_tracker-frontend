@@ -22,4 +22,10 @@ export default {
     deleteAsset(assetId) {
         return apiClient.delete(`/assets/${assetId}`);
     },
+    checkInAsset(assetId, data) {
+        return apiClient.post(`/assets/${assetId}/check-in`, data);
+    },
+    checkOutAsset(assetId, data) {
+        return apiClient.post(`/assets/${assetId}/check-out`, data);
+    },
 };
