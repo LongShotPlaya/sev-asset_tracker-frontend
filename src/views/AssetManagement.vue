@@ -2,7 +2,7 @@
     import { ref, onMounted, computed } from "vue";
     import { useRouter } from "vue-router";
     import { format } from "@formkit/tempo";
-    import { VBtn, VDatePicker } from 'vuetify/components'; // Import components from Vuetify
+    import { VBtn } from 'vuetify/components';
 
     import Utils from "../config/utils.js";
     import assetServices from "../services/assetServices.js";
@@ -10,8 +10,6 @@
     import alertServices from "../services/alertServices.js";
     import logServices from "../services/logServices.js";
     import assetFieldServices from"../services/fieldListServices.js";
-    // import addEditDialog from "../components/ManageAssetDialog.vue"; //Importing Dialog component
-    // import alertTypeService from "../services/alertTypeService"; Do I need this???
 
     const user = Utils.getStore("user");
     const router = useRouter();
