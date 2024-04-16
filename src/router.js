@@ -42,7 +42,7 @@ const router = createRouter({
       component: AllAssets,
     },
     {
-      path: "/asset/:id",
+      path: "/asset/:id?",
       name: "asset",
       component: AssetManagement,
       props: true,

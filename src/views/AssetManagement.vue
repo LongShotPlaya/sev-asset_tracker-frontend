@@ -32,14 +32,7 @@
     const assetTemplateId = ref();
     const assetFields = ref();
     const assetTypeId = ref();
-    const showDatePicker = ref(false);
-    const selectedDate = ref(null);
-
-    const mode = computed(() => assetId.value ? 'edit' : 'add');
-
-    const toggleDatePicker = () => {
-        showDatePicker.value = !showDatePicker.value;
-    };
+    const assetLocation = ref(null);
 
     const props = defineProps({
       id: {
@@ -56,7 +49,8 @@
             console.log("Full Borrower: ", currentBorrower);
             assetType.value = response.data.type.name;
             console.log("Asset Type:", assetType);
-            accDate.value = format(response.data.acquisitionDate);
+            // accDate.value = format(response.data.acquisitionDate);
+            accDate.value = response.data.acquisitionDate;
             console.log("Accqsition Date: ", accDate);
             accPrice.value = response.data.acquisitionPrice;
             console.log("Asset Price: ", accPrice);
@@ -64,6 +58,8 @@
             console.log("Asset Template: ", assetTemplate);
             assetTemplateId.value = response.data.template.id;
             console.log("Asset Template ID: ", assetTemplateId);
+            assetLocation.value = response.data.location;
+            console.log("Asset Location: ", assetLocation);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -86,8 +82,11 @@
     const getItemTypes = () => {
         assetTypeServices.getAllAssetTypes() 
         .then(response => {
-            allAssetTypes.value = response.data; //Use map for list when in add mode
-            console.log("All Assets Types: ", allAssetTypes);
+            allAssetTypes.value = response.data.map(assetType => ({
+                title: assetType.name, 
+                value: assetType.id, 
+            }));
+            console.log("Asset Types: ", allAssetTypes);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -126,23 +125,6 @@
             message.value = error.response.data.message;
         })
     };
-
-    // const itemTypes = [ //Update this to take straight from database
-
-    // ];
-    const itemTypes = [ //Update this to take straight from database
-        { title: 'Chair', value: 1 },
-        { title: 'Key', value: 2 },
-        { title: 'Sofa', value: 3 },
-        { title: 'Laptop', value: 4 },
-        { title: 'Matteress', value: 5 },
-        { title: 'Phone', value: 6 },
-        { title: 'Projector', value: 7 },
-        { title: 'Books', value: 8 },
-        { title: 'Whiteboard Accessaries', value: 9 },
-        { title: 'Rooftop Unit', value: 10 },
-        { title: 'Smoke Detector', value: 11 },
-    ];
 
     const cancel = () => {
         router.go(-1);
@@ -231,7 +213,7 @@
     class="mx-auto"
     width="90%"
     >
-        <v-container v-if="mode == 'edit'" 
+        <v-container 
         fluid 
         style="
             min-height: 950px;
@@ -242,19 +224,19 @@
         ">General Asset Info</v-title><br><br>
             <v-row>
                 <v-col> 
-                    <!-- <v-autocomplete //Use this for add page
+                    <v-autocomplete
                     :items="allAssetTypes"
                     return-object
                     single-line
                     v-model="assetType"
-                    ></v-autocomplete> -->
-                    <v-textarea
+                    ></v-autocomplete>
+                    <!-- <v-textarea
                     class="mx-2"
                     label="Asset Type"
                     rows="1"
                     v-model="assetType"
-                    readonly
-                    ></v-textarea>
+                    :readonly
+                    ></v-textarea> -->
                 </v-col>
                 <v-col>
                     <v-textarea
@@ -266,20 +248,16 @@
                     ></v-textarea>
                 </v-col>
                 <v-col style="position: relative;">
-                    <!-- append-inner-icon="mdi-calendar" -->
-                    <!-- <v-textarea
-                    class="mx-2"
-                    label="Aquistion Date"
-                    rows="1"
+                    <v-text-field
+                    type="date"
+                    hint="Acquisition Date"
                     v-model="accDate"
-                    > -->
-                    <!-- </v-textarea> -->
-                    <div class="d-flex align-items-center">
+                    ></v-text-field>
+                    <!-- <div class="d-flex align-items-center">
                         <v-text-field
                             class="mx-2"
                             label="Acquisition Date"
                             v-model="accDate"
-                            readonly
                         />
                         <v-btn
                             icon
@@ -292,7 +270,7 @@
                     v-if="showDatePicker"
                     v-model="selectedDate"
                     @input="showDatePicker = false"
-                    />
+                    /> -->
                 </v-col>
             </v-row>
             <v-row>
@@ -304,8 +282,6 @@
                 </v-col>                                            
             </v-row>
         </v-container><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-        <!-- <v-if mode="edit">
-        </v-if> -->
     </v-card><br>
 <!--------------------------------------------------------------Fields Block----------------------------------------------------------->
     <v-card
@@ -337,6 +313,7 @@
         >
             <v-tab value="alerts">Alerts</v-tab> 
             <v-tab value="logs">Logs</v-tab> 
+            <v-tab value="Buildings">Buildings</v-tab>
         </v-tabs>
         <v-card-text>
             <v-window v-model="tab">
@@ -364,6 +341,12 @@
                             {{ format(item.date) }}
                         </template>
                     </v-data-table>
+                </v-window-item>
+                <v-window-item value="Buildings"
+                :disabled="assetLocation == null"
+                >
+                    <div>Buildings</div>
+                    <!--Complete data table here-->
                 </v-window-item>
             </v-window>
         </v-card-text>
