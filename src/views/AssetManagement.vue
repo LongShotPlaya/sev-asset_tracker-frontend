@@ -10,6 +10,8 @@
     import alertServices from "../services/alertServices.js";
     import logServices from "../services/logServices.js";
     import assetFieldServices from"../services/fieldListServices.js";
+    import assetCatServices from "../services/assetCatServices";
+    import assetTemplateServices from "../services/assetTemplateServices.js";
 
     const user = Utils.getStore("user");
     const router = useRouter();
@@ -18,7 +20,8 @@
     const fullAsset = ref("");
     const assetId = ref("No ID found");
     const currentBorrower = ref("Not in circulation");
-    const assetType = ref("No type found");
+    const assetType = ref();
+    const assetCat = ref("");
     const accPrice = ref(null);
     const accDate = ref("");
     const tab = ref('alerts');
@@ -30,7 +33,10 @@
     const assetTemplateId = ref();
     const assetFields = ref();
     const assetTypeId = ref();
+    const fullAssetType = ref();
+    const allAssetCategories = ref([]);
     const assetLocation = ref(null);
+    const allAssetTemplates = ref([]);
 
     const props = defineProps({
       id: {
@@ -92,6 +98,17 @@
         })
     };
 
+    const getAssetCat = (id) => {
+        assetTypeServices.getAssetType(id)
+        .then(response => {
+            fullAssetType.value = response.data.filter(assetType => assetType.categoryId == id);
+            console.log("Full Asset Cat/type: ", fullAssetType);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
     const getAllAlerts = (id) => {
         alertServices.getAllAlerts()
         .then(response => {
@@ -119,6 +136,34 @@
         .then(response => {
             assetFields.value = response.data;
             console.log("Asset Fields: ", assetFields);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const getAllAssetCats = () => {
+        assetCatServices.getAllAssetCats()
+        .then(response => {
+            allAssetCategories.value = response.data.map(assetCat => ({
+                title: assetCat.name,
+                value: assetCat.id,
+            }));
+            console.log("All Asset Categories: ", allAssetCategories);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const getAllAssetTemplates = () => {
+        assetTemplateServices.getAllAssetTemplates()
+        .then(response => {
+            allAssetTemplates.value = response.data.map(assetTemplate => ({
+                title: assetTemplate.name,
+                value: assetTemplate.id,
+            }));
+            console.log("All Asset Templates: ", allAssetTemplates);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -173,6 +218,9 @@
         getAllLogs(id);
         getAsset(id);
         getAssetFields(assetTypeId);
+        getAllAssetCats();
+        getAssetCat(id);
+        getAllAssetTemplates();
     });
 </script>
 
@@ -222,16 +270,39 @@
         font-size: x-large;
         ">General Asset Info</v-title><br><br>
             <v-row>
+                <v-col>
+                    <v-combobox
+                        :items="allAssetCategories"
+                        variant="outlined"
+                        label="Category"
+                        return-object
+                        auto-select-first
+                        v-model="assetCat"
+                    ></v-combobox>
+                </v-col>    
                 <v-col> 
                     <v-combobox
                     :items="allAssetTypes"
                     variant="outlined"
-                    label="Asset Type"
+                    label="Type"
                     return-object
                     auto-select-first
                     v-model="assetType"
                     ></v-combobox>
                 </v-col>
+                <v-col>
+                    <v-combobox
+                    :items="allAssetTemplates"
+                    variant="outlined"
+                    label="Template"
+                    return-object
+                    auto-select-first
+                    v-model="assetTemplate.name"
+                    >
+                    </v-combobox>
+                </v-col> 
+            </v-row>
+            <v-row>
                 <v-col>
                     <v-text-field
                     class="mx-2"
@@ -250,20 +321,7 @@
                     label="Acquisition Date"
                     v-model="accDate"
                     ></v-text-field>
-                </v-col>
-            </v-row>
-            <v-row>
-                <v-col>
-                    <v-select
-                    variant="outlined"
-                    label="Template"
-                    >
-                    </v-select>
-                    <!-- <v-card>
-                        <v-card-text>Template: </v-card-text>
-                        <v-card-text>{{ fullAsset.template }}</v-card-text>
-                    </v-card> -->
-                </v-col>                                            
+                </v-col>                                           
             </v-row>
         </v-container>
     </v-card><br>
