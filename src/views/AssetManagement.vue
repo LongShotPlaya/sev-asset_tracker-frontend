@@ -20,8 +20,7 @@
     const fullAsset = ref("");
     const assetId = ref("No ID found");
     const currentBorrower = ref("Not in circulation");
-    const assetType = ref();
-    const assetCat = ref("");
+    const assetType = ref(null);
     const accPrice = ref(null);
     const accDate = ref("");
     const tab = ref('alerts');
@@ -33,10 +32,11 @@
     const assetTemplateId = ref();
     const assetFields = ref();
     const assetTypeId = ref();
-    const fullAssetType = ref();
     const allAssetCategories = ref([]);
     const assetLocation = ref(null);
     const allAssetTemplates = ref([]);
+    const assetCatName = ref(null);
+    const assetCatId = ref();
 
     const props = defineProps({
       id: {
@@ -50,21 +50,20 @@
             fullAsset.value = response.data;
             console.log("Full Asset Details: ", fullAsset);
             currentBorrower.value = response.data.borrower;
-            console.log("Full Borrower: ", currentBorrower);
+            // console.log("Full Borrower: ", currentBorrower);
             assetType.value = response.data.type.name;
             console.log("Asset Type:", assetType);
-            // accDate.value = format(response.data.acquisitionDate);
             const acquisitionDate = new Date(response.data.acquisitionDate);
             accDate.value = acquisitionDate.toISOString().split('T')[0];
-            console.log("Accqsition Date: ", accDate);
-            accPrice.value = response.data.acquisitionPrice;
-            console.log("Asset Price: ", accPrice);
+            // console.log("Accqsition Date: ", accDate);
+            accPrice.value = (response.data.acquisitionPrice / 100).toFixed(2);
+            // console.log("Asset Price: ", accPrice);
             assetTemplate.value = response.data.template;
-            console.log("Asset Template: ", assetTemplate);
+            // console.log("Asset Template: ", assetTemplate);
             assetTemplateId.value = response.data.template.id;
-            console.log("Asset Template ID: ", assetTemplateId);
+            // console.log("Asset Template ID: ", assetTemplateId);
             assetLocation.value = response.data.location;
-            console.log("Asset Location: ", assetLocation);
+            // console.log("Asset Location: ", assetLocation);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -91,18 +90,7 @@
                 title: assetType.name, 
                 value: assetType.id, 
             }));
-            console.log("Asset Types: ", allAssetTypes);
-        })
-        .catch(error => {
-            message.value = error.response.data.message;
-        })
-    };
-
-    const getAssetCat = (id) => {
-        assetTypeServices.getAssetType(id)
-        .then(response => {
-            fullAssetType.value = response.data.filter(assetType => assetType.categoryId == id);
-            console.log("Full Asset Cat/type: ", fullAssetType);
+            // console.log("Asset Types: ", allAssetTypes);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -113,7 +101,7 @@
         alertServices.getAllAlerts()
         .then(response => {
             alerts.value = response.data.filter(alert => alert.assetId == id);
-            console.log("Alerts for Asset: ", alerts);
+            // console.log("Alerts for Asset: ", alerts);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -124,14 +112,14 @@
         logServices.getAllLogs()
         .then(response => {
             logs.value = response.data.filter(logs => logs.assetId == id);
-            console.log("Logs for asset: ", logs);
+            // console.log("Logs for asset: ", logs);
         })
         .catch(error => {
             message.value = error.response.data.message;
         })
     };
 
-    const getAssetFields = (id) => {
+    const getAssetFields = (id) => { //404 error, why????
         assetFieldServices.getOneFieldList(id)
         .then(response => {
             assetFields.value = response.data;
@@ -149,7 +137,7 @@
                 title: assetCat.name,
                 value: assetCat.id,
             }));
-            console.log("All Asset Categories: ", allAssetCategories);
+            // console.log("All Asset Categories: ", allAssetCategories);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -163,12 +151,33 @@
                 title: assetTemplate.name,
                 value: assetTemplate.id,
             }));
-            console.log("All Asset Templates: ", allAssetTemplates);
+            // console.log("All Asset Templates: ", allAssetTemplates);
         })
         .catch(error => {
             message.value = error.response.data.message;
         })
     };
+
+    const getAssetCatId = (id) => {
+        assetTypeServices.getAssetType(id)
+        .then(response => {
+            assetCatId.value = response.data.categoryId;
+            console.log("Asset Cat ID HERE: ", assetCatId);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        })
+    };
+
+    const getAssetCatName = () => { //************************************ */
+        assetCatServices.getAssetCat()
+        .then (response => {
+
+        })
+        .catch (error => {
+            message.value = error.response.data.message;
+        })
+    }
 
     const cancel = () => {
         router.go(-1);
@@ -219,8 +228,8 @@
         getAsset(id);
         getAssetFields(assetTypeId);
         getAllAssetCats();
-        getAssetCat(id);
         getAllAssetTemplates();
+        getAssetCatId(assetTypeId);
     });
 </script>
 
@@ -235,7 +244,7 @@
     ">
         <v-toolbar-title
         style="font-size: 28px;"
-        >Asset ID: #{{ id }}<v-btn
+        >Asset: {{ id }}<v-btn
                 @click="cancel()"
                 color="#811429" 
                 style= "margin-left: 2%;
@@ -277,7 +286,7 @@
                         label="Category"
                         return-object
                         auto-select-first
-                        v-model="assetCat"
+                        v-model="assetCatName"
                     ></v-combobox>
                 </v-col>    
                 <v-col> 
