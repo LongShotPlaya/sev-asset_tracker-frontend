@@ -185,7 +185,13 @@
 
     const save = (id) => {
         assetId = id;
-        data = {};
+        data = { 
+            acquisitionDate: accDate.value,
+            acquisitionPrice: accPrice.value,
+            templateId: assetTemplateId.value,
+            location: assetLocation.value,
+            template: assetTemplate.value,
+        };
 
         const updateAsset = (assetId, data) => {
             assetServices.updateAsset(assetId, data)
