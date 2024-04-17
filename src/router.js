@@ -10,6 +10,7 @@ import EditAssetType from "./views/EditAssetType.vue";
 import FieldListManagement from "./views/FieldListManagement.vue";
 import GenerateReports from "./views/GenerateReports.vue";
 import GroupManagement from "./views/GroupManagement.vue";
+import NetworkError from './views/NetworkError.vue';
 import Home from "./views/Home.vue";
 import Login from "./views/Login.vue";
 import PersonManagement from "./views/PersonManagement.vue";
@@ -75,6 +76,11 @@ const router = createRouter({
       path: "/groups",
       name: "groups",
       component: GroupManagement,
+    },
+    {
+      path: "/network-error",
+      name: "network-error",
+      component: NetworkError,
     },
     {
       path: "/people",
