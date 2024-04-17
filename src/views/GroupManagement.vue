@@ -8,10 +8,14 @@
 	import personServices from "../services/personServices";
 	import { useRouter } from "vue-router";
 
+	const router = useRouter();
 	const user = Utils.getStore("user");
-	const message = ref("");
+	const message = ref("message");
 	const spacing = ref(" ");
-	const groupName = ref("");
+	const groupInfo = ref({
+		name: '',
+		permissions: [],
+	});
 	const groupId = ref("");
 	const selectedPerms = ref([]);
 	
@@ -51,11 +55,27 @@
 		permissionServices.getAllPermissions()
 			.then((response) => {
 				permissions.value = response.data;
+				console.log(permissions.value);
 			})
 			.catch((e) => {
 				message.value = e.response.data.message;
 			});
-		message.value = permissions;
+		//message.value = permissions;
+	};
+
+	const changePerm = (index) => {
+		//message.value += itemName;
+		let permExists = false;
+		// Check if permission exists
+		for (let i = 0; i < groupInfo.value.permissions.length; i++)
+			if (groupInfo.value[i].permissions.name == index)
+				permExists = true;
+
+		// If the permission doesn't exist, add it, if not delete it
+		if (!permExists)
+			groupInfo.value.permissions += index;
+		else
+			message.value = index + " Delete";
 	};
 
 	const retrieveUsers = () => {
@@ -79,17 +99,18 @@
 		//message.value = people;
 	};
 
-	const addGroup = (name) => {
-		groupServices.createGroup({name});
+	const addGroup = () => {
+		//groupServices.createGroup({name});
 		addDialogue.value = false;
-		groupName.value = "";
-		location.reload();
+		//message.value = groupInfo.value;
+		//groupInfo.value.name = "";
+		//location.reload();
 	};
 
-	const updateGroup = (id, name, data) => {
+	const editGroup = (id, name, data) => {
 		groupServices.updateGroup(id, name);
 		editDialogue.value = false;
-		groupName.value = "";
+		groupInfo.value.name = "";
 		location.reload();
 	};
 
@@ -135,7 +156,7 @@
 		groupServices.getGroupWithPermissions(groupId.value)
 			.then((response) => {
 				displayPermissions.value = response.data;
-				//console.log(displayPermissions.value)
+				//console.log(displayPermissions.value);
 			})
 			.catch((e) => {
 				message.value = e.response.data.message;
@@ -202,12 +223,12 @@
 	  <v-card>
 		<v-container>
 			<v-card>
-				<v-form @submit.prevent>
+				<v-form @submit.prevent><!---->
 					<v-card-title class="text-h5">
 						<v-row class="mt-auto mx-auto mb-auto">
 							Create a New Group
 							<v-spacer></v-spacer>
-							<v-btn color="primary" type="submit" class="mr-3" @click="addGroup(groupName)">Save</v-btn>
+							<v-btn color="primary" type="submit" class="mr-3" @click="addGroup()">Save</v-btn>
 							<v-btn variant=outlined color="primary" @click="addDialogue=false">Cancel</v-btn>
 						</v-row>
 					</v-card-title>
@@ -217,27 +238,28 @@
 								<br />
 								<v-row>
 									<v-text-field required variant=outlined
-									label="Name" v-model=groupName></v-text-field>
+									label="Name" v-model=groupInfo.name></v-text-field>
 								</v-row>
 								<br />
-								<div v-for="(item, index) in permissions" :key="index">
-									<div v-if="item.clearance == 'full'">
-										<v-divider></v-divider>
-										<v-checkbox :v-model=selectedPerms
-										:label=item.name :value=item.id>
-										</v-checkbox>
-									</div>
-									<div v-else>
-										<v-divider></v-divider>
-										<v-row>
-											<v-select class="mt-8" :label="item.name"
-											:items="['View', 'Edit', 'Create', 'Delete']">
-											</v-select>
-											<v-checkbox class="mt-8" label="Reportable?">
+								<v-list>
+									<v-list-item v-for="(item, index) in permissions" :key="index">
+										<div v-if="item.clearance == 'full'">
+											<v-divider></v-divider>
+											<v-checkbox :label=item.name :value=item.name @click="changePerm(index)">
 											</v-checkbox>
-										</v-row>
-									</div>
-								</div>
+										</div>
+										<div v-else>
+											<v-divider></v-divider>
+											<v-row>
+												<v-select class="mt-8" :label="item.name"
+												:items="['View', 'Edit', 'Create', 'Delete']">
+												</v-select>
+												<v-checkbox class="mt-8" label="Reportable?">
+												</v-checkbox>
+											</v-row>
+										</div>
+									</v-list-item>
+								</v-list>
 							</v-col>
 						</v-row>
 					</div>
@@ -270,7 +292,10 @@
 						<v-card-title> People </v-card-title>
 						<v-list lines="one">
 							<v-list-item v-show=displayPeople[index] v-for="(item, index) in people"
-							:key="index" :title="item.fName+spacing+item.lName">
+							:key="index">
+							<router-link :to="router.resolve({ name: 'person', params: { id: item.id }})">
+								{{ item.fName+spacing+item.lName }}
+							</router-link>
 							<v-divider></v-divider>
 							</v-list-item>
 						</v-list>
@@ -290,7 +315,7 @@
 				<v-row class="mt-auto mx-auto mb-auto">
 				Edit Group
 				<v-spacer></v-spacer>
-				<v-btn color="primary" class="mr-3" @click="editGroup(groupId, groupName)">Save</v-btn>
+				<v-btn color="primary" class="mr-3" @click="editGroup(groupId, groupInfo)">Save</v-btn>
 				<v-btn variant=outlined color="primary" @click="editDialogue=false">Cancel</v-btn>
 				</v-row>
 			</v-card-title>
@@ -298,7 +323,7 @@
 				<v-row>
 					<v-col>
 						<br />
-						<v-text-field required variant=outlined label="Name" max-width="30%" v-model=groupName></v-text-field>
+						<v-text-field required variant=outlined label="Name" max-width="30%" v-model=groupInfo></v-text-field>
 						<br />
 						<div v-for="(item, index) in permissions" :key="index">
 							<v-checkbox :v-model=selectedPerms
