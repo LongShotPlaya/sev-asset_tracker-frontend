@@ -21,22 +21,23 @@
     const assetId = ref("No ID found");
     const currentBorrower = ref("Not in circulation");
     const assetType = ref(null);
-    const accPrice = ref(null);
-    const accDate = ref("");
+    let accPrice = ref(null);
+    let accDate = ref("");
     const tab = ref('alerts');
-    const assetTemplate = ref("");
+    let assetTemplate = ref("");
     const allAssetTypes = ref([]);
     const alerts = ref([]);
     const logs = ref([]);
-    const template = ref({});
-    const assetTemplateId = ref();
+    let template = ref({});
+    let assetTemplateId = ref();
     const assetFields = ref();
     const assetTypeId = ref();
     const allAssetCategories = ref([]);
-    const assetLocation = ref(null);
-    const allAssetTemplates = ref([]);
+    let assetLocation = ref(null);
+    let allAssetTemplates = ref([]);
     const assetCatName = ref(null);
     const assetCatId = ref();
+    let SaveAssetId = ref();
 
     const props = defineProps({
       id: {
@@ -62,7 +63,7 @@
             assetTemplate.value = response.data.template;
             // console.log("Asset Template: ", assetTemplate);
             assetTemplateId.value = response.data.template.id;
-            // console.log("Asset Template ID: ", assetTemplateId);
+            console.log("Asset Template ID: ", assetTemplateId);
             assetLocation.value = response.data.location;
             // console.log("Asset Location: ", assetLocation);
         })
@@ -185,17 +186,19 @@
     };
 
     const save = (id) => {
-        assetId = id;
-        data = { 
+        SaveAssetId = id;
+
+        const acquisitionPriceInCents = Math.round(accPrice.value * 100); // Multiply by 100 and round to nearest integer
+
+        const data = { 
             acquisitionDate: accDate.value,
-            acquisitionPrice: accPrice.value,
-            templateId: assetTemplateId.value,
+            acquisitionPrice: acquisitionPriceInCents,
+            templateId: assetTemplateId.value.value,
             location: assetLocation.value,
-            template: assetTemplate.value,
+            template: assetTemplate.value.value,
         };
 
-        const updateAsset = (assetId, data) => {
-            assetServices.updateAsset(assetId, data)
+        assetServices.updateAsset(SaveAssetId, data)
             .then(() => {
                 console.log("Updated Asset info: ", data);
             })
@@ -203,7 +206,6 @@
                 message.value = error.response.data.message;
             })
         };
-    };
 
     const logHeaders = ref([
         { title: "Time Stamp", value: "date", sortable: true },
