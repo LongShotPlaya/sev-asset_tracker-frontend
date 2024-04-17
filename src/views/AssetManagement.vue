@@ -41,6 +41,7 @@
     const props = defineProps({
       id: {
         required: true,
+        default: null,
       },
     });
 
