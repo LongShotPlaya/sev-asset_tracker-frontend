@@ -191,11 +191,10 @@
         const acquisitionPriceInCents = Math.round(accPrice.value * 100); // Multiply by 100 and round to nearest integer
 
         const data = { 
-            acquisitionDate: accDate.value,
-            acquisitionPrice: acquisitionPriceInCents,
-            templateId: assetTemplateId.value.value,
-            location: assetLocation.value,
-            template: assetTemplate.value.value,
+            acquisitionDate: accDate.value, //Works
+            acquisitionPrice: acquisitionPriceInCents, //Works
+            assetTemplate: assetTemplateId.value, //Does not work
+            location: assetLocation.value, //Not tested
         };
 
         assetServices.updateAsset(SaveAssetId, data)
