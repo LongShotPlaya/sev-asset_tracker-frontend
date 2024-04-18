@@ -38,6 +38,7 @@
             categoryId: null,
             fields: [],
         },
+        templateId: null,
         template: {
             id: null,
         },
@@ -65,7 +66,9 @@
         const grid = [];
         fieldGridCols.value = 0;
 
-        assetType.value.fields.forEach(field => {
+        fullAsset.value.type.fields.forEach(field => {
+            if (!field.templateData && !field.assetData) field.assetData = { value: null };
+
             while (grid.length <= field.row)
             {
                 const newRow = [];
@@ -102,7 +105,6 @@
         assetServices.getFullAsset(id)
         .then(response => {
             fullAsset.value = response.data;
-            console.log(fullAsset.value);
             fullAsset.value.acquisitionDate = format(fullAsset.value.acquisitionDate, 'YYYY-MM-DD');
 
             // currentBorrower.value = response.data.borrower;
@@ -137,13 +139,12 @@
         })
     };
 
-    const changeAssetType = () => { //404 error, why????
+    const changeAssetType = () => {
         if (!fullAsset.value.type.id)
             return;
         assetTypeServices.getFullAssetType(asset.value.typeId)
         .then(response => {
             assetType.value = response.data;
-            console.log("Asset Fields: ", assetType);
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -183,8 +184,15 @@
         router.go(-1);
     };
 
-    const save = (id) => {
-        
+    const save = () => {
+        assetServices.updateAsset(fullAsset.value.id, fullAsset.value)
+        .then(response => {
+            router.go(0);
+        })
+        .catch(err => {
+            console.log(err.response.data.message)
+            message.value = err.response.data.message;
+        })
     };
 
     const logHeaders = ref([
@@ -213,185 +221,183 @@
     });
 </script>
 
-<template><br>
-    <v-toolbar
-    style="
-    padding-top: .5%;
-    padding-left: .5%;
-    padding-right: .5%;
-    width: 90%;
-    margin-left: 5%;
-    ">
-        <v-toolbar-title
-        style="font-size: 28px;"
-        >Asset: {{ id }}<v-btn
-                @click="cancel()"
-                color="#811429" 
-                style= "margin-left: 2%;
-                float: right;
-                font-size: large;
-                margin-right: 1%;
-                ">
-                cancel
-            </v-btn>
-            <v-btn
-                @click="save(id)"
-                color="green" 
-                style="float: right;
-                font-size: large;
-                ">
-                save
-            </v-btn>
-        </v-toolbar-title>
-    </v-toolbar>
-    <br>
-    <v-card
-    class="mx-auto"
-    width="90%"
-    >
-        <v-container 
-        fluid 
-        style="
-            min-height: 900px;
-        ">  
-        <v-title 
-        style="
-        font-size: x-large;
-        ">General Asset Info</v-title><br><br>
-            <v-row>
-                <v-col>
-                    <v-combobox
-                        :items="allAssetCategories"
-                        :return-object = "false"
+<template>
+    <v-container>
+
+        <br>
+        <v-toolbar>
+            <v-toolbar-title
+            style="font-size: 28px;"
+            >Asset: {{ id }}<v-btn
+                    @click="cancel()"
+                    color="#811429" 
+                    style= "margin-left: 2%;
+                    float: right;
+                    font-size: large;
+                    margin-right: 1%;
+                    ">
+                    cancel
+                </v-btn>
+                <v-btn
+                    @click="save(id)"
+                    color="green" 
+                    style="float: right;
+                    font-size: large;
+                    ">
+                    save
+                </v-btn>
+            </v-toolbar-title>
+        </v-toolbar>
+        <br>
+        <v-card>
+            <v-container>  
+                <v-row>
+                    <v-col>
+                        <v-card-title 
+                        style="
+                        font-size: x-large;
+                        ">General Asset Info</v-card-title><br><br>
+                    </v-col>
+                </v-row>
+                <v-row class="ma-1">
+                    <v-col>
+                        <v-combobox
+                            :items="allAssetCategories"
+                            :return-object = "false"
+                            variant="outlined"
+                            label="Category"
+                            :readonly = "!adding"
+                            :hint="adding?'' : 'Cannot change after creating asset'"
+                            v-model="fullAsset.type.categoryId"
+                        ></v-combobox>
+                    </v-col>    
+                    <v-col> 
+                        <v-combobox
+                        :items="allAssetTypes"
                         variant="outlined"
-                        label="Category"
-                        :readonly = "!adding"
+                        label="Type"
+                        :return-object = "false"
+                        auto-select-first
+                        :readonly = '!adding'
                         :hint="adding?'' : 'Cannot change after creating asset'"
-                        v-model="fullAsset.type.categoryId"
-                    ></v-combobox>
-                </v-col>    
-                <v-col> 
-                    <v-combobox
-                    :items="allAssetTypes"
-                    variant="outlined"
-                    label="Type"
-                    :return-object = "false"
-                    auto-select-first
-                    :readonly = '!adding'
-                    :hint="adding?'' : 'Cannot change after creating asset'"
-                    v-model="fullAsset.type.id"
-                    ></v-combobox>
-                </v-col>
-                <v-col>
-                    <v-combobox
-                    :items="allAssetTemplates"
-                    variant="outlined"
-                    label="Template"
-                    :return-object = 'false'
-                    auto-select-first
-                    v-model="fullAsset.template.id"
-                    >
-                    </v-combobox>
-                </v-col> 
-            </v-row>
-            <v-row>
-                <v-col>
-                    <v-text-field
-                    variant="outlined"
-                    label="Aquisition Price"
-                    prepend-inner-icon="mdi-currency-usd"
-                    rows="1"
-                    v-model="fullAsset.acquisitionPrice"
-                    ></v-text-field>
-                </v-col>
-                <v-col>
-                    <v-text-field
-                    variant="outlined"
-                    type="date"
-                    label="Acquisition Date"
-                    v-model="fullAsset.acquisitionDate"
-                    ></v-text-field>
-                </v-col>                                           
-            </v-row>
-        </v-container>
-    </v-card><br>
-<!--------------------------------------------------------------Fields Block----------------------------------------------------------->
-    <v-card
-    class="mx-auto"
-    width="90%"
-    >
-        <v-card-title 
-        style="
-        font-size: x-large;
-        margin: 1%;
-        ">Fields</v-card-title>
-        <v-container
-        fluid>
-            <v-row v-for="(row, rowIndex) in fieldGrid" :key=rowIndex justify="center">
-                <v-col v-for="(column, colIndex) in row"
-                    :key="colIndex"
-                    :cols="Math.round((fieldGridCols - column.columnSpan) / fieldGridCols * 12)"
-                >
-                    <br>
-                    <v-row v-if="column.label !== undefined" align="baseline">
-                        <v-text-field
-                            :label="fieldGridRef[rowIndex][colIndex].label"
-                            v-model="fieldGridRef[rowIndex][colIndex].label"
-                        />
-                    </v-row>
-                </v-col>
-            </v-row>
-        </v-container>
-    </v-card><br>
-<!------------------------------------------------------------Alerts and Logs------------------------------->
-    <v-card 
-    style="width: 90%; 
-    margin-left: 5%;">
-        <v-tabs
-        v-model="tab"
-        id="tabsBlock"
-        >
-            <v-tab value="alerts">Alerts</v-tab> 
-            <v-tab value="logs">Logs</v-tab> 
-            <v-tab value="Buildings" v-if = 'isBuilding'>Buildings</v-tab>
-        </v-tabs>
-        <v-card-text>
-            <v-window v-model="tab">
-                <v-window-item value="alerts">
-                    <v-data-table
-                        :headers="alertHeaders"
-                        :items="fullAsset.alerts"
-                        :sortBy="[{ key: 'date', order: 'asc' }]"
+                        v-model="fullAsset.type.id"
+                        ></v-combobox>
+                    </v-col>
+                    <v-col>
+                        <v-combobox
+                        :items="allAssetTemplates"
+                        variant="outlined"
+                        label="Template"
+                        :return-object = 'false'
+                        auto-select-first
+                        v-model="fullAsset.templateId"
                         >
-                        <template #item.date="{ item }">
-                            {{ format(item.date) }}
-                        </template>
-                        <template #item.updatedAt="{ item }">
-                            {{ format(item.updtatedAt) }}
-                        </template>
-                    </v-data-table>
-                </v-window-item>
-                <v-window-item value="logs">
-                    <v-data-table
-                    :headers="logHeaders"
-                    :items="fullAsset.logs"
-                    :sort-by="[{ key: 'date', order: 'asc' }]"
+                        </v-combobox>
+                    </v-col> 
+                </v-row>
+                <v-row class="ma-1">
+                    <v-col>
+                        <v-text-field
+                        variant="outlined"
+                        label="Aquisition Price"
+                        prepend-inner-icon="mdi-currency-usd"
+                        rows="1"
+                        v-model="fullAsset.acquisitionPrice"
+                        ></v-text-field>
+                    </v-col>
+                    <v-col>
+                        <v-text-field
+                        variant="outlined"
+                        type="date"
+                        label="Acquisition Date"
+                        v-model="fullAsset.acquisitionDate"
+                        ></v-text-field>
+                    </v-col>                                           
+                </v-row>
+            </v-container>
+        </v-card><br>
+    <!--------------------------------------------------------------Fields Block----------------------------------------------------------->
+        <v-card>
+            <v-container>
+                <v-row>
+                    <v-col>
+                        <v-card-title 
+                        style="
+                        font-size: x-large;
+                        ">Fields</v-card-title>
+                    </v-col>
+                </v-row>
+                <v-row v-for="(row, rowIndex) in fieldGrid" :key=rowIndex justify="center" class="ma-4">
+                    <v-col v-for="(column, colIndex) in row"
+                        :key="colIndex"
+                        :cols="Math.round((fieldGridCols - column.columnSpan) / fieldGridCols * 12)"
                     >
-                        <template #item.date="{ item }">
-                            {{ format(item.date) }}
-                        </template>
-                    </v-data-table>
-                </v-window-item>
-                <v-window-item 
-                value="buildings"
-                >
-                    <v-card-title>
-                        Buildings
-                    </v-card-title>
-                </v-window-item>
-            </v-window>
-        </v-card-text>
-    </v-card>
+                        <br>
+                        <v-row v-if="column.label !== undefined" align="baseline">
+                            <v-text-field
+                                v-if="fieldGridRef[rowIndex][colIndex].templateField && !!fieldGridRef[rowIndex][colIndex].templateData?.value"
+                                :label="fieldGridRef[rowIndex][colIndex].label"
+                                v-model="fieldGridRef[rowIndex][colIndex].templateData.value"
+                                disabled
+                            />
+                            <v-text-field
+                                v-else
+                                :label="fieldGridRef[rowIndex][colIndex].label"
+                                v-model="fieldGridRef[rowIndex][colIndex].assetData.value"
+                            />
+                        </v-row>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-card><br>
+    <!------------------------------------------------------------Alerts and Logs------------------------------->
+        <v-card>
+            <v-tabs
+            v-model="tab"
+            id="tabsBlock"
+            >
+                <v-tab value="alerts">Alerts</v-tab> 
+                <v-tab value="logs">Logs</v-tab> 
+                <v-tab value="Buildings" v-if = 'isBuilding'>Buildings</v-tab>
+            </v-tabs>
+            <v-card-text>
+                <v-window v-model="tab">
+                    <v-window-item value="alerts">
+                        <v-data-table
+                            :headers="alertHeaders"
+                            :items="fullAsset.alerts"
+                            :sortBy="[{ key: 'date', order: 'asc' }]"
+                            >
+                            <template #item.date="{ item }">
+                                {{ format(item.date) }}
+                            </template>
+                            <template #item.updatedAt="{ item }">
+                                {{ format(item.updtatedAt) }}
+                            </template>
+                        </v-data-table>
+                    </v-window-item>
+                    <v-window-item value="logs">
+                        <v-data-table
+                        :headers="logHeaders"
+                        :items="fullAsset.logs"
+                        :sort-by="[{ key: 'date', order: 'asc' }]"
+                        >
+                            <template #item.date="{ item }">
+                                {{ format(item.date) }}
+                            </template>
+                        </v-data-table>
+                    </v-window-item>
+                    <v-window-item 
+                    value="buildings"
+                    >
+                        <v-card-title>
+                            Buildings
+                        </v-card-title>
+                    </v-window-item>
+                </v-window>
+            </v-card-text>
+        </v-card>
+    </v-container>
 </template>
 
 <style>
