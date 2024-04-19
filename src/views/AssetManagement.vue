@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, onMounted, computed } from "vue";
+    import { ref, onMounted, computed, watch } from "vue";
     import { useRouter } from "vue-router";
     import { format } from "@formkit/tempo";
     import { VBtn } from 'vuetify/components';
@@ -11,6 +11,8 @@
     import logServices from "../services/logServices.js";
     import assetCatServices from "../services/assetCatServices";
     import assetTemplateServices from "../services/assetTemplateServices.js";
+    import personServices from "../services/personServices.js";
+    import userServices from "../services/userServices.js";
 
     const user = Utils.getStore("user");
     const router = useRouter();
@@ -54,11 +56,16 @@
     });
     const assetType = ref(null);
     const tab = ref('alerts');
-    const assetTemplate = ref("");
     const allAssetTypes = ref([]);
     const alertTypes = ref([]);
     const allAssetCategories = ref([]);
     const allAssetTemplates = ref([]);
+    const formattedAccPrice = ref("0");
+    const validAccPrice = computed(() => {
+        const removeCommas = formattedAccPrice.value.replace(/,/g, "");
+        return !isNaN(parseFloat(removeCommas)) && !isNaN(new Number(removeCommas));
+    });
+    const filteredAssetTemplates = computed(() => allAssetTemplates.value.filter(template => template.assetTypeId == fullAsset.value.type.id));
 
     const fieldGridCols = ref(0);
     const fieldGridRef = ref([]);
@@ -100,26 +107,23 @@
         return grid;
     });
 
+    watch(formattedAccPrice, (newValue, oldValue) => {
+        if (!validAccPrice.value) return;
+        const decimal = formattedAccPrice.value.includes('.');
+        fullAsset.value.acquisitionPrice = parseInt(formattedAccPrice.value.replace(".", "").replace(/,/g, "")) * (decimal ? 1 : 100);
+    });
+
 
     const getFullAssetDetails = (id) => {
         assetServices.getFullAsset(id)
         .then(response => {
             fullAsset.value = response.data;
             fullAsset.value.acquisitionDate = format(fullAsset.value.acquisitionDate, 'YYYY-MM-DD');
-
-            // currentBorrower.value = response.data.borrower;
-            // // console.log("Full Borrower: ", currentBorrower);
-            // const acquisitionDate = new Date(response.data.acquisitionDate);
-            // accDate.value = acquisitionDate.toISOString().split('T')[0];
-            // // console.log("Accqsition Date: ", accDate);
-            // accPrice.value = (response.data.acquisitionPrice / 100).toFixed(2);
-            // // console.log("Asset Price: ", accPrice);
-            // assetTemplate.value = response.data.template;
-            // // console.log("Asset Template: ", assetTemplate);
-            // assetTemplateId.value = response.data.template.id;
-            // console.log("Asset Template ID: ", assetTemplateId);
-            // assetLocation.value = response.data.location;
-            // // console.log("Asset Location: ", assetLocation);
+            const unformattedAccPrice = `${fullAsset.value.acquisitionPrice}`; 
+            formattedAccPrice.value = "";
+            for(let i = 0; i < unformattedAccPrice.length; i++) {
+                formattedAccPrice.value += unformattedAccPrice.length - i == 2 ? '.' + unformattedAccPrice[i] : unformattedAccPrice[i];
+            }
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -133,6 +137,7 @@
                 title: assetType.name, 
                 value: assetType.id, 
             }));
+            changeAssetType();
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -140,9 +145,9 @@
     };
 
     const changeAssetType = () => {
-        if (!fullAsset.value.type.id)
+        if (!fullAsset.value?.type?.id)
             return;
-        assetTypeServices.getFullAssetType(asset.value.typeId)
+        assetTypeServices.getFullAssetType(fullAsset.value.type.id)
         .then(response => {
             assetType.value = response.data;
         })
@@ -169,15 +174,37 @@
     const getAllAssetTemplates = () => {
         assetTemplateServices.getAllAssetTemplates()
         .then(response => {
-            allAssetTemplates.value = response.data.map(assetTemplate => ({
-                title: assetTemplate.name,
-                value: assetTemplate.id,
-            }));
-            // console.log("All Asset Templates: ", allAssetTemplates);
+            allAssetTemplates.value = response.data.map(assetTemplate => {
+                return {
+                    title: assetTemplate.name,
+                    value: assetTemplate.id,
+                    assetTypeId: assetTemplate.assetTypeId,
+                };
+            });
+            changeTemplate();
         })
         .catch(error => {
             message.value = error.response.data.message;
         })
+    };
+
+    const changeTemplate = () => {
+        if (!fullAsset.value?.templateId)
+            return;
+
+        assetTemplateServices.getFullAssetTemplate(fullAsset.value.templateId)
+        .then(response => {
+            const templateData = response.data.assetType.fields
+            .map(field => field.templateData)
+            .filter(data => !!data);
+
+            fullAsset.value.type.fields.forEach(field => {
+                field.templateData = templateData.find(data => data.fieldId == field.id) ?? null;
+            });
+        })
+        .catch(err => {
+            message.value = err.response.data.message;
+        });
     };
 
     const cancel = () => {
@@ -215,7 +242,6 @@
         const id = props.id;
         getFullAssetDetails(id);
         getAllAssetTypes();
-        changeAssetType();
         getAllAssetCats();
         getAllAssetTemplates(); 
     });
@@ -223,42 +249,54 @@
 
 <template>
     <v-container>
-
-        <br>
         <v-toolbar>
-            <v-toolbar-title
-            style="font-size: 28px;"
-            >Asset: {{ id }}<v-btn
-                    @click="cancel()"
-                    color="#811429" 
-                    style= "margin-left: 2%;
-                    float: right;
-                    font-size: large;
-                    margin-right: 1%;
-                    ">
-                    cancel
-                </v-btn>
-                <v-btn
-                    @click="save(id)"
-                    color="green" 
-                    style="float: right;
-                    font-size: large;
-                    ">
-                    save
-                </v-btn>
-            </v-toolbar-title>
+            <v-container>
+                <v-row>
+                    <v-col>
+                        <v-toolbar-title
+                        style="font-size: 28px;"
+                        >{{ adding ? 'Add' : 'Edit' }} Asset
+                        </v-toolbar-title>
+                    </v-col>
+                    <v-col>
+
+                    </v-col>
+                </v-row>
+            </v-container>
         </v-toolbar>
         <br>
         <v-card>
-            <v-container>  
+            <v-container>
                 <v-row>
                     <v-col>
                         <v-card-title 
                         style="
                         font-size: x-large;
-                        ">General Asset Info</v-card-title><br><br>
+                        ">General Asset Info</v-card-title>
+                    </v-col>
+                    <v-col class="mr-4">
+                        <v-btn
+                            @click="cancel()"
+                            color="secondary" 
+                            style= "margin-left: 2%;
+                            float: right;
+                            font-size: large;
+                            "
+                            size="large">
+                            cancel
+                        </v-btn>
+                        <v-btn
+                            @click="save(id)"
+                            color="primary" 
+                            style="float: right;
+                            font-size: large;
+                            "
+                            size="large">
+                            save
+                        </v-btn>
                     </v-col>
                 </v-row>
+                <br>
                 <v-row class="ma-1">
                     <v-col>
                         <v-combobox
@@ -285,12 +323,13 @@
                     </v-col>
                     <v-col>
                         <v-combobox
-                        :items="allAssetTemplates"
+                        :items="filteredAssetTemplates"
                         variant="outlined"
                         label="Template"
                         :return-object = 'false'
                         auto-select-first
                         v-model="fullAsset.templateId"
+                        @update:modelValue="changeTemplate"
                         >
                         </v-combobox>
                     </v-col> 
@@ -302,7 +341,8 @@
                         label="Aquisition Price"
                         prepend-inner-icon="mdi-currency-usd"
                         rows="1"
-                        v-model="fullAsset.acquisitionPrice"
+                        :rules="[validAccPrice]"
+                        v-model="formattedAccPrice"
                         ></v-text-field>
                     </v-col>
                     <v-col>
@@ -313,6 +353,20 @@
                         v-model="fullAsset.acquisitionDate"
                         ></v-text-field>
                     </v-col>                                           
+                </v-row>
+                <br>
+                <v-row class="ma-1">
+                    <v-col>
+                        <v-combobox
+                            v-if="!fullAsset.borrower"
+                            label="Building and room"
+                            variant="outlined"
+                        />
+                        <v-combobox
+                            v-else
+                            label="Person"
+                        />
+                    </v-col>
                 </v-row>
             </v-container>
         </v-card><br>
@@ -338,12 +392,14 @@
                                 v-if="fieldGridRef[rowIndex][colIndex].templateField && !!fieldGridRef[rowIndex][colIndex].templateData?.value"
                                 :label="fieldGridRef[rowIndex][colIndex].label"
                                 v-model="fieldGridRef[rowIndex][colIndex].templateData.value"
+                                variant="outlined"
                                 disabled
                             />
                             <v-text-field
                                 v-else
                                 :label="fieldGridRef[rowIndex][colIndex].label"
                                 v-model="fieldGridRef[rowIndex][colIndex].assetData.value"
+                                variant="outlined"
                             />
                         </v-row>
                     </v-col>
