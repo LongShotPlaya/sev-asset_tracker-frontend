@@ -113,6 +113,17 @@
         fullAsset.value.acquisitionPrice = parseInt(formattedAccPrice.value.replace(".", "").replace(/,/g, "")) * (decimal ? 1 : 100);
     });
 
+    const newAlert = ref({
+        description: '',
+        status: ''
+    });
+
+    const newLog = ref({
+        description: "",
+        type: "",
+        condition: "",
+        status: "",
+    });
 
     const getFullAssetDetails = (id) => {
         assetServices.getFullAsset(id)
@@ -230,12 +241,30 @@
         { title: "Status", value: "circulationStatus" },
     ]);
 
+    const addLog = () => {
+        fullAsset.value.logs.push({ ...newLog.value });
+        newLog.value = {
+            description: "",
+            type: "",
+            condition: "",
+            status: "",
+        }
+    };
+
     const alertHeaders = ref([
         { title: "Time Stamp", value: "date", sortable: true },
         { title: "Description", value: "description" },
         { title: "Status", value: "status" },
         { title: "Time Updated", value: "updatedAt" },
     ]);
+
+    const addAlert = () => {
+        fullAsset.value.alerts.push({ ...newAlert.value });
+        newAlert.value = {
+            description: '',
+            status: '',
+        };
+    };
 
     onMounted(() => {
         user.value = Utils.getStore("User");
@@ -365,6 +394,7 @@
                         <v-combobox
                             v-else
                             label="Person"
+                            variant="outlined"
                         />
                     </v-col>
                 </v-row>
@@ -422,13 +452,31 @@
                         <v-data-table
                             :headers="alertHeaders"
                             :items="fullAsset.alerts"
-                            :sortBy="[{ key: 'date', order: 'asc' }]"
-                            >
-                            <template #item.date="{ item }">
-                                {{ format(item.date) }}
-                            </template>
-                            <template #item.updatedAt="{ item }">
-                                {{ format(item.updtatedAt) }}
+                            :sort-by="[{ key: 'date', order: 'asc' }]"
+                        >
+                        <template #item.date="{ item }">
+                            {{ format(item.date) }}
+                        </template>
+
+                        <template #item.updatedAt="{ item }">
+                            {{ format(item.updatedAt) }}
+                        </template>
+
+                        <!--Add Alert funtionality-->
+                        <template v-slot:top-row>
+                            <tr>
+                                <td><input v-model="newAlert.description" placeholder="Enter description" /></td>
+                                <td><input v-model="newAlert.status" placeholder="Enter status" /></td>
+                                <td>
+                                    <v-btn @click="addAlert">Add</v-btn>
+                                </td>
+                            </tr>
+                        </template>
+                            <template v-slot:top>
+                                <v-divider class="mx-4" inset vertical></v-divider>
+                                <v-btn class="mb-2" color="primary" dark @click="addAlert" style="margin-left: 85%; width: 15%;">
+                                    New Alert
+                                </v-btn>
                             </template>
                         </v-data-table>
                     </v-window-item>
@@ -441,6 +489,12 @@
                             <template #item.date="{ item }">
                                 {{ format(item.date) }}
                             </template>
+                                <template v-slot:top>
+                                    <v-divider class="mx-4" inset vertical></v-divider>
+                                    <v-btn class="mb-2" color="primary" dark @click="addLog" style="margin-left: 85%; width: 15%;">
+                                        New Log
+                                    </v-btn>
+                                </template>
                         </v-data-table>
                     </v-window-item>
                     <v-window-item 
