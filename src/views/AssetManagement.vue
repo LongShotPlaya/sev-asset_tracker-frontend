@@ -454,62 +454,33 @@
                             :items="fullAsset.alerts"
                             :sort-by="[{ key: 'date', order: 'asc' }]"
                         >
-                            <!-- Formatting for date and updatedAt columns -->
-                            <template #item.date="{ item }">
-                                {{ format(item.date) }}
-                            </template>
-                            <template #item.updatedAt="{ item }">
-                                {{ format(item.updatedAt) }}
-                            </template>
+                        <template #item.date="{ item }">
+                            {{ format(item.date) }}
+                        </template>
 
-                            <!-- Add Alert functionality -->
-                            <template v-slot:top-row>
-                                <tr>
-                                    <td>
-                                        <!-- Editable description input for the new alert -->
-                                        <v-text-field v-model="newAlert.description" placeholder="Enter description" />
-                                    </td>
-                                    <td>
-                                        <!-- Editable status input for the new alert -->
-                                        <v-text-field v-model="newAlert.status" placeholder="Enter status" />
-                                    </td>
-                                    <td>
-                                        <!-- Save button to add the new alert -->
-                                        <v-btn @click="addAlert">Save</v-btn>
-                                    </td>
-                                </tr>
-                            </template>
+                        <template #item.updatedAt="{ item }">
+                            {{ format(item.updatedAt) }}
+                        </template>
 
-                            <!-- Slot for existing alert rows to allow editing -->
-                            <template #item="{ item }">
-                                <tr>
-                                    <td>
-                                        <!-- Editable description input for existing alerts -->
-                                        <v-text-field v-model="item.description" />
-                                    </td>
-                                    <td>
-                                        <!-- Editable status input for existing alerts -->
-                                        <v-text-field v-model="item.status" />
-                                    </td>
-                                    <td>
-                                        <!-- Save button to save changes to existing alerts -->
-                                        <v-btn @click="">Save</v-btn> 
-                                        <!-- <v-btn @click="saveAlert(item)">Save</v-btn>  -->
-                                    </td>
-                                </tr>
-                            </template>
-
-                            <!-- Add New Alert button -->
+                        <!--Add Alert funtionality-->
+                        <template v-slot:top-row>
+                            <tr>
+                                <td><input v-model="newAlert.description" placeholder="Enter description" /></td>
+                                <td><input v-model="newAlert.status" placeholder="Enter status" /></td>
+                                <td>
+                                    <v-btn @click="addAlert">Add</v-btn>
+                                </td>
+                            </tr>
+                        </template>
                             <template v-slot:top>
                                 <v-divider class="mx-4" inset vertical></v-divider>
-                                <v-spacer></v-spacer>
                                 <v-btn class="mb-2" color="primary" dark @click="addAlert" style="margin-left: 85%; width: 15%;">
                                     New Alert
                                 </v-btn>
                             </template>
                         </v-data-table>
                     </v-window-item>
-                   <v-window-item value="logs">
+                    <v-window-item value="logs">
                         <v-data-table
                         :headers="logHeaders"
                         :items="fullAsset.logs"
