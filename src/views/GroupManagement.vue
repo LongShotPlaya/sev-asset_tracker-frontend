@@ -86,7 +86,7 @@
 					groupPermissions.value[i].clearance = "full";
 				else
 					groupPermissions.value[i].clearance = "none";
-		message.value = groupPermissions;
+		//message.value = groupPermissions;
 	};
 
 	const retrieveUsers = () => {
@@ -111,16 +111,41 @@
 	};
 
 	const addGroup = (name, permissions) => {
-		groupServices.createGroup({name});
-		retrieveGroups();
-		for (let i = 0; i < groups.value.length; i++)
-			if (groupName == groups.value[i].name)
-				groupServices.updateGroup(groups.value[i].id, {permissions});
-		groupName.value = "";
-		resetPermissions();
-		addDialogue.value = false;
-		//location.reload();
-		
+		let groupInfo = ref({ id: null, name: "", priority: null,
+		expiration: null, createdAt: "", updatedAt: "", permissions: [] });
+
+		groupServices.createGroup({name})
+			.then((response) => {
+				groupServices.getGroup(response.data.id)
+					.then((response) => {
+						groupInfo.value.id = response.data.id;
+						groupInfo.value.name = response.data.name;
+						groupInfo.value.priority = response.data.priority;
+						groupInfo.value.expiration = response.data.expiration;
+						groupInfo.value.createdAt = response.data.createdAt;
+						groupInfo.value.updatedAt = response.data.updatedAt;
+						for (let i = 0; i < permissions.length; i++)
+							if (permissions[i].clearance != "none")
+								groupInfo.value.permissions.push(permissions[i]);
+						groupServices.updateGroup(groupInfo.value.id, groupInfo.value)
+							.then((response) => {
+								message.value = groupInfo.value + " => " + response.data;
+								groupName.value = "";
+								resetPermissions();
+								addDialogue.value = false;
+								//location.reload();
+							})
+							.catch((e) => {
+								message.value = e.response.data.message;
+							});
+				})
+				.catch((e) => {
+					message.value = e.response.data.message;
+				});
+			})
+			.catch((e) => {
+				message.value = e.response.data.message;
+			});
 	};
 
 	const editGroup = (id, name, data) => {
