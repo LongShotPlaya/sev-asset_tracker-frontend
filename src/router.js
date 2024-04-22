@@ -7,6 +7,7 @@ import AssetCatManagement from "./views/AssetCatManagement.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
 import BuildingManagement from "./views/BuildingManagement.vue";
 import EditAssetType from "./views/EditAssetType.vue";
+import EditAssetTemplate from "./views/EditAssetTemplate.vue";
 import FieldListManagement from "./views/FieldListManagement.vue";//here for dropdowns
 import GenerateReports from "./views/GenerateReports.vue";
 import GroupManagement from "./views/GroupManagement.vue";
@@ -60,6 +61,12 @@ const router = createRouter({
       path: "/asset-templates",
       name: "asset-templates",
       component: AssetTemplateManagement,
+    },
+    {
+      path: "/asset-templates/:id",
+      name: "asset-templates",
+      component: EditAssetTemplate,
+      props: true,
     },
     {
       path: "/buildings",

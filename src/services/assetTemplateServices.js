@@ -7,6 +7,9 @@ export default{
     getAssetTemplate(assetTemplateId) {
         return apiClient.get(`/asset-templates/${assetTemplateId}`);
     },
+    getFullAssetTemplate(assetTemplateId) {
+        return apiClient.get(`/asset-templates/${assetTemplateId}?full`);
+    },
     createAssetTemplate(data) {
         return apiClient.post(`/asset-templates/`, data);
     },
