@@ -983,7 +983,7 @@
                         >
                             <template v-slot:top>
                                 <v-divider class="mx-4" inset vertical></v-divider>
-                                <v-btn class="mb-2" color="primary" dark @click="addLog" style="margin-left: 85%; width: 15%;">
+                                <v-btn class="mb-2" color="primary" dark @click="console.log('Adding Log')" style="margin-left: 85%; width: 15%;">
                                     Add Log
                                 </v-btn>
                             </template>
