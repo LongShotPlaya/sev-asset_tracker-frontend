@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import AlertTypeManagement from "./views/AlertTypeManagement.vue";
 import AllAssets from "./views/AllAssets.vue";
+import Asset from "./views/AssetManagement.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/AssetCatManagement.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
@@ -40,6 +41,12 @@ const router = createRouter({
       path: "/assets",
       name: "assets",
       component: AllAssets,
+    },
+    {
+      path: "/asset/:id?",
+      name: "asset",
+      component: Asset,
+      props: true,
     },
     {
       path: "/asset-types",
