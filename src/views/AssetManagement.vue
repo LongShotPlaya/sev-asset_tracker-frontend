@@ -21,6 +21,7 @@
     const router = useRouter();
     const message = ref("");
 
+    const checkingOut = ref(false);
     const props = defineProps({
       id: {
         required: true,
@@ -39,11 +40,14 @@
         acquisitionPrice: 0,
         dueDate: null,
         condition: 'Like New',
+        borrowerId: null,
+        locationId: null,
         type: {
             id: null,
             identifierId: null,
             categoryId: null,
             fields: [],
+            circulatable: false,
         },
         templateId: null,
         template: {
@@ -73,6 +77,7 @@
     const allAssetCategories = ref([]);
     const allAssetTemplates = ref([]);
     const formattedAccPrice = ref("0.00");
+    const people = ref([]);
     const validAccPrice = computed(() => {
         const removeCommas = formattedAccPrice.value.replace(/,/g, "");
         return !isNaN(parseFloat(removeCommas)) && !isNaN(new Number(removeCommas));
@@ -149,7 +154,8 @@
         return !!fullAsset.value.type.id
         && validAccPrice.value
         && validAccDate.value
-        && !!validBuildingAbbreviation.value;
+        && !!validBuildingAbbreviation.value
+        && fullAsset.value.type.fields.every(field => !field.required || `${field.assetData?.value ?? ''}${field.templateData?.value ?? ''}`.length > 0);
     });
 
     watch(formattedAccPrice, (newValue, oldValue) => {
@@ -163,7 +169,7 @@
         if (!newAlert) return true;
 
         try {
-            newAlert.date = format(newAlert.date, "YYYY-MM-DD");
+            format(newAlert.tempValues.date, "YYYY-MM-DD");
         }
         catch {
             return false;
@@ -194,11 +200,12 @@
             fullAsset.value.alerts.forEach((alert) => {
                 alert.editing = false;
                 alert.status = new Date(alert.date) > new Date() ? "Active" : "Expired";
-                alert.date = format(alert.date, 'YYYY-MM-DD');
+                alert.date = format(`${alert.date}`.match(/\d{4}-\d{2}-\d{2}/)[0], 'YYYY-MM-DD');
             });
             fullAsset.value.building?.rooms?.forEach((room) => {
                 room.editing = false;
             });
+            fullAsset.value.locationId ??= "No Location";
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -255,7 +262,14 @@
         assetTypeServices.getFullAssetType(fullAsset.value.type.id)
         .then(response => {
             assetType.value = response.data;
+            const oldFields = fullAsset.value.type.fields;
             fullAsset.value.type.fields = response.data?.fields ?? [];
+            oldFields.forEach(field => {
+               const targetField = fullAsset.value.type.fields.find(f => f.id == field.id);
+               if (!targetField) return;
+               targetField.assetData = field.assetData;
+               targetField.templateData = field.templateData;
+            });
             if (!filteredAssetTemplates.value.map(template => template.value).includes(fullAsset.value.templateId))
             {
                 fullAsset.value.templateId = null;
@@ -313,6 +327,8 @@
                     abbreviation: room.building.abbreviation,
                 };
             });
+            locations.value.sort((a, b) => a.title.localeCompare(b.title));
+            locations.value = [{ title: "No Location", value: "No Location" }, ...locations.value];
         })
         .catch(error => {
             message.value = error.response.data.message;
@@ -327,7 +343,7 @@
         .then(response => {
             const templateData = response.data.assetType.fields
             .map(field => field.templateData)
-            .filter(data => !!data);
+            .filter(data => !!data && !!data.value);
 
             fullAsset.value.type.fields.forEach(field => {
                 field.templateData = templateData.find(data => data.fieldId == field.id) ?? null;
@@ -338,11 +354,29 @@
         });
     };
 
+    const getAllPeople = () =>  {
+        personServices.getAllPeople()
+        .then(response => {
+            people.value = response.data.map(person => {
+                return {
+                    title: `${person.fName} ${person.lName}`,
+                    value: person.id,
+                };
+            });
+            people.value.sort((a, b) => a.title.localeCompare(b.title));
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        });
+    };
+
     const cancel = () => {
         router.go(-1);
     };
 
     const saveAsset = async () => {
+        if (isNaN(fullAsset.value.locationId)) fullAsset.value.locationId = null;
+
         const addingAsset = adding.value;
         const request = () => addingAsset
         ? assetServices.createAsset(fullAsset.value)
@@ -351,7 +385,7 @@
 
         const buildingRequest = (assetId) => addingAsset
         ? buildingServices.createBuilding({ ...fullAsset.value.building, assetId })
-        : buildingServices.updateBuilding(fullAsset.value.building.id, fullAsset.value.building);
+        : buildingServices.updateBuilding(fullAsset.value.building?.id, fullAsset.value.building);
         
         let error = false;
         const response = await request()
@@ -365,7 +399,7 @@
 
         if (adding.value) fullAsset.value.id = response.data.id;
 
-        await buildingRequest(fullAsset.value.id)
+        if (isBuilding.value) await buildingRequest(fullAsset.value.id)
         .catch(error => {
             message.value = error.response.data.message;
         });
@@ -374,11 +408,16 @@
         getAllRooms();
     };
 
+    const determineValid = (required, input) => {
+        return !required || (input?.length ?? 0) > 0 || "Field is required!";
+    };
+
     //#region Alerts
     const editAlert = (id) => {
         const targetAlert = fullAsset.value.alerts.find(alert => alert.id == id);
         targetAlert.oldValues = { ...targetAlert };
         targetAlert.editing = true;
+        targetAlert.tempValues = {date: targetAlert.date};
     };
 
     const cancelAlert = (id) => {
@@ -392,11 +431,13 @@
     };
 
     const saveAlert = (item) => {
-        item.status = new Date(item.date) > new Date() ? "Active" : "Expired";
+        item.date = format(item.tempValues.date, "YYYY-MM-DD");
+        item.status = (!!item.date ? new Date(item.date) : new Date()) < new Date() ? "Expired" : "Active";
         item.assetId = fullAsset.value.id;
         const request = () => (item.id ?? null) === null
         ? alertServices.createAlert(item)
         : alertServices.updateAlert(item.id, item);
+        console.log(item)
         
         request()
         .then(response => {
@@ -435,6 +476,9 @@
             description: "",
             status: "",
             editing: true,
+            tempValues: {
+                date: null,
+            }
         }, ...fullAsset.value.alerts];
     };
     //#endregion
@@ -531,6 +575,40 @@
     };
     //#endregion
 
+    //#region Circulation
+    const circulateAsset = () =>{
+        if (!!fullAsset.value.borrower) {
+            // Check the asset in
+            assetServices.checkInAsset(fullAsset.value.id, {})
+            .then(response => {
+                router.go(0);
+            })
+            .catch(error => {
+                message.value = error.response.data.message;
+            });
+        }
+        else {
+            // Check the asset out
+            checkingOut.value = true;
+        }
+    };
+
+    const checkOutAsset = () => {
+        assetServices.checkOutAsset(fullAsset.value.id, {
+            borrowerId: fullAsset.value.borrowerId,
+            dueDate: fullAsset.value.dueDate,
+        })
+        .then(response => {
+            router.go(0);
+        })
+        .catch(error => {
+            message.value = error.response.data.message;
+        });
+    };
+
+
+    //#endregion
+
     onMounted(() => {
         user.value = Utils.getStore("User");
         if (!adding.value) getFullAssetDetails();
@@ -539,6 +617,7 @@
         getAllAssetTemplates(); 
         getAllAlertTypes();
         getAllRooms();
+        getAllPeople();
     });
 </script>
 
@@ -666,19 +745,67 @@
                     </v-col>                                           
                 </v-row>
                 <br>
+                <v-card-title 
+                        style="
+                        font-size: x-large;
+                        ">Asset Location</v-card-title>
                 <v-row class="ma-1">
-                    <v-col>
+                    <v-col
+                    cols="4">
                         <v-combobox
-                            v-if="!fullAsset.borrower"
                             label="Building and room"
                             variant="outlined"
                             :items="locations"
+                            :disabled="!!fullAsset.borrowerId"
+                            v-model="fullAsset.locationId"
+                            :return-object="false"
+                            auto-select-first
                         />
+                    </v-col>
+                    <v-col cols="4">
                         <v-combobox
-                            v-else
+                            v-if = "!adding && (!!fullAsset.borrowerId || checkingOut)" 
                             label="Person"
                             variant="outlined"
+                            :items="people"
+                            v-model="fullAsset.borrowerId"
+                            :return-object="false"
+                            auto-select-first
+                            clearable
                         />
+                    </v-col>
+                    <v-col cols = "4">
+                        <v-row justify="end" class="mt-1 mr-1" no-gutters>
+                            <v-btn v-if="checkingOut && !adding && fullAsset.type.circulatable"
+                            color="primary" 
+                            @click="checkOutAsset"
+                            size="x-large"
+                            justify="end"
+                            :disabled="!fullAsset.borrowerId"
+                            style="float: right;"
+                            class="mr-4"
+                            >
+                                Confirm
+                            </v-btn>
+                            <v-btn
+                                v-if="!checkingOut"
+                                color="primary" 
+                                @click="circulateAsset"
+                                size="x-large"
+                                class="text-right"
+                            >
+                                {{ !!fullAsset.borrower ? 'Check In' : 'Check Out' }}
+                            </v-btn>
+                            <v-btn
+                                v-else
+                                color="secondary" 
+                                @click="() => {checkingOut = false; fullAsset.borrowerId = null;}"
+                                size="x-large"
+                                style="float: right;"
+                            >
+                                Cancel
+                            </v-btn>
+                        </v-row>
                     </v-col>
                 </v-row>
             </v-container>
@@ -713,16 +840,18 @@
                         <v-row v-if="column.label !== undefined" align="baseline">
                             <v-text-field
                                 v-if="fieldGridRef[rowIndex][colIndex].templateField && !!fieldGridRef[rowIndex][colIndex].templateData?.value"
-                                :label="fieldGridRef[rowIndex][colIndex].label"
+                                :label="fieldGridRef[rowIndex][colIndex].label + (fieldGridRef[rowIndex][colIndex].required ? '*' : '')"
                                 v-model="fieldGridRef[rowIndex][colIndex].templateData.value"
                                 variant="outlined"
                                 disabled
+                                :rules="[(input) => determineValid(fieldGridRef[rowIndex][colIndex].required, input)]"
                             />
                             <v-text-field
                                 v-else
-                                :label="fieldGridRef[rowIndex][colIndex].label"
+                                :label="fieldGridRef[rowIndex][colIndex].label + (fieldGridRef[rowIndex][colIndex].required ? '*' : '')"
                                 v-model="fieldGridRef[rowIndex][colIndex].assetData.value"
                                 variant="outlined"
+                                :rules="[(input) => determineValid(fieldGridRef[rowIndex][colIndex].required, input)]"
                             />
                         </v-row>
                     </v-col>
@@ -745,6 +874,7 @@
                         <v-data-table
                             :headers="alertHeaders"
                             :items="fullAsset.alerts"
+                            :sort-by="[{ key: 'date', order: 'asc' }]"
                         >
                             <template v-slot:top>
                                 <v-divider class="mx-4" inset vertical></v-divider>
@@ -768,7 +898,7 @@
                                     label="Expiration Date"
                                     density="compact"
                                     variant="outlined"
-                                    v-model="item.date"
+                                    v-model="item.tempValues.date"
                                     type = "date"
                                 >
                                 </v-text-field>
