@@ -13,9 +13,10 @@
 	const message = ref("message");
 	const spacing = ref(" ");
 	const groupName = ref("");
-	const groupPermissions = ref([]);
+	//const groupPermissions = ref([]);
 	const groupId = ref("");
 	const selectedPerms = ref([]);
+	const group = ref({});
 	
 	const editDialogue = ref(false);
 	const addDialogue = ref(false);
@@ -52,7 +53,14 @@
 	const retrievePermissions = () => {
 		permissionServices.getAllPermissions()
 			.then((response) => {
-				permissions.value = response.data;
+				permissions.value = response.data.map(permission => {
+					return {
+						name: permission.name,
+						categorySpecific: !isNaN(parseInt(permission.categoryId)),
+						clearance: "none",
+						report: false,
+					};
+				});
 			})
 			.catch((e) => {
 				message.value = e.response.data.message;
@@ -60,32 +68,12 @@
 		//message.value = permissions;
 	};
 
-	const resetPermissions = () => {
-		permissionServices.getAllPermissions()
-			.then((response) => {
-				groupPermissions.value = response.data.map(permission => {
-					return {
-						name: permission.name,
-						clearance: "none",
-						report: false,
-					}
-				});
-				// message.value = groupPermissions.value.map(item => item.name)[0];
-			})
-			.catch((e) => {
-				message.value = e.response.data.message;
-			});
-	};
-
-	const changePerm = (permName) => {
-		//message.value = permName;
+	const changePerm = (item) => {
 		// Check if permission exists
-		for (let i = 0; i < permissions.value.length; i++)
-			if (permName == groupPermissions.value[i].name)//.value.map(item => item.name)[i])
-				if (groupPermissions.value[i].clearance == "none")
-					groupPermissions.value[i].clearance = "full";
-				else
-					groupPermissions.value[i].clearance = "none";
+		if (item.clearance == "none")
+			item.clearance = "full";
+		else
+			item.clearance = "none";
 		//message.value = groupPermissions;
 	};
 
@@ -110,7 +98,8 @@
 		//message.value = people;
 	};
 
-	const addGroup = (name, permissions) => {
+	const addGroup = (name) => {
+		let permissions = [...permissions.value];
 		let groupInfo = ref({ id: null, name: "", priority: null,
 		expiration: null, createdAt: "", updatedAt: "", permissions: [] });
 
@@ -131,7 +120,7 @@
 							.then((response) => {
 								message.value = groupInfo.value + " => " + response.data;
 								groupName.value = "";
-								resetPermissions();
+								//resetPermissions();
 								addDialogue.value = false;
 								//location.reload();
 							})
@@ -148,20 +137,47 @@
 			});
 	};
 
-	const editGroup = (id, name, data) => {
-		groupServices.updateGroup(id, name);
-		editDialogue.value = false;
-		groupName.value = "";
-		location.reload();
+	const editGroup = (id, permissions) => {
+		let groupInfo = ref({ id: null, name: "", priority: null,
+		expiration: null, createdAt: "", updatedAt: "", permissions: [] });
+
+		groupServices.getGroup({id})
+			.then((response) => {
+				groupInfo.value.id = response.data.id;
+				groupInfo.value.name = response.data.name;
+				groupInfo.value.priority = response.data.priority;
+				groupInfo.value.expiration = response.data.expiration;
+				groupInfo.value.createdAt = response.data.createdAt;
+				groupInfo.value.updatedAt = response.data.updatedAt;
+				for (let i = 0; i < permissions.length; i++)
+					if (permissions[i].clearance != "none")
+						groupInfo.value.permissions.push(permissions[i]);
+				groupServices.updateGroup(groupInfo.value.id, groupInfo.value)
+					.then((response) => {
+						message.value = groupInfo.value + " => " + response.data;
+						groupName.value = "";
+						//resetPermissions();
+						editDialogue.value = false;
+						//location.reload();
+					})
+					.catch((e) => {
+						message.value = e.response.data.message;
+					});
+		})
+		.catch((e) => {
+			message.value = e.response.data.message;
+		});
 	};
 
 	const deleteGroup = (id) => {
-		if (id == 1)
-			console.log("Cannot delete the Super User");
-		else
-			groupServices.deleteGroup(id);
-		deleteDialogue.value = false;
-		location.reload();
+		groupServices.deleteGroup(id)
+		.then(response => {
+			deleteDialogue.value = false;
+			location.reload();
+		})
+		.catch(e => {
+			message.value = e.response.data.message;
+		});
 	};
 
 	const findPeople = (groupId) => {
@@ -204,8 +220,32 @@
 		// message.value = displayPermissions.value;
 	};
 
+	const configureEdit = async (id) => {
+		let error = false;
+		const response = await groupServices.getGroupWithPermissions(id)
+			.catch((e) => {
+				message.value = e.response.data.message;
+				editDialogue.value = false;
+				error = true;
+			});
+		if (error)
+			return;
+		group.value = response.data;
+		const groupPermissions = group.value.permissions;
+		group.value.permissions = [...permissions.value];
+		groupPermissions.forEach(permission => {
+			const match = group.value.permissions.findIndex(option => option.name == permission.name);
+			if (match < 0)
+				return;
+			group.value.permissions[match] = {
+				...group.value.permissions[match],
+				...permission
+			};
+		});
+		//message.value
+	};
+
 	const openDialog = (action, id) => {
-		groupId.value = id;
 		switch (action)
 		{
 			case ("add"):
@@ -213,11 +253,12 @@
 				break;
 			case ("view"):
 				viewDialogue.value = true;
-				findPeople(groupId);
-				findPermissions(groupId);
+				findPeople(id);
+				findPermissions(id);
 				break;
 			case ("edit"):
 				editDialogue.value = true;
+				configureEdit(id);
 				break;
 			case ("delete"):
 				deleteDialogue.value = true;
@@ -230,7 +271,7 @@
 		retrievePermissions();
 		retrieveUsers();
 		retrievePeople();
-		resetPermissions();
+		//resetPermissions();
 	});
 
 </script>
@@ -242,7 +283,7 @@
         	<v-btn class="mt-7 mr-3" color="primary" @click="openDialog('add', null)">Add group</v-btn>
 		</v-row>
 		<v-card class="mt-7" variant="outlined" color="grey-lighten-1">
-			<v-data-table :headers="headers" :items="groups">
+			<v-data-table :headers="headers" :items="groups" :sort-by="[{ key: 'name', order: 'asc' }]">
 				<template v-slot:[`item.actions`]="{ item }">
 					<v-btn class="ma-2" color="primary"
 					icon="mdi-format-list-bulleted-type" @click="openDialog('view', item.id)">
@@ -268,8 +309,8 @@
 						<v-row class="mt-auto mx-auto mb-auto">
 							Create a New Group
 							<v-spacer></v-spacer>
-							<v-btn color="primary" type="submit" class="mr-3" @click="addGroup(groupName, groupPermissions)">Save</v-btn>
-							<v-btn variant=outlined color="primary" @click="addDialogue=false; resetPermissions()">Cancel</v-btn>
+							<v-btn color="primary" type="submit" class="mr-3" @click="addGroup(groupName)">Save</v-btn>
+							<v-btn variant=outlined color="primary" @click="addDialogue=false; console.log('console.log sucks')">Cancel</v-btn>
 						</v-row>
 					</v-card-title>
 					<div class="ml-8 mr-16">
@@ -283,9 +324,9 @@
 								<br />
 								<v-list>
 									<v-list-item v-for="(item, index) in permissions" :key="index">
-										<div v-if="item.clearance == 'full'">
+										<div v-if="!item.categorySpecific">
 											<v-divider></v-divider>
-											<v-checkbox :label=item.name :value=item.name @click="changePerm(item.name)">
+											<v-checkbox :label=item.name :value=item.name @click="changePerm(item)">
 											</v-checkbox>
 										</div>
 										<div v-else>
@@ -347,32 +388,51 @@
     </v-card>
   </v-dialog>
 
-  <v-dialog v-model="editDialogue" max-width="90%">
+  <v-dialog v-model="editDialogue" max-width="90%" persistent>
     <v-card>
       <v-container>
 		<v-card>
-			<v-card-title class="text-h5">
-				<v-row class="mt-auto mx-auto mb-auto">
-				Edit Group
-				<v-spacer></v-spacer>
-				<v-btn color="primary" class="mr-3" @click="editGroup(groupId, groupName)">Save</v-btn>
-				<v-btn variant=outlined color="primary" @click="editDialogue=false">Cancel</v-btn>
-				</v-row>
-			</v-card-title>
-			<v-card-actions>
-				<v-row>
-					<v-col>
-						<br />
-						<v-text-field required variant=outlined label="Name" max-width="30%" v-model=groupName></v-text-field>
-						<br />
-						<div v-for="(item, index) in permissions" :key="index">
-							<v-checkbox :v-model=selectedPerms
-							:label=item.name :value=item.id>
-							</v-checkbox>
-						</div>
-					</v-col>
-				</v-row>
-			</v-card-actions>
+			<v-form @submit.prevent><!---->
+					<v-card-title class="text-h5">
+						<v-row class="mt-auto mx-auto mb-auto">
+							Edit Group
+							<v-spacer></v-spacer>
+							<v-btn color="primary" type="submit" class="mr-3" @click="editGroup(groupId)">Save</v-btn>
+							<v-btn variant=outlined color="primary" @click="editDialogue=false; console.log('this one suck too!')">Cancel</v-btn>
+						</v-row>
+					</v-card-title>
+					<div class="ml-8 mr-16">
+						<v-row>
+							<v-col>
+								<br />
+								<v-row>
+									<v-text-field required variant=outlined
+									label="Name" v-model=groupName></v-text-field>
+								</v-row>
+								<br />
+								<v-list>
+									<v-list-item v-for="(item, index) in permissions" :key="index">
+										<div v-if="!item.categorySpecific">
+											<v-divider></v-divider>
+											<v-checkbox :label=item.name :value=item.name @click="changePerm(item.name)">
+											</v-checkbox>
+										</div>
+										<div v-else>
+											<v-divider></v-divider>
+											<v-row>
+												<v-select class="mt-8" :label="item.name"
+												:items="['View', 'Edit', 'Create', 'Delete']">
+												</v-select>
+												<v-checkbox class="mt-8" label="Reportable?">
+												</v-checkbox>
+											</v-row>
+										</div>
+									</v-list-item>
+								</v-list>
+							</v-col>
+						</v-row>
+					</div>
+				</v-form>
 		</v-card>
       </v-container>
     </v-card>
