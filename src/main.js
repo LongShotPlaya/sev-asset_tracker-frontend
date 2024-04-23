@@ -1,6 +1,11 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router.js";
-import vuetify from "./plugins/vuetify.js";
+import { loadingFonts, vuetify } from "./plugins/vuetify.js";
 
-createApp(App).use(vuetify).use(router).mount("#app");
+const startup = async () => {
+    await loadingFonts;
+    createApp(App).use(vuetify).use(router).mount("#app");
+}
+
+startup();
