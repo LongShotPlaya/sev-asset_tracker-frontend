@@ -208,7 +208,14 @@
             for(let i = 0; i < unformattedAccPrice.length; i++) {
                 formattedAccPrice.value += unformattedAccPrice.length - i == 2 ? '.' + unformattedAccPrice[i] : unformattedAccPrice[i];
             }
-            fullAsset.value.dueDate = format(`${fullAsset.value.dueDate}`.match(/\d{4}-\d{2}-\d{2}/)[0], 'YYYY-MM-DD');
+
+            try {
+                fullAsset.value.dueDate = format(`${fullAsset.value.dueDate}`.match(/\d{4}-\d{2}-\d{2}/)[0], 'YYYY-MM-DD');
+            }
+            catch {
+                fullAsset.value.dueDate = null;
+            }
+
             fullAsset.value.alerts.forEach((alert) => {
                 alert.editing = false;
                 alert.status = new Date(alert.date) > new Date() ? "Active" : "Expired";
@@ -221,7 +228,8 @@
         })
         .catch(error => {
             if (error?.response?.status == 404 || error?.response?.status == 401) router.push({ name: "home" });
-            message.value = error.response.data.message;
+            console.log(error)
+            message.value = error?.response?.data?.message;
         })
     };
 
