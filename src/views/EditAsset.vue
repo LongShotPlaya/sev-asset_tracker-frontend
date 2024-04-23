@@ -203,7 +203,7 @@
         assetServices.getFullAsset(fullAsset.value.id)
         .then(response => {
             fullAsset.value = response.data;
-            fullAsset.value.acquisitionDate = format(fullAsset.value.acquisitionDate, 'YYYY-MM-DD');
+            fullAsset.value.acquisitionDate = format(`${fullAsset.value.acquisitionDate}`.match(/\d{4}-\d{2}-\d{2}/)[0], 'YYYY-MM-DD');
             const unformattedAccPrice = `${fullAsset.value.acquisitionPrice}`; 
             formattedAccPrice.value = "";
             for(let i = 0; i < unformattedAccPrice.length; i++) {
