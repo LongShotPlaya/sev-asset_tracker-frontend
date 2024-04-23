@@ -53,11 +53,11 @@ const viewPerson = (id) => {
 
 
 const headers = [
-  { title: 'Last Name', value: 'lName', width: '20%' },
-  { title: 'First Name', value: 'fName', width: '20%' },
-  { title: 'ID', value: 'id', width: '20%' },
-  { title: 'Email', value: 'email', width: '20%' },
-  { title: '', value: 'actions', align: 'end' },
+  { title: 'Last Name', value: 'lName', sortable: true, width: '20%' }, //width: '20%'
+  { title: 'First Name', value: 'fName', sortable: true, width: '20%' },
+  { title: 'ID', value: 'id', sortable: true, width: '20%' },
+  { title: 'Email', value: 'email', sortable: true, width: '20%' },
+  { title: '', value: 'actions', align: 'end', width: '20%' },
 ];
 
 onMounted(() => {
@@ -69,52 +69,48 @@ watch(search, filterPeople);
 </script>
 
 <template>
-  <v-app>
-
-  <v-card flat title="" class="title">
+  <v-container>
     <v-toolbar>
       <v-toolbar-title>Find Person</v-toolbar-title>
     </v-toolbar>
     <br>
-
-    <v-text-field class="searchBar"
-      v-model="search"
-      label="Search"
-      prepend-inner-icon="mdi-magnify"
-      single-line
-      variant="outlined"
-      hide-details
-    ></v-text-field>
-  </v-card>
-
-  <div class="table">
-    <v-data-table
-      :headers="headers"
-      :items="filteredPeople"
-      item-key="id"
-    >
-        <template v-slot:[`item.actions`]="{ item }">
-            <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewPerson(item.id)">
-                <v-icon>mdi-pencil</v-icon> 
-            </v-btn>
-        </template>
-  </v-data-table>
-  </div>
-</v-app>
-
+    <v-card>
+      <v-container>
+        <v-row>
+          <v-col>
+            <v-text-field
+              v-model="search"
+              label="Search"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              hide-details
+              single-line
+              full-width
+              clearable
+            />
+          </v-col>
+        </v-row>
+      </v-container>
+      
+      <v-data-table
+        :headers="headers"
+        :items="filteredPeople"
+        item-key="id"
+        :sort-by="[{ key: 'lName', order: 'asc' }]"
+      >
+          <template v-slot:[`item.actions`]="{ item }">
+              <v-btn class="ma-2" color="primary" :icon="true" @click="viewPerson(item.id)">
+                  <v-icon>mdi-pencil</v-icon> 
+              </v-btn>
+          </template>
+    </v-data-table>
+    </v-card>
+  
+  </v-container>
 </template>
 
 <style>
-.searchBar{
-  margin-left: 5%;
-  margin-right: 5%;
-}
 .title {
-  padding-left: 5%;
-  padding-right: 5%;
-}
-.table {
-  margin-top: 1%;
   padding-left: 5%;
   padding-right: 5%;
 }

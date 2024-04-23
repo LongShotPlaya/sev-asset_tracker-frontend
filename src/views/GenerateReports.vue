@@ -93,6 +93,7 @@ const fetchCategories = async () => {
     catsLoading.value = false;
   })
   .catch(err => {
+    if (err?.response?.status == 401) router.push({ name: "home" });
     catsLoading.value = false;
     console.log("Error retrieving categories!");
   });
@@ -857,7 +858,7 @@ fetchAlertTypes();
       <v-window-item value="report-by-assignment">
         <v-card>
           <v-container>
-            
+            <v-card-title align="center">Coming Soon!</v-card-title>
           </v-container>
         </v-card>
       </v-window-item>

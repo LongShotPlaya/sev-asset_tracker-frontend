@@ -2,13 +2,13 @@ import { createRouter, createWebHistory } from "vue-router";
 
 import AlertTypeManagement from "./views/AlertTypeManagement.vue";
 import AllAssets from "./views/AllAssets.vue";
-import Asset from "./views/AssetManagement.vue";
+import Asset from "./views/EditAsset.vue";
 import AssetTypeManagement from "./views/AssetTypeManagement.vue";
 import AssetCatManagement from "./views/AssetCatManagement.vue";
 import AssetTemplateManagement from "./views/AssetTemplateManagement.vue";
-import BuildingManagement from "./views/BuildingManagement.vue";
 import EditAssetType from "./views/EditAssetType.vue";
-import FieldListManagement from "./views/FieldListManagement.vue";
+import EditAssetTemplate from "./views/EditAssetTemplate.vue";
+import FieldListManagement from "./views/FieldListManagement.vue"; //here for dropdowns
 import GenerateReports from "./views/GenerateReports.vue";
 import GroupManagement from "./views/GroupManagement.vue";
 import Home from "./views/Home.vue";
@@ -42,7 +42,12 @@ const router = createRouter({
       component: AllAssets,
     },
     {
-      path: "/asset/:id?",
+      path: "/assets/add",
+      name: "add-asset",
+      component: Asset,
+    },
+    {
+      path: "/assets/:id",
       name: "asset",
       component: Asset,
       props: true,
@@ -51,6 +56,11 @@ const router = createRouter({
       path: "/asset-types",
       name: "asset-types",
       component: AssetTypeManagement,
+    },
+    {
+      path: "/asset-types/add",
+      name: "asset-type-add",
+      component: EditAssetType,
     },
     {
       path: "/asset-types/:id",
@@ -69,15 +79,16 @@ const router = createRouter({
       component: AssetTemplateManagement,
     },
     {
-      path: "/buildings",
-      name: "buildings",
-      component: BuildingManagement,
+      path: "/asset-templates/:id",
+      name: "asset-template-edit",
+      component: EditAssetTemplate,
+      props: true,
     },
-    {
-      path: "/field-list",
-      name: "field-list",
-      component: FieldListManagement,
-    },
+    // {
+    //   path: "/field-list",
+    //   name: "field-list",
+    //   component: FieldListManagement,
+    // },
     {
       path: "/groups",
       name: "groups",
@@ -99,11 +110,11 @@ const router = createRouter({
       name: "reports",
       component: GenerateReports,
     },
-    {
-      path: "/vendors",
-      name: "vendors",
-      component: VendorManagement,
-    },
+    // {
+    //   path: "/vendors",
+    //   name: "vendors",
+    //   component: VendorManagement,
+    // },
   ],
 });
 

@@ -24,8 +24,7 @@
     const checkingOut = ref(false);
     const props = defineProps({
       id: {
-        required: true,
-        default: null,
+        required: false,
       },
     });
 
@@ -41,7 +40,7 @@
         dueDate: null,
         condition: 'Like New',
         borrowerId: null,
-        locationId: null,
+        locationId: 'No Location',
         type: {
             id: null,
             identifierId: null,
@@ -91,6 +90,17 @@
             success = false;
         }
         return success;
+    });
+    const validDueDate = computed(() => {
+        if (!fullAsset.value.borrowerId || (fullAsset.value.dueDate ?? null) === null) return true;
+        let success = !isNaN(new Date(fullAsset.value.dueDate));
+        try {
+            format(fullAsset.value.dueDate);
+        }
+        catch {
+            success = false;
+        }
+        return success || "Due date must be empty or a valid date!";
     });
     const validBuildingAbbreviation = computed (() => {
         const abb = fullAsset.value?.building?.abbreviation;
@@ -154,6 +164,7 @@
         return !!fullAsset.value.type.id
         && validAccPrice.value
         && validAccDate.value
+        && /true/i.test(`${validDueDate.value}`)
         && !!validBuildingAbbreviation.value
         && fullAsset.value.type.fields.every(field => !field.required || `${field.assetData?.value ?? ''}${field.templateData?.value ?? ''}`.length > 0);
     });
@@ -197,6 +208,14 @@
             for(let i = 0; i < unformattedAccPrice.length; i++) {
                 formattedAccPrice.value += unformattedAccPrice.length - i == 2 ? '.' + unformattedAccPrice[i] : unformattedAccPrice[i];
             }
+
+            try {
+                fullAsset.value.dueDate = format(`${fullAsset.value.dueDate}`.match(/\d{4}-\d{2}-\d{2}/)[0], 'YYYY-MM-DD');
+            }
+            catch {
+                fullAsset.value.dueDate = null;
+            }
+
             fullAsset.value.alerts.forEach((alert) => {
                 alert.editing = false;
                 alert.status = new Date(alert.date) > new Date() ? "Active" : "Expired";
@@ -208,7 +227,9 @@
             fullAsset.value.locationId ??= "No Location";
         })
         .catch(error => {
-            message.value = error.response.data.message;
+            if (error?.response?.status == 404 || error?.response?.status == 401) router.push({ name: "home" });
+            console.log(error)
+            message.value = error?.response?.data?.message;
         })
     };
 
@@ -235,6 +256,7 @@
                 value: assetType.id,
                 categoryId: assetType.categoryId,
             }));
+            allAssetTypes.value.sort((a, b) => a.title.localeCompare(b.title));
             changeAssetType();
         })
         .catch(error => {
@@ -307,6 +329,7 @@
                     assetTypeId: assetTemplate.assetTypeId,
                 };
             });
+            allAssetTemplates.value.sort((a, b) => a.title.localeCompare(b.title));
             changeTemplate();
         })
         .catch(error => {
@@ -403,6 +426,9 @@
         .catch(error => {
             message.value = error.response.data.message;
         });
+
+        await router.push({ name: "asset", params: { id: fullAsset.value.id } });
+        router.go(0);
 
         getFullAssetDetails();
         getAllRooms();
@@ -773,11 +799,20 @@
                             auto-select-first
                             clearable
                         />
+                        <v-text-field
+                            v-if = "!adding && (!!fullAsset.borrowerId || checkingOut)"
+                            label="Due Date"
+                            variant="outlined"
+                            v-model="fullAsset.dueDate"
+                            :rules="[validDueDate]"
+                            type="date"
+                            clearable
+                        />
                     </v-col>
                     <v-col cols = "4">
-                        <v-row justify="end" class="mt-1 mr-1" no-gutters>
-                            <v-btn v-if="checkingOut && !adding && fullAsset.type.circulatable"
-                            color="primary" 
+                        <v-row justify="end" class="mt-1 mr-1" no-gutters v-if="!adding">
+                            <v-btn v-if="checkingOut && fullAsset.type.circulatable"
+                            color="primary"
                             @click="checkOutAsset"
                             size="x-large"
                             justify="end"
@@ -788,7 +823,7 @@
                                 Confirm
                             </v-btn>
                             <v-btn
-                                v-if="!checkingOut"
+                                v-if="!checkingOut && fullAsset.type.circulatable"
                                 color="primary" 
                                 @click="circulateAsset"
                                 size="x-large"
@@ -797,7 +832,7 @@
                                 {{ !!fullAsset.borrower ? 'Check In' : 'Check Out' }}
                             </v-btn>
                             <v-btn
-                                v-else
+                                v-else-if="fullAsset.type.circulatable"
                                 color="secondary" 
                                 @click="() => {checkingOut = false; fullAsset.borrowerId = null;}"
                                 size="x-large"
@@ -891,7 +926,7 @@
                             </template>
 
                             <!--Expiration Date-->
-                            <template #item.date="{ item }">
+                            <template v-slot:[`item.date`]="{ item }">
                                 <v-text-field
                                     v-if="item.editing"
                                     class="mt-6"
@@ -908,7 +943,7 @@
                                 </td>
                             </template>
 
-                            <template #item.typeId="{ item }">
+                            <template v-slot:[`item.typeId`]="{ item }">
                                 <v-autocomplete
                                 v-if="item.editing"
                                     class="mt-6"
@@ -924,7 +959,7 @@
                                 </td>
                             </template>
 
-                            <template #item.description="{ item }">
+                            <template v-slot:[`item.description`]="{ item }">
                                 <v-text-field
                                     v-if="item.editing"
                                     class="mt-6"
@@ -936,7 +971,7 @@
                                 <td v-else>{{ item.description }}</td>
                             </template>
 
-                            <template #item.actions="{ item }">
+                            <template v-slot:[`item.actions`]="{ item }">
                                 <v-btn @click="saveAlert(item)" 
                                 :disabled="!validNewAlert"
                                 class="mr-5"
@@ -988,7 +1023,7 @@
                                 </v-btn>
                             </template>
 
-                            <template #item.date="{ item }">
+                            <template v-slot:[`item.date`]="{ item }">
                                 {{ format(item.date) }}
                             </template>
                         </v-data-table>
@@ -1008,7 +1043,7 @@
                                 </v-btn>
                             </template>
 
-                            <template #item.name="{ item }">
+                            <template v-slot:[`item.name`]="{ item }">
                                 <v-text-field
                                     v-if="item.editing"
                                     label="Room name"
@@ -1023,7 +1058,7 @@
                                 </td>
                             </template>
 
-                            <template #item.actions="{ item }">
+                            <template v-slot:[`item.actions`]="{ item }">
                                 <v-btn @click="saveRoom(item)" 
                                 :disabled="!validNewRoom"
                                 class="mr-5"
