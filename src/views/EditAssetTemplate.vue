@@ -76,7 +76,7 @@ const fieldGrid = computed(() => {
 const retrieveAssetTemplate = () => {
     if (adding.value)
     {
-        console.log("Adding asset template!");
+        // console.log("Adding asset template!");
         return;
     }
 
@@ -117,11 +117,12 @@ const retrieveAssetTypes = () => {
 
 const saveTemplate = async () => {
     let error = false;
+    let addingTemplate = adding.value;
 
     templateLoading.value = true;
-    if (adding.value)
+    if (addingTemplate)
     {
-        // We need to create the type and ensure that its identifier is null since fields cannot be added
+        // We need to create the template and ensure that its identifier is null since fields cannot be added
         // in a create call to the backend
         const resultingTemplate = await TemplateServices.createAssetTemplate({ ...template.value, id: null })
         .catch(err => {
@@ -141,11 +142,13 @@ const saveTemplate = async () => {
     TemplateServices.updateAssetTemplate(template.value.id, template.value)
     .then(response => {
         retrieveAssetTemplate(template.value.id);
+        if (addingTemplate) router.replace({ name: "asset-template-edit", params: { id: template.value.id } });
     })
     .catch(err => {
         console.log(err?.response?.data?.message ?? "Error saving asset type!");
         retrieveAssetTemplate(template.value.id);
     });
+
 };
 
 const cancelChanges = () => {
@@ -250,6 +253,7 @@ retrieveAssetTemplate();
                                     color="primary"
                                     :loading="templateLoading"
                                     :disabled="!type || (template.name?.length ?? 0) == 0"
+                                    size="x-large"
                                     @click="saveTemplate"
                                 >
                                     {{ adding ? 'Add' : 'Save' }} Asset Template
@@ -258,6 +262,7 @@ retrieveAssetTemplate();
                             <v-col align="start">
                                 <v-btn
                                     color="secondary"
+                                    size="x-large"
                                     @click="cancelChanges"
                                 >
                                     Cancel

@@ -20,10 +20,10 @@
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" variant="outlined" @click="saveAssetCat">
+          <v-btn color="primary" variant="flat" @click="saveAssetCat">
             {{ isNewItem ? 'Add' : 'Save' }} 
           </v-btn>
-          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+          <v-btn color="tertiary" variant="outlined" @click="closeDialog">
             Cancel
           </v-btn>
         </v-card-actions>

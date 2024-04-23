@@ -67,6 +67,7 @@
         alerts: [],
     });
     const adding = computed(() => !fullAsset.value.id);
+    const checkedOut = ref(false);
     const assetType = ref(null);
     const locations = ref([]);
     const tab = ref('alerts');
@@ -225,6 +226,7 @@
                 room.editing = false;
             });
             fullAsset.value.locationId ??= "No Location";
+            checkedOut.value = !!fullAsset.value.borrowerId;
         })
         .catch(error => {
             if (error?.response?.status == 404 || error?.response?.status == 401) router.push({ name: "home" });
@@ -420,15 +422,15 @@
 
         if (error) return;
 
-        if (adding.value) fullAsset.value.id = response.data.id;
+        if (addingAsset) fullAsset.value.id = response.data.id;
 
         if (isBuilding.value) await buildingRequest(fullAsset.value.id)
         .catch(error => {
             message.value = error.response.data.message;
         });
 
-        await router.push({ name: "asset", params: { id: fullAsset.value.id } });
-        router.go(0);
+        if (addingAsset) await router.replace({ name: "asset", params: { id: fullAsset.value.id } });
+        else router.go(0);
 
         getFullAssetDetails();
         getAllRooms();
@@ -748,6 +750,7 @@
                         rows="1"
                         :items="['Like New', 'Worn', 'Damaged', 'Out of Commission', 'Not in Inventory']"
                         v-model="fullAsset.condition"
+                        :disabled="!!fullAsset.borrowerId"
                         />
                     </v-col>
                     <v-col>
@@ -782,7 +785,7 @@
                             label="Building and room"
                             variant="outlined"
                             :items="locations"
-                            :disabled="!!fullAsset.borrowerId"
+                            :disabled="!!fullAsset.borrowerId || checkingOut"
                             v-model="fullAsset.locationId"
                             :return-object="false"
                             auto-select-first
@@ -790,23 +793,27 @@
                     </v-col>
                     <v-col cols="4">
                         <v-combobox
-                            v-if = "!adding && (!!fullAsset.borrowerId || checkingOut)" 
+                            v-if = "!adding && (checkedOut || checkingOut)" 
                             label="Person"
                             variant="outlined"
                             :items="people"
                             v-model="fullAsset.borrowerId"
                             :return-object="false"
                             auto-select-first
-                            clearable
+                            :clearable="!checkedOut"
+                            :readonly="checkedOut"
+                            :hint="checkedOut ? 'Cannot change person while checked out' : ''"
                         />
                         <v-text-field
-                            v-if = "!adding && (!!fullAsset.borrowerId || checkingOut)"
+                            v-if = "!adding && (checkedOut || checkingOut)"
                             label="Due Date"
                             variant="outlined"
                             v-model="fullAsset.dueDate"
                             :rules="[validDueDate]"
                             type="date"
-                            clearable
+                            :clearable="!checkedOut"
+                            :readonly="checkedOut"
+                            :hint="checkedOut ? 'Cannot change due date while checked out' : ''"
                         />
                     </v-col>
                     <v-col cols = "4">
@@ -823,7 +830,7 @@
                                 Confirm
                             </v-btn>
                             <v-btn
-                                v-if="!checkingOut && fullAsset.type.circulatable"
+                                v-if="!checkingOut && (fullAsset.type.circulatable || checkedOut)"
                                 color="primary" 
                                 @click="circulateAsset"
                                 size="x-large"

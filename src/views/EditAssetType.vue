@@ -124,6 +124,7 @@ const retrieveAssetCategories = () => {
     CatServices.getAllAssetCats()
     .then(response => {
         categories.value = response.data.map(cat => { return { title: cat.name, value: cat.id }; });
+        categories.value.sort((a, b) => a.title.localeCompare(b.title));
         catsLoading.value = false;
     })
     .catch(err => {

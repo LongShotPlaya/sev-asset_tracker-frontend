@@ -79,6 +79,11 @@ const router = createRouter({
       component: AssetTemplateManagement,
     },
     {
+      path: "/asset-templates/add",
+      name: "asset-template-add",
+      component: EditAssetTemplate,
+    },
+    {
       path: "/asset-templates/:id",
       name: "asset-template-edit",
       component: EditAssetTemplate,
