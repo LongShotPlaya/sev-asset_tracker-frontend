@@ -3,7 +3,7 @@
  */
 import { createVuetify } from "vuetify";
 import { loadFonts } from "./webfontloader";// Misc
-await loadFonts();
+const loadingFonts = loadFonts();
 
 // Styles
 import "vuetify/styles";
@@ -42,4 +42,7 @@ const vuetify = createVuetify({
   },
 });
 
-export default vuetify;
+export {
+  loadingFonts,
+  vuetify,
+};
