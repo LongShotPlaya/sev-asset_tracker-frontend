@@ -1,17 +1,20 @@
 <script setup>
 import Utils from "../config/utils.js";
 import alertTypeServices from "../services/alertTypeService";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
  
 
 const alertTypes = ref([]);
 const dialog = ref(false);
-const deleteDialogue = ref(false)
-const editDialogue = ref(false)
-const addDialogue = ref(false)
-const item = ref({})
-
+const deleteDialogue = ref(false);
+const editDialogue = ref(false);
+const addDialogue = ref(false);
+const item = ref({});
+const search = ref("");
+const searchResults = computed(() => alertTypes.value.filter(alertType => {
+  return new RegExp(search.value, "i").test(alertType.name);
+}))
 
 const router = useRouter();
 const user = Utils.getStore("user");
@@ -19,7 +22,6 @@ const message = ref("Add, Edit or Delete alert types");
 
 
 const updateAlertTypes = (id) => {
-    console.log(id);
   const data = {
     name: item.value.name,
   };
@@ -46,7 +48,6 @@ const addAlertTypes = () => {
 
 //edit function 
 const editAlertType = (itemData) => {
-  console.log('Editing asset:', itemData);
   closeDialog(); 
 };
 
@@ -75,7 +76,6 @@ const retrieveAlertTypes = () => {
     .then((response) => {
       const allItems = response.data;
       alertTypes.value = response.data;
-      console.log(alertTypes.value);
     })
     .catch((e) => {
       message.value = e.response.data.message;
@@ -120,46 +120,57 @@ onMounted(() => {
 </script>
 
 <template>
-<v-container class="space">  
-    <v-toolbar>
-        <v-toolbar-title>Alert Type Management</v-toolbar-title>
-    </v-toolbar>
-
+<v-container>  
+  <v-toolbar>
+      <v-toolbar-title>Alert Type Management</v-toolbar-title>
+  </v-toolbar>
   <br>
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-col align="right">
-        <v-btn color="primary" @click="openDialog(null)">
-          Add
-        </v-btn>
-      </v-col>
-    </v-row>
-
-  <v-row>
-      <v-col>
-        <v-card>
-          <v-data-table
-            :headers ="headers"
-            :items ="alertTypes"
-            item-key ="id"
-          >
-
-            <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="openDialog(item.id)">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn
-                class="ma-2"
-                color="primary"
-                variant="outlined"
-                icon="mdi-trash-can"
-                @click="openDeleteDialogue(item.id)"
-                ></v-btn>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
+  <v-card>
+    <v-container>
+      <v-row>
+        <v-col>
+          <v-text-field
+            v-model="search"
+            label="Search"
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+            hide-details
+            single-line
+            full-width
+            clearable
+          />
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-spacer></v-spacer>
+        <v-col align="right">
+          <v-btn color="primary" size="x-large" @click="openDialog(null)">
+            Add Alert Type
+          </v-btn>
+        </v-col>
+      </v-row>
+      </v-container>
+      
+      <v-data-table
+        :headers ="headers"
+        :items ="searchResults"
+        item-key ="id"
+        :sort-by="[{ key: 'name', order: 'asc' }]"
+      >
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="openDialog(item.id)">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn
+            class="ma-2"
+            color="primary"
+            variant="outlined"
+            icon="mdi-trash-can"
+            @click="openDeleteDialogue(item.id)"
+            ></v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
   </v-container>
 
 <!-- Delete Dialog -->

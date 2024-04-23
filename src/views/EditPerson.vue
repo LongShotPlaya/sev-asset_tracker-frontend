@@ -31,28 +31,7 @@
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
-            select.value = response.data.name; // Non-exsistant group Id being called here: For non-user
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    };
-    
-    const getSomeone = (id) => {
-        peopleServices.getPerson(id) 
-            .then((response) => {
-                person.value = response.data;
-            })
-            .catch((error) => {
-                message.value = error.response.data.message;
-            })
-    };
-
-    const getPersonId = (id) => {
-        userServices.getUser(id)
-        .then((response) => {
-            setPersonId.value = response.data.personId; // Non-exsistant user id being called here: For non-user
-            console.log("Person ID: ", setPersonId); 
+            select.value = response.data.name; // Non-existant group Id being called here: For non-user
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -83,18 +62,25 @@
         })
     };
 
-    const getFullPerson = (id) => {
-        personServices.getFullPerson(id) 
-        .then((response) => {
-            fullPerson.value = response.data;
-            personsAssets.value = response.data.borrowedAssets;
-            console.log("Full person: ", fullPerson);
-            console.log("Full persons assets: ", personsAssets);
-            getSoonDueAssets();
-        })
+    const getFullPerson = async (id) => {
+        let error = false;
+        const response = await personServices.getFullPerson(id)
         .catch((error) => {
+            error = true;
+            if (error?.response?.status == 404) router.push({ name: "home" });
             message.value = error.response.data.message;
-        })
+        });
+
+        if (error) return;
+        
+        person.value = response.data;
+        fullPerson.value = response.data;
+        personsAssets.value = response.data.borrowedAssets;
+        setPersonId.value = response.data.id;
+        console.log("Full person: ", fullPerson);
+        console.log("Full persons assets: ", personsAssets);
+        if ((fullPerson.value.user?.group?.id ?? null) !== null) getGroup(fullPerson.value.user.group.id);
+        getSoonDueAssets();
     };
 
     const getSoonDueAssets = () => {
@@ -150,10 +136,6 @@
     onMounted(() => {
         user.value = Utils.getStore("user");
         const id = props.id;
-        getGroup(id);
-        getSomeone(id);
-        getPersonId(id);
-        getSoonDueAssets();
         getFullPerson(id);
         // getUserGroupId(id); //Test
         // getAssetTypeName(); //Test
@@ -161,19 +143,10 @@
 </script>
 
 <template>
-    <br>
-    <v-card
-    class="mx-auto"
-    width="90%"
-    height="90%"
-    >
-        <v-app
-        class="layout">
-            <v-toolbar
-            style="padding: .5%;">
-                <v-toolbar-title
-                style="font-size: 28px;"
-                >{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
+    <v-container>
+        <v-card>
+            <v-toolbar>
+                <v-toolbar-title>{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
             </v-toolbar>
             <v-container
             class="v-container">
@@ -238,7 +211,7 @@
                         <v-btn
                             @click="saveChanges(person.id)"
                             id="btn"
-                            color="green" 
+                            color="primary" 
                             style="margin-top: 3%;"
                             x-large>
                             save
@@ -246,7 +219,7 @@
                         <v-btn
                             @click="cancel()"
                             id="btn"
-                            color="#811429" 
+                            color="secondary" 
                             style="margin-top: 3%;  margin-left: 2%;"
                             x-large>
                             cancel
@@ -262,7 +235,7 @@
                                 item-key="id"
                             >
                                 <template v-slot:[`item.actions`]="{ item }">
-                                    <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewAsset(item.id)">
+                                    <v-btn class="ma-2" color="primary" :icon="true" @click="viewAsset(item.id)">
                                         <v-icon>mdi-pencil</v-icon> 
                                     </v-btn>
                                 </template>
@@ -271,8 +244,8 @@
                     </v-col>
                 </v-row>
             </v-container>
-        </v-app>
-    </v-card>
+        </v-card>
+    </v-container>
 </template>
 
 <style scoped>

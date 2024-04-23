@@ -1,6 +1,6 @@
 <script setup>
 	import ocLogo from "/oc-logo-white.png";
-	import { ref, onMounted} from "vue";
+	import { ref, onMounted } from "vue";
 	import Utils from "../config/utils";
 	import AuthServices from "../services/authServices";
 	import { useRouter } from 'vue-router';
@@ -20,18 +20,17 @@
 		{ bannerName: 'View Checkouts', routeName: "home", permission: "any" },
 	];
 	const assetOrg = [
-		{ bannerName: 'Asset Categories', routeName: "asset-categories", permission: "any" },
-		{ bannerName: 'Asset Types', routeName: "asset-types", permission: "any" },
-		{ bannerName: 'Asset Templates', routeName: "asset-templates", permission: "any" },
-		{ bannerName: 'Facilities', routeName: "buildings", permission: "any" },
-		{ bannerName: 'Custom Dropdowns', routeName: "home", permission: "any" },
+		{ bannerName: 'All Assets', routeName: "assets", permission: "any" },
+		{ bannerName: 'Categories', routeName: "asset-categories", permission: "any" },
+		{ bannerName: 'Types', routeName: "asset-types", permission: "any" },
+		{ bannerName: 'Templates', routeName: "asset-templates", permission: "any" },
+		// { bannerName: 'Custom Dropdowns', routeName: "home", permission: "any" },
 	];
 	const management = [
-		{ bannerName: 'All Assets', routeName: "assets", permission: "any" },
 		{ bannerName: 'Groups', routeName: "groups", permission: "any" },
 		{ bannerName: 'People', routeName: "people", permission: "any" },
-		{ bannerName: 'Vendors', routeName: "vendors", permission: "any" },
-		{ bannerName: 'Alerts', routeName: "alert-types", permission: "any" },
+		// { bannerName: 'Vendors', routeName: "vendors", permission: "any" },
+		{ bannerName: 'Alert Types', routeName: "alert-types", permission: "any" },
 		{ bannerName: 'Generate Reports', routeName: "reports", permission: "any" },
 	];
 
@@ -150,7 +149,7 @@
 	<v-app-bar-nav-icon @click.stop = "drawer = !drawer"></v-app-bar-nav-icon>
 	<v-app-bar-title class="text-left">OC Asset Tracker</v-app-bar-title>
 	<div class="mr-2">
-		<v-btn :ripple="false" icon="" @click="router.push({name: ''})">
+		<v-btn v-if="!!user" :ripple="false" icon="" @click="router.push({name: ''})">
 			<v-icon v-show=!alertActive icon="mdi-bell"></v-icon>
 			<v-badge v-show=alertActive color="grey-darken-3" :content="alertNum">
 				<v-icon icon="mdi-bell"></v-icon>
@@ -211,13 +210,13 @@
 					</v-row>
 					</v-expansion-panel-text>
 				</v-expansion-panel> -->
-				<v-expansion-panel title="Management">
+				<v-expansion-panel title="Asset Organization">
 					<v-expansion-panel-text class="ml-0 pt-0 pr-0">
 					<v-row no-gutters class="pl-0 pr-0">
 						<v-col>
 							<v-list class="pt-0 pb-0">
-							<v-list-item class="pt-0 pb-0 pl-0 pr-0" v-for="(item, i) in managementAllowed" :key = "i">
-								<v-btn text color="grey-darken-4" class="font-weight-regular rounded-0 pl-0"
+							<v-list-item class="pt-0 pb-0 pl-0 pr-0" v-for="(item, i) in assetOrgAllowed" :key = "i">
+								<v-btn text class="font-weight-regular rounded-0 pl-0"
 								size="large" variant="text"
 								@click = "router.push({name: item.routeName})">
 									{{ item.bannerName }}
@@ -228,13 +227,13 @@
 					</v-row>
 					</v-expansion-panel-text>
 				</v-expansion-panel>
-				<v-expansion-panel title="Asset Organization">
+				<v-expansion-panel title="Management">
 					<v-expansion-panel-text class="ml-0 pt-0 pr-0">
 					<v-row no-gutters class="pl-0 pr-0">
 						<v-col>
 							<v-list class="pt-0 pb-0">
-							<v-list-item class="pt-0 pb-0 pl-0 pr-0" v-for="(item, i) in assetOrgAllowed" :key = "i">
-								<v-btn text color="grey-darken-4" class="font-weight-regular rounded-0 pl-0"
+							<v-list-item class="pt-0 pb-0 pl-0 pr-0" v-for="(item, i) in managementAllowed" :key = "i">
+								<v-btn text class="font-weight-regular rounded-0 pl-0"
 								size="large" variant="text"
 								@click = "router.push({name: item.routeName})">
 									{{ item.bannerName }}

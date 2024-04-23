@@ -9,12 +9,6 @@
 	const message = ref("");
 	const sectionsAllowed = ref([]);
 	const linksAllowed = ref([]);
-
-	const links = ref([
-		"assets", "people", "reports",
-		"asset-templates", "asset-types", "asset-categories", "buildings",
-		"", "people", "groups", "vendors", "alert-types",
-	]);
 		
 	const configureScreen = () => {
 
@@ -48,167 +42,101 @@
 </script>
 
 <template>
-  <div>
-    <v-container>
+	<v-container>
+		<br>
 		<v-col>
-			<h2 class="text-center">Welcome, {{ user.fName }}!</h2>
+			<v-card-title class="text-center" style="font-size: 200%;">Welcome, {{ user.fName }}!</v-card-title>
 		</v-col>
 		<br>
 		<v-row justify="center">
-			<v-col>
-				<v-img src="oc-logo-large.png" height="100%" />
+			<v-col cols="6">
+				<v-img src="oc-logo-large.png" style="height: 100%; width: 100%; object-fit: cover;"/>
 			</v-col>
-			<v-col class="text-center">
-				<v-btn class="text-center mt-1" min-width="550" min-height="100" variant="outlined"
-				@click = "router.push({name: links[0]})">
-					<v-col>
-						<h3>View Assets</h3>
-						<br/>
-						<p>See all currently held assets</p>
-					</v-col>
-				</v-btn>
-				<v-btn class="text-center mt-8 mb-8" min-width="550" min-height="100" variant="outlined"
-				@click = "router.push({name: links[1]})">
-					<v-col>
-						<h3>Search Person</h3>
-						<br/>
-						<p>Search for a specific person</p>
-					</v-col>
-				</v-btn>
-				<v-btn class="text-center" min-width="550" min-height="100" variant="outlined"
-				@click = "router.push({name: links[2]})">
-					<v-col>
-						<h3>Create Report</h3>
-						<br/>
-						<p>Generate an asset report</p>
-					</v-col>
-				</v-btn>
+			<v-col cols="6" class="text-center" fill-height>
+				<v-row>
+					<v-btn class="text-center mt-4" min-width="550" min-height="100" variant="outlined"
+					@click = "router.push({name: 'assets'})" block>
+						<v-col>
+							<h3>View Assets</h3>
+							<br/>
+							<p>See all currently held assets</p>
+						</v-col>
+					</v-btn>
+				</v-row>
+				<v-row>
+					<v-btn class="text-center mt-8 mb-8" min-width="550" min-height="100" variant="outlined"
+					@click = "router.push({name: 'people'})" block>
+						<v-col>
+							<h3>Search Person</h3>
+							<br/>
+							<p>Search for a specific person</p>
+						</v-col>
+					</v-btn>
+				</v-row>
+				<v-row>
+					<v-btn class="text-center" min-width="550" min-height="100" variant="outlined"
+					@click = "router.push({name: 'reports'})" block>
+						<v-col>
+							<h3>Create Report</h3>
+							<br/>
+							<p>Generate an asset report</p>
+						</v-col>
+					</v-btn>
+				</v-row>
 			</v-col>
-			<!--<v-spacer></v-spacer>
-			<v-card class="text-center" min-width="200" min-height="200"
-			title="View Assets" text="See all currently held assets" variant="outlined">
-				<v-card-actions>
-					<v-row justify="center">
-						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[0]})">Go!</v-btn>
-					</v-row>
-				</v-card-actions>
-			</v-card>
-			<v-spacer></v-spacer>
-			<v-card class="text-center" min-width="200" min-height="200"
-			title="Search Person" text="Search for a specific person" variant="outlined">
-				<v-card-actions>
-					<v-row justify="center">
-						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[1]})">Go!</v-btn>
-					</v-row>
-				</v-card-actions>
-			</v-card>
-			<v-spacer></v-spacer>
-			<v-card class="text-center" min-width="200" min-height="200"
-			title="Create Report" text="Generate an asset report" variant="outlined">
-				<v-card-actions>
-					<v-row justify="center">
-						<v-btn class="mt-12" min-width="125" variant="flat" color="primary"
-						@click = "router.push({name: links[2]})">Go!</v-btn>
-					</v-row>
-				</v-card-actions>
-			</v-card>
-			<v-spacer></v-spacer>-->
 		</v-row>
-		<!--<v-col>
-			<v-card min-height="300" title="Asset Organization" variant="flat" class="text-center mt-6">
-				<v-row class="mt-4">
-					<v-spacer></v-spacer>
-					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
-					@click = "router.push({name: links[3]})">
-						<v-col>
-							<h3>Asset Templates</h3>
-							<br/>
-							<p>View current asset templates</p>
-						</v-col>
-					</v-btn>
-					<v-spacer></v-spacer>
-					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
-					@click = "router.push({name: links[4]})">
-						<v-col>
-							<h3>Asset Types</h3>
-							<br/>
-							<p>View current asset types</p>
-						</v-col>
-					</v-btn>
-					<v-spacer></v-spacer>
-				</v-row>
-				<v-row class="mt-10">
-					<v-spacer></v-spacer>
-					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
-					@click = "router.push({name: links[5]})">
-						<v-col>
-							<h3>Asset Categories</h3>
-							<br/>
-							<p>View current asset categories</p>
-						</v-col>
-					</v-btn>
-					<v-spacer></v-spacer>
-					<v-btn class="text-center" min-width="400" min-height="100" variant="outlined"
-					@click = "router.push({name: links[6]})">
-						<v-col>
-							<h3>Facilities</h3>
-							<br/>
-							<p>Configure facilities</p>
-						</v-col>
-					</v-btn>
-					<v-spacer></v-spacer>
-				</v-row>
-			</v-card>
-		</v-col>-->
-    </v-container>
-	<br><br><br>
-	<v-card min-height="400" title="Management" variant="flat"
+	</v-container>
+	<br><br><br><br><br>
+	<v-card min-height="275" variant="flat"
 	color="grey-darken-3" class="text-center rounded-0">
+		<br>
+		<v-card-title>Management</v-card-title>
+		<br><br>
+		<v-row>
+			<v-col />
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: 'asset-categories'})">Asset Categories</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: 'asset-types'})">Asset Types</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: 'asset-templates'})">Asset Templates</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: 'alert-types'})">Alert Types</v-btn>
+			</v-col>
+			<v-col>
+				<v-btn min-width="150" min-height="50" variant="outlined"
+				@click = "router.push({name: 'groups'})">Groups</v-btn>
+			</v-col>
+			<v-col />
+		</v-row>
 		<v-row class="mt-6" justify="center">
 			<v-col cols="2" />
-			<v-col>
+			<!-- <v-col>
 				<v-btn max-width="150" min-height="50" variant="outlined"
 				@click = "router.push({name: links[7]})">
 					<p class="text-wrap">Custom Dropdown</p>
 				</v-btn>
-			</v-col>
-			<v-col>
+			</v-col> -->
+			<!-- <v-col>
 				<v-btn min-width="150" min-height="50" variant="outlined"
 				@click = "router.push({name: links[11]})">Alerts</v-btn>
 			</v-col>
 			<v-col>
 				<v-btn min-width="150" min-height="50" variant="outlined"
 				@click = "router.push({name: links[9]})">Groups</v-btn>
-			</v-col>
-			<v-col>
+			</v-col> -->
+			<!-- <v-col>
 				<v-btn min-width="150" min-height="50" variant="outlined"
 				@click = "router.push({name: links[10]})">Vendors</v-btn>
-			</v-col>
-			<v-col cols="2" />
-		</v-row>
-		<br><br>
-		<v-row>
-			<v-col cols="2" />
-			<v-col>
-				<v-btn min-width="150" min-height="50" variant="outlined"
-				@click = "router.push({name: links[3]})">Asset Templates</v-btn>
-			</v-col>
-			<v-col>
-				<v-btn min-width="150" min-height="50" variant="outlined"
-				@click = "router.push({name: links[4]})">Asset Types</v-btn>
-			</v-col>
-			<v-col>
-				<v-btn min-width="150" min-height="50" variant="outlined"
-				@click = "router.push({name: links[5]})">Asset Categories</v-btn>
-			</v-col>
-			<v-col>
-				<v-btn min-width="150" min-height="50" variant="outlined"
-				@click = "router.push({name: links[6]})">Buildings</v-btn>
-			</v-col>
+			</v-col> -->
 			<v-col cols="2" />
 		</v-row>
 	</v-card>
-  </div>
 </template>

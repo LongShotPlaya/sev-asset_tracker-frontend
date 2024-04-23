@@ -241,11 +241,11 @@ const retrieveAssets = () => {
 };
 
 const addAsset = () => {
-    console.log("Trying to add an asset!");
+    router.push({ name: "add-asset"});
 };
 
 const editAsset = (assetId) => {
-    console.log("Editing asset with id of " + assetId);
+    router.push({ name: "asset", params: { id: assetId }});
 };
 
 const deleteAsset = (assetId) => {
@@ -299,7 +299,7 @@ retrieveAssets();
                     <v-col class="text-right">
                         <v-btn
                             color="primary"
-                            size="large"
+                            size="x-large"
                             @click="addAsset"
                         >Add Asset</v-btn>
                     </v-col>
@@ -310,7 +310,7 @@ retrieveAssets();
                 :headers="headers"
                 :items="filteredAssets"
             >
-                <template v-slot:item.location="{ item }">
+                <template v-slot:[`item.location`]="{ item }">
                     <td v-if="(item.borrowerId ?? null) !== null">
                         {{ item.location.substring(0, item.location.length - item.borrowerName.length) }}
                         <router-link :to="router.resolve({ name: 'person', params: { id: item.borrowerId }})">
@@ -335,7 +335,7 @@ retrieveAssets();
                         <td></td>
                     </tr>
                 </template>
-                <template v-slot:item.actions="{ item }">
+                <template v-slot:[`item.actions`]="{ item }">
                     <v-btn
                         v-if="(item.borrowerId ?? null) !== null"
                         class="ma-2"
