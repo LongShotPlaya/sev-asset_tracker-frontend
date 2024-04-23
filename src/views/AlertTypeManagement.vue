@@ -74,13 +74,11 @@ const deleteAlertTypes = () => {
 const retrieveAlertTypes = () => {
   alertTypeServices.getAllAlertTypes()
     .then((response) => {
-      const allItems = response.data;
       alertTypes.value = response.data;
     })
     .catch((e) => {
       message.value = e.response.data.message;
     });
-    
 };
 
 const openDialog = (itemId) => {
@@ -104,7 +102,7 @@ const closeDialog = () => {
   deleteDialogue.value = false;
   editDialogue.value = false;
   addDialogue.value = false;
-  item.value = {}; // Reset item
+  setTimeout(() => item.value = {}, 150);
 }
 
 const headers = [
@@ -181,10 +179,10 @@ onMounted(() => {
         <v-row justify="center">
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" variant="outlined"  @click="deleteAlertTypes">
+            <v-btn color="tertiary" variant="outlined"  @click="deleteAlertTypes">
               Yes
             </v-btn>
-            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+            <v-btn color="primary" variant="flat" @click="closeDialog">
               No
             </v-btn>
           </v-card-actions>
@@ -210,10 +208,10 @@ onMounted(() => {
         
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green" variant="outlined" @click="updateAlertTypes(item.id)">
+          <v-btn color="primary" variant="flat" @click="updateAlertTypes(item.id)">
             Save
           </v-btn>
-          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+          <v-btn color="tertiary" variant="outlined" @click="closeDialog">
             Cancel
           </v-btn>
         </v-card-actions>
@@ -236,10 +234,10 @@ onMounted(() => {
       
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" variant="outlined" @click="addAlertTypes">
+          <v-btn color="primary" variant="flat" @click="addAlertTypes">
             Save
           </v-btn>
-          <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+          <v-btn color="tertiary" variant="outlined" @click="closeDialog">
             Cancel
           </v-btn>
         </v-card-actions>

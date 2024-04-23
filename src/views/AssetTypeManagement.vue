@@ -70,7 +70,7 @@ const openDeleteDialogue = (itemId) =>{
 
 const closeDialog = () => {
   deleteDialogue.value = false;
-  item.value = {}; // Reset item
+  setTimeout(() => item.value = {}, 150);
 }
 
 const addEditLink = (id) => {
@@ -94,14 +94,14 @@ const retrieveAssetTypes = async () => {
         return {
           ...assetType,
           categoryName: assetcategories.value.find(cat => cat.id == assetType.categoryId)?.name,
-          createdAt: format(assetType.createdAt, "YYYY-MM-DD"),
+          // createdAt: format(assetType.createdAt, "YYYY-MM-DD"),
         };
       });
       assetTypes.value.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
     })
     .catch((e) => {
-        console.log(e)
-      message.value = e.response.data.message;
+      console.log(e)
+      message.value = e?.response?.data?.message;
     });
 };
 
@@ -186,14 +186,14 @@ onMounted(() => {
   <v-dialog v-model="deleteDialogue" persistent max-width="800px">
     <v-card>
       <v-container>
-        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete this type?</v-card-title>
+        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete asset type "{{ item.name }}"?</v-card-title>
         <v-row justify="center">
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" variant="outlined"  @click="deleteAssetTypes">
+            <v-btn color="tertiary" variant="outlined" @click="deleteAssetTypes">
               Yes
             </v-btn>
-            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+            <v-btn color="primary" variant="flat" @click="closeDialog">
               No
             </v-btn>
           </v-card-actions>

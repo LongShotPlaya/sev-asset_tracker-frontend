@@ -6,6 +6,9 @@ import { format } from "@formkit/tempo";
 
 const router = useRouter();
 
+const deleteDialogue = ref(false);
+const deletingAsset = ref(null);
+const deleting = ref(false);
 const headers = [
     {
         title: "Category",
@@ -241,19 +244,33 @@ const retrieveAssets = () => {
 };
 
 const addAsset = () => {
-    router.push({ name: "add-asset"});
+    router.push({ name: "add-asset" });
 };
 
 const editAsset = (assetId) => {
     router.push({ name: "asset", params: { id: assetId }});
 };
 
+const promptDeleteAsset = (asset) => {
+    deletingAsset.value = asset;
+    deleteDialogue.value = true;
+};
+
+const closeDialog = () => {
+    deleteDialogue.value = false;
+    setTimeout(() => deletingAsset.value = null, 150);
+};
+
 const deleteAsset = (assetId) => {
+    deleting.value = true;
     AssetServices.deleteAsset(assetId)
     .then(response => {
+        deleting.value = false;
+        closeDialog();
         retrieveAssets();
     })
     .catch(err => {
+        deleting.value = false;
         console.log(err?.data?.response?.message ?? "Error deleting asset!");
     });
 };
@@ -353,12 +370,41 @@ retrieveAssets();
                         color="primary"
                         variant="outlined"
                         icon="mdi-trash-can"
-                        @click="deleteAsset(item.id)"
+                        @click="promptDeleteAsset(item)"
                     />
                 </template>
             </v-data-table>
         </v-card>
     </v-container>
+
+    <!-- Delete Dialog -->
+    <v-dialog v-model="deleteDialogue" persistent max-width="800px">
+        <v-card>
+        <v-container>
+            <v-card-title class="text-h5" align="center">Are you sure you want to delete this asset?</v-card-title>
+            <v-row justify="center">
+                <v-col cols="3" />
+                <v-col>
+                    <v-card-text>Category: {{ deletingAsset?.assetCategory }}</v-card-text>
+                    <v-card-text>Type: {{ deletingAsset?.assetType }}</v-card-text>
+                    <v-card-text>Identififer: {{ deletingAsset?.assetIdentifier }}</v-card-text>
+                </v-col>
+                <v-col cols="3" />
+            </v-row>
+            <v-row justify="center">
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="tertiary" variant="outlined"  @click="deleteAsset(deletingAsset.id)" :loading="deleting">
+                        Yes
+                    </v-btn>
+                    <v-btn color="primary" variant="flat" @click="closeDialog">
+                        No
+                    </v-btn>
+                </v-card-actions>
+            </v-row>
+        </v-container>
+        </v-card>
+    </v-dialog>
 </template>
 
 <style>

@@ -67,12 +67,12 @@ const openDeleteDialogue = (itemId) =>{
 
 const closeDialog = () => {
   deleteDialogue.value = false;
-  item.value = {}; // Reset item
+  setTimeout(() => item.value = {}, 150);
 };
 
 const addEditLink = (id) => {
     router.push({
-        name: "",
+        name: "asset-template-edit",
         params: {id},
     });
 };
@@ -134,7 +134,7 @@ onMounted(() => {
         <v-row>
           <v-spacer></v-spacer>
           <v-col align="end">
-            <v-btn color="primary" size="x-large" @click="router.push({ name: 'asset-template-edit', params: { id: 'add' }})">
+            <v-btn color="primary" size="x-large" @click="router.push({ name: 'asset-template-add' })">
               Add Template
             </v-btn>
           </v-col>
@@ -165,14 +165,14 @@ onMounted(() => {
   <v-dialog v-model="deleteDialogue" persistent max-width="800px">
     <v-card>
       <v-container>
-        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete this template?</v-card-title>
+        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete asset template "{{ item.name }}"?</v-card-title>
         <v-row justify="center">
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" variant="outlined"  @click="deleteAssetTemplate">
+            <v-btn color="tertiary" variant="outlined"  @click="deleteAssetTemplate">
               Yes
             </v-btn>
-            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+            <v-btn color="primary" variant="flat" @click="closeDialog">
               No
             </v-btn>
           </v-card-actions>

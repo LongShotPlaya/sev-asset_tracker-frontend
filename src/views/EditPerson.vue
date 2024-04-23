@@ -11,10 +11,8 @@
     const message = ref("");
     const person = ref("");
     const personsAssets = ref([]);
-    const select = ref("No Group");
-    const userGroupId = ref("");
-    const assetTypeName = ref("");
-    const assetTypeId = ref("");
+    const loadingGroup = ref(false);
+    const select = ref("");
     const setPersonId = ref("Not a User");
     const fullPerson = ref();
     const assetsDue = ref([]);
@@ -31,34 +29,13 @@
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
-            select.value = response.data.name; // Non-existant group Id being called here: For non-user
+            select.value = response.data?.id ?? "No Group";
+            loadingGroup.value = false;
         })
         .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    };
-
-    const getUserGroupId = (id) => {
-        userServices.getUser(id) //Non-exsistant user ID being called here: For non-user
-        .then((response) => {
-            userGroupId.value = response.data.groupId; // User's Group Id, permissions
-            // console.log("User Group ID: ", userGroupId);
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    };
-
-    const getAssetTypeName = () => {
-        assetTypeServices.getAllAssetTypes()
-        .then((response) => {
-            assetTypeName.value = response.data.name; // get Asset Name
-            assetTypeId.value = response.data.id; // get Asset ID
-            // console.log("Asset Type Names: ", assetTypeName );
-            // console.log("Asset Type ID: ", assetTypeId);
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
+            select.value = "No Group";
+            message.value = error?.response?.data?.message;
+            loadingGroup.value = false;
         })
     };
 
@@ -77,9 +54,13 @@
         fullPerson.value = response.data;
         personsAssets.value = response.data.borrowedAssets;
         setPersonId.value = response.data.id;
-        // console.log("Full person: ", fullPerson);
-        // console.log("Full persons assets: ", personsAssets);
+        
         if ((fullPerson.value.user?.group?.id ?? null) !== null) getGroup(fullPerson.value.user.group.id);
+        else
+        {
+            loadingGroup.value = false;
+            select.value = "No Group";
+        }
         getSoonDueAssets();
     };
 
@@ -111,8 +92,18 @@
                 return {
                     title: group.name,
                     value: group.id,
+                    priority: group.priority,
                 };
             });
+
+            // Sort by group priority first, and then in alphabetical order
+            // Higher priority will be placed later in the array to encourage security
+            roles.value.sort((a, b) => {
+                if (a.priority > b.priority) return -1;
+                if (a.priority < b.priority) return 1;
+                return a.title.localeCompare(b.title);
+            });
+            roles.value = [{ title: "No Group", value: "No Group", priority: null }, ...roles.value];
         })
         .catch(err => {
             console.log("Error retrieving groups!");
@@ -122,12 +113,14 @@
 
     const saveChanges = () => {
         if (!person.value?.user?.id) return;
-        const userId = person.value.user?.id;
-        const data = { groupId: select.value.value }; //Dont touch!!!
+        const userId = person.value.user.id;
+        const groupId = isNaN(parseInt(select.value)) ? null : parseInt(select.value);
+        const data = { groupId };
 
         userServices.updateUser(userId, data)
-        .then(() => {
+        .then((response) => {
             // console.log("Group ID updated successfully! User ID: ", id, "Data: ", data);
+            router.go(0);
         })
         .catch((error) => {
             if (error?.response?.status === 404) {
@@ -149,6 +142,7 @@
     onMounted(() => {
         user.value = Utils.getStore("user");
         const id = props.id;
+        loadingGroup.value = true;
         getFullPerson(id);
         retrieveGroups();
         // getUserGroupId(id); //Test
@@ -172,9 +166,9 @@
                                 <v-select
                                     v-model="select"
                                     :items="roles"
-                                    return-object
-                                    single-line
+                                    :return-object="false"
                                     :disabled="select === 'Not a user'"
+                                    :loading="loadingGroup"
                                     ></v-select>
                             </v-card-title>
                             <v-divider></v-divider>

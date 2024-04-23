@@ -34,6 +34,7 @@
         :headers ="headers"
         :items ="searchResults"
         item-key ="id"
+        :sort-by="[{ key: 'name', order: 'asc' }]"
       >
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="openDialog(item)">
@@ -55,14 +56,14 @@
   <v-dialog v-model="deleteDialogue" persistent max-width="800px">
     <v-card>
       <v-container>
-        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete this category?</v-card-title>
+        <v-card-title class="text-h5, space2" align="center">Are you sure you want to delete asset category "{{ item.name }}"?</v-card-title>
         <v-row justify="center">
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" variant="outlined"  @click="deleteAssetCats">
+            <v-btn color="tertiary" variant="outlined" @click="deleteAssetCats">
               Yes
             </v-btn>
-            <v-btn color="grey-darken-3" variant="outlined" @click="closeDialog">
+            <v-btn color="primary" variant="flat" @click="closeDialog">
               No
             </v-btn>
           </v-card-actions>
@@ -157,8 +158,8 @@ const deleteAssetCats = () => {
 const retrieveAssetCats = () => {
   CatServices.getAllAssetCats()
     .then((response) => {
-      const allItems = response.data;
       assetcategories.value = response.data;
+      assetcategories.value.sort((a, b) => a.name.localeCompare(b.name));
     })
     .catch((e) => {
       message.value = e.response.data.message;
@@ -176,11 +177,10 @@ const openDeleteDialogue = (itemId) =>{
   deleteDialogue.value = true;
 }
 
-
 const closeDialog = () => {
   dialog.value = false;
   deleteDialogue.value = false;
-  item.value = {}; // Reset item
+  setTimeout(() => item.value = {}, 150);
 }
 
 const headers = [
