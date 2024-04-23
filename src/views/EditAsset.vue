@@ -806,7 +806,7 @@
                         />
                         <v-text-field
                             v-if = "!adding && (checkedOut || checkingOut)"
-                            label="Due Date"
+                            label="Due Date (optional)"
                             variant="outlined"
                             v-model="fullAsset.dueDate"
                             :rules="[validDueDate]"
