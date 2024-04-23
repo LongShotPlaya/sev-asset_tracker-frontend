@@ -3,7 +3,7 @@
  */
 import { createVuetify } from "vuetify";
 import { loadFonts } from "./webfontloader";// Misc
-loadFonts();
+await loadFonts();
 
 // Styles
 import "vuetify/styles";
