@@ -42,4 +42,7 @@ const vuetify = createVuetify({
   },
 });
 
-export default vuetify;
+export {
+  loadingFonts,
+  vuetify,
+};
