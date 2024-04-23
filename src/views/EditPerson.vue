@@ -143,7 +143,7 @@
     };
 
     const viewAsset = (id) => {
-        router.push({ name: "asset", props: id }); //Change when page is made. 
+        router.push({ name: "assets", props: id }); //Change when page is made. 
     };
 
     onMounted(() => {
