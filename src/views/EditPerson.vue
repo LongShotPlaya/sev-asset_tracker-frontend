@@ -11,7 +11,7 @@
     const message = ref("");
     const person = ref("");
     const personsAssets = ref([]);
-    const select = ref("Not a user");
+    const select = ref("No Group");
     const userGroupId = ref("");
     const assetTypeName = ref("");
     const assetTypeId = ref("");
@@ -31,28 +31,7 @@
     const getGroup = (id) => {
         groupServices.getGroup(id)
         .then((response) => {
-            select.value = response.data.name; // Non-exsistant group Id being called here: For non-user
-        })
-        .catch((error) => {
-            message.value = error.response.data.message;
-        })
-    };
-    
-    const getSomeone = (id) => {
-        peopleServices.getPerson(id) 
-            .then((response) => {
-                person.value = response.data;
-            })
-            .catch((error) => {
-                message.value = error.response.data.message;
-            })
-    };
-
-    const getPersonId = (id) => {
-        userServices.getUser(id)
-        .then((response) => {
-            setPersonId.value = response.data.personId; // Non-exsistant user id being called here: For non-user
-            console.log("Person ID: ", setPersonId); 
+            select.value = response.data.name; // Non-existant group Id being called here: For non-user
         })
         .catch((error) => {
             message.value = error.response.data.message;
@@ -83,18 +62,25 @@
         })
     };
 
-    const getFullPerson = (id) => {
-        personServices.getFullPerson(id) 
-        .then((response) => {
-            fullPerson.value = response.data;
-            personsAssets.value = response.data.borrowedAssets;
-            console.log("Full person: ", fullPerson);
-            console.log("Full persons assets: ", personsAssets);
-            getSoonDueAssets();
-        })
+    const getFullPerson = async (id) => {
+        let error = false;
+        const response = await personServices.getFullPerson(id)
         .catch((error) => {
+            error = true;
+            if (error?.response?.status == 404) router.push({ name: "home" });
             message.value = error.response.data.message;
-        })
+        });
+
+        if (error) return;
+        
+        person.value = response.data;
+        fullPerson.value = response.data;
+        personsAssets.value = response.data.borrowedAssets;
+        setPersonId.value = response.data.id;
+        // console.log("Full person: ", fullPerson);
+        // console.log("Full persons assets: ", personsAssets);
+        if ((fullPerson.value.user?.group?.id ?? null) !== null) getGroup(fullPerson.value.user.group.id);
+        getSoonDueAssets();
     };
 
     const getSoonDueAssets = () => {
@@ -104,7 +90,7 @@
             const dueDate = new Date(asset.dueDate);
             return dueDate <= nextMonth;
         });
-        console.log("Assets due soon: ", dueAssets);
+        // console.log("Assets due soon: ", dueAssets);
     };
 
     //Asset data table
@@ -116,25 +102,38 @@
         { title: '', value: 'actions', align: 'end' },
     ];
 
-    const roles = [
-        { title: 'Super User', value: 1 }, 
-        { title: 'User', value: 2 }, 
-        { title: 'Person', value: 3 }, 
-    ];
+    const roles = ref([]);
 
-    const saveChanges = (id) => { 
-        const userId = id;
+    const retrieveGroups = () => {
+        groupServices.getAllGroups()
+        .then(response => {
+            roles.value = response.data.map(group => {
+                return {
+                    title: group.name,
+                    value: group.id,
+                };
+            });
+        })
+        .catch(err => {
+            console.log("Error retrieving groups!");
+            message.value = err?.response?.data?.message;
+        });
+    }
+
+    const saveChanges = () => {
+        if (!person.value?.user?.id) return;
+        const userId = person.value.user?.id;
         const data = { groupId: select.value.value }; //Dont touch!!!
 
         userServices.updateUser(userId, data)
         .then(() => {
-            console.log("Group ID updated successfully! User ID: ", id, "Data: ", data);
+            // console.log("Group ID updated successfully! User ID: ", id, "Data: ", data);
         })
         .catch((error) => {
-            if (error.response.status === 404) {
-                console.error("Asset type not found:", error.response.data.message);
+            if (error?.response?.status === 404) {
+                console.error("User not found:", error.response.data.message);
             } else {
-                console.error("Error:", error.message);
+                console.error("Error:", error?.message);
             }        
         })
     };
@@ -150,31 +149,18 @@
     onMounted(() => {
         user.value = Utils.getStore("user");
         const id = props.id;
-        getGroup(id);
-        getSomeone(id);
-        getPersonId(id);
-        getSoonDueAssets();
         getFullPerson(id);
+        retrieveGroups();
         // getUserGroupId(id); //Test
         // getAssetTypeName(); //Test
-
     });
 </script>
 
 <template>
-    <br>
-    <v-card
-    class="mx-auto"
-    width="90%"
-    height="90%"
-    >
-        <v-app
-        class="layout">
-            <v-toolbar
-            style="padding: .5%;">
-                <v-toolbar-title
-                style="font-size: 28px;"
-                >{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
+    <v-container>
+        <v-card>
+            <v-toolbar>
+                <v-toolbar-title>{{ person.fName + ' ' + person.lName }}</v-toolbar-title>
             </v-toolbar>
             <v-container
             class="v-container">
@@ -237,9 +223,9 @@
                                     </v-card-text>
                                 </v-card>
                         <v-btn
-                            @click="saveChanges(person.id)"
+                            @click="saveChanges()"
                             id="btn"
-                            color="green" 
+                            color="primary" 
                             style="margin-top: 3%;"
                             x-large>
                             save
@@ -247,7 +233,7 @@
                         <v-btn
                             @click="cancel()"
                             id="btn"
-                            color="#811429" 
+                            color="secondary" 
                             style="margin-top: 3%;  margin-left: 2%;"
                             x-large>
                             cancel
@@ -263,7 +249,7 @@
                                 item-key="id"
                             >
                                 <template v-slot:[`item.actions`]="{ item }">
-                                    <v-btn class="ma-2" color="primary" :icon="true" size="small" @click="viewAsset(item.id)">
+                                    <v-btn class="ma-2" color="primary" :icon="true" @click="viewAsset(item.id)">
                                         <v-icon>mdi-pencil</v-icon> 
                                     </v-btn>
                                 </template>
@@ -272,8 +258,8 @@
                     </v-col>
                 </v-row>
             </v-container>
-        </v-app>
-    </v-card>
+        </v-card>
+    </v-container>
 </template>
 
 <style scoped>

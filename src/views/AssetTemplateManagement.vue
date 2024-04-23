@@ -1,14 +1,14 @@
 <script setup>
 import Utils from "../config/utils.js";
 import TemplateServices from "../services/assetTemplateServices.js";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { format } from "@formkit/tempo";
 
 const assetTemplates = ref([]);
-const deleteDialogue = ref(false)
-const item = ref({})
-
+const deleteDialogue = ref(false);
+const item = ref({});
+const search = ref("");
 
 const router = useRouter();
 const user = Utils.getStore("user");
@@ -19,6 +19,11 @@ const headers = [
     {title: 'Category', value: 'categoryName', sortable: true },
     {title: '', value: 'actions', align: 'end'},
 ];
+const searchResults = computed(() => assetTemplates.value.filter(template => {
+  return new RegExp(search.value, "i").test(template.name)
+  || new RegExp(search.value, "i").test(template.typeName)
+  || new RegExp(search.value, "i").test(template.categoryName);
+}));
 
 const updateAssetTemplates = async (id) => {
   const data = {
@@ -58,19 +63,19 @@ const deleteAssetTemplate = () => {
 const openDeleteDialogue = (itemId) =>{
   item.value = assetTemplates.value?.find(cat => cat.id == itemId);
   deleteDialogue.value = true;
-}
+};
 
 const closeDialog = () => {
   deleteDialogue.value = false;
   item.value = {}; // Reset item
-}
+};
 
 const addEditLink = (id) => {
     router.push({
         name: "",
         params: {id},
     });
-}
+};
 
 const retrieveAssetTemplates = async () => {
   assetTemplates.value = (await TemplateServices.getAllAssetTemplates())?.data;
@@ -86,15 +91,13 @@ const retrieveAssetTemplates = async () => {
         return {
           ...assetTemplate,
           categoryName: assetTemplate.assetType.category.name,
-          typeName: assetTemplate.assetType.name
-          
+          typeName: assetTemplate.assetType.name,
         };
       });
       assetTemplates.value.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-      console.log(assetTemplates.value)
     })
     .catch((e) => {
-        console.log(e)
+      console.log(e)
       message.value = e.response.data.message;
     });
 };
@@ -106,46 +109,56 @@ onMounted(() => {
 </script>
 
 <template>
-    <v-container class="space">  
+  <v-container>  
     <v-toolbar>
         <v-toolbar-title>Asset Template Management</v-toolbar-title>
     </v-toolbar>
 
-  <br>
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-col align="right">
-        <v-btn color="primary" @click="addEditLink('add')">
-          Add
-        </v-btn>
-      </v-col>
-    </v-row>
-
-  <v-row>
-      <v-col>
-        <v-card>
-          <v-data-table
-            :headers ="headers"
-            :items ="assetTemplates"
-            item-key ="id"
-          >
-
-            <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="addEditLink(item.id)">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn
-                class="ma-2"
-                color="primary"
-                variant="outlined"
-                icon="mdi-trash-can"
-                @click="openDeleteDialogue(item.id)"
-                ></v-btn>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
+    <br>
+    <v-card>
+      <v-container>
+        <v-row>
+          <v-col>
+            <v-text-field
+              v-model="search"
+              label="Search"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              hide-details
+              single-line
+              full-width
+              clearable
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-spacer></v-spacer>
+          <v-col align="end">
+            <v-btn color="primary" size="x-large" @click="router.push({ name: 'asset-template-edit', params: { id: 'add' }})">
+              Add Template
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-data-table
+        :headers ="headers"
+        :items ="searchResults"
+        item-key ="id"
+      >
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="addEditLink(item.id)">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn
+            class="ma-2"
+            color="primary"
+            variant="outlined"
+            icon="mdi-trash-can"
+            @click="openDeleteDialogue(item.id)"
+            ></v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
   </v-container>
 
 <!-- Delete Dialog -->

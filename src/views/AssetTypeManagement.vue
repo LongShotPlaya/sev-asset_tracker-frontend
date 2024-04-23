@@ -2,15 +2,20 @@
 import Utils from "../config/utils.js";
 import TypeServices from "../services/assetTypeManagementServices.js";
 import CatServices from "../services/assetCatServices.js";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { format } from "@formkit/tempo";
 
 const assetTypes = ref([]);
 const assetcategories = ref([]);
-const deleteDialogue = ref(false)
-const item = ref({})
-
+const deleteDialogue = ref(false);
+const item = ref({});
+const search = ref("");
+const searchResults = computed(() => assetTypes.value.filter(type => {
+  return new RegExp(search.value, "i").test(type.name)
+  || new RegExp(search.value, "i").test(type.circulatable)
+  || new RegExp(search.value, "i").test(type.categoryName);
+}))
 
 const router = useRouter();
 const user = Utils.getStore("user");
@@ -18,7 +23,7 @@ const message = ref("Search, Edit or Delete Tutorials");
 const headers = [
     {title: 'Name', value: 'name', sortable: true },
     {title: 'Circulatable', value: 'circulatable', sortable: true },
-    {title: 'Created', value: 'createdAt', sortable: true },
+    // {title: 'Created', value: 'createdAt', sortable: true },
     {title: 'Category', value: 'categoryName', sortable: true },
     {title: '', value: 'actions', align: 'end'},
 ];
@@ -93,7 +98,6 @@ const retrieveAssetTypes = async () => {
         };
       });
       assetTypes.value.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-      console.log(assetTypes.value)
     })
     .catch((e) => {
         console.log(e)
@@ -125,46 +129,57 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-container class="space">  
+  <v-container>  
     <v-toolbar>
         <v-toolbar-title>Asset Type Management</v-toolbar-title>
     </v-toolbar>
 
   <br>
-    <v-row>
-      <v-spacer></v-spacer>
-      <v-col align="right">
-        <v-btn color="primary" @click="addEditLink('add')">
-          Add
-        </v-btn>
-      </v-col>
-    </v-row>
+    <v-card>
+      <v-container>
+        <v-row>
+          <v-col>
+            <v-text-field
+              v-model="search"
+              label="Search"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              hide-details
+              single-line
+              full-width
+              clearable
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-spacer></v-spacer>
+          <v-col align="right">
+            <v-btn color="primary" size="x-large" @click="router.push({ name: 'asset-type-add' })">
+              Add Asset Type
+            </v-btn>
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-data-table
+        :headers ="headers"
+        :items ="searchResults"
+        item-key ="id"
+      >
 
-  <v-row>
-      <v-col>
-        <v-card>
-          <v-data-table
-            :headers ="headers"
-            :items ="assetTypes"
-            item-key ="id"
-          >
-
-            <template v-slot:[`item.actions`]="{ item }">
-              <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="addEditLink(item.id)">
-                <v-icon>mdi-pencil</v-icon>
-              </v-btn>
-              <v-btn
-                class="ma-2"
-                color="primary"
-                variant="outlined"
-                icon="mdi-trash-can"
-                @click="openDeleteDialogue(item.id)"
-                ></v-btn>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-btn class="ma-2" color="primary" icon="mdi-pencil" @click="addEditLink(item.id)">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn
+            class="ma-2"
+            color="primary"
+            variant="outlined"
+            icon="mdi-trash-can"
+            @click="openDeleteDialogue(item.id)"
+            ></v-btn>
+        </template>
+      </v-data-table>
+    </v-card>
   </v-container>
 
 <!-- Delete Dialog -->
@@ -193,10 +208,5 @@ onMounted(() => {
     th.column,
     td.column{
         width: 33.3%;
-    }
-    .space{
-        padding-left: 5%;
-        padding-right: 5%;
-        margin-top: 1%;
     }
 </style>
