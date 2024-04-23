@@ -857,7 +857,7 @@ fetchAlertTypes();
       <v-window-item value="report-by-assignment">
         <v-card>
           <v-container>
-            
+            <v-card-title align="center">Coming Soon!</v-card-title>
           </v-container>
         </v-card>
       </v-window-item>
