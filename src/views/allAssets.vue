@@ -14,21 +14,25 @@ const headers = [
         title: "Category",
         key: "assetCategory",
         sortable: true,
+        width: "15%",
     },
     {
         title: "Type",
         key: "assetType",
         sortable: true,
+        width: "15%",
     },
     {
         title: "Identifier",
         key: "assetIdentifier",
         sortable: true,
+        width: "15%",
     },
     {
         title: "Location",
         key: "location",
         sortable: true,
+        width: "15%",
     },
     {
         title: "Alerts",
@@ -217,14 +221,14 @@ const retrieveAssets = () => {
                 location: !!asset.location ? `${asset.location.building.abbreviation} ${asset.location.name}` : !!asset.borrower ? `Checked Out to ${asset.borrower.fName} ${asset.borrower.lName}` : `No location`,
                 borrowerId: asset.borrower?.id,
                 borrowerName: `${asset.borrower?.fName} ${asset.borrower?.lName}`,
-                alerts: asset.alerts.map(alert => { return { id: alert.id, type: alert.type.name, date: format(alert.date, "YYYY-MM-DD") } }),
+                alerts: asset.alerts.map(alert => { return { id: alert.id, type: alert.type.name, date: format(`${alert.date}`.match(/\d{4}-\d{2}-\d{2}/)[0], "YYYY-MM-DD") } }),
             };
 
             if ((result.borrowerId ?? null) !== null)
             {
                 let parsedDate;
                 try {
-                    parsedDate = format(asset.dueDate);
+                    parsedDate = format(`${asset.dueDate}`.match(/\d{4}-\d{2}-\d{2}/)[0], "YYYY-MM-DD");
                 }
                 catch {
                     parsedDate = "No Due Date";
@@ -287,6 +291,17 @@ const checkInAsset = (assetId) => {
     });
 };
 
+const parseDate = (date) => {
+    let result = date;
+    try {
+        result = format(date);
+    }
+    catch {
+        result = "No Date";
+    }
+    return result;
+};
+
 retrieveAssets();
 </script>
 
@@ -345,7 +360,7 @@ retrieveAssets();
                         style="background-color: rgb(var(--v-theme-secondary));"
                     >
                         <td>{{ alert.type }}</td>
-                        <td>{{ alert.date }}</td>
+                        <td>{{ parseDate(alert.date) }}</td>
                         <td></td>
                         <td></td>
                         <td></td>
