@@ -11,7 +11,7 @@
     const message = ref("");
     const person = ref("");
     const personsAssets = ref([]);
-    const select = ref("Not a user");
+    const select = ref("No Group");
     const userGroupId = ref("");
     const assetTypeName = ref("");
     const assetTypeId = ref("");
@@ -77,8 +77,8 @@
         fullPerson.value = response.data;
         personsAssets.value = response.data.borrowedAssets;
         setPersonId.value = response.data.id;
-        console.log("Full person: ", fullPerson);
-        console.log("Full persons assets: ", personsAssets);
+        // console.log("Full person: ", fullPerson);
+        // console.log("Full persons assets: ", personsAssets);
         if ((fullPerson.value.user?.group?.id ?? null) !== null) getGroup(fullPerson.value.user.group.id);
         getSoonDueAssets();
     };
@@ -90,7 +90,7 @@
             const dueDate = new Date(asset.dueDate);
             return dueDate <= nextMonth;
         });
-        console.log("Assets due soon: ", dueAssets);
+        // console.log("Assets due soon: ", dueAssets);
     };
 
     //Asset data table
@@ -102,25 +102,38 @@
         { title: '', value: 'actions', align: 'end' },
     ];
 
-    const roles = [
-        { title: 'Super User', value: 1 }, 
-        { title: 'User', value: 2 }, 
-        { title: 'Person', value: 3 }, 
-    ];
+    const roles = ref([]);
 
-    const saveChanges = (id) => { 
-        const userId = id;
+    const retrieveGroups = () => {
+        groupServices.getAllGroups()
+        .then(response => {
+            roles.value = response.data.map(group => {
+                return {
+                    title: group.name,
+                    value: group.id,
+                };
+            });
+        })
+        .catch(err => {
+            console.log("Error retrieving groups!");
+            message.value = err?.response?.data?.message;
+        });
+    }
+
+    const saveChanges = () => {
+        if (!person.value?.user?.id) return;
+        const userId = person.value.user?.id;
         const data = { groupId: select.value.value }; //Dont touch!!!
 
         userServices.updateUser(userId, data)
         .then(() => {
-            console.log("Group ID updated successfully! User ID: ", id, "Data: ", data);
+            // console.log("Group ID updated successfully! User ID: ", id, "Data: ", data);
         })
         .catch((error) => {
-            if (error.response.status === 404) {
-                console.error("Asset type not found:", error.response.data.message);
+            if (error?.response?.status === 404) {
+                console.error("User not found:", error.response.data.message);
             } else {
-                console.error("Error:", error.message);
+                console.error("Error:", error?.message);
             }        
         })
     };
@@ -137,6 +150,7 @@
         user.value = Utils.getStore("user");
         const id = props.id;
         getFullPerson(id);
+        retrieveGroups();
         // getUserGroupId(id); //Test
         // getAssetTypeName(); //Test
     });
@@ -209,7 +223,7 @@
                                     </v-card-text>
                                 </v-card>
                         <v-btn
-                            @click="saveChanges(person.id)"
+                            @click="saveChanges()"
                             id="btn"
                             color="primary" 
                             style="margin-top: 3%;"

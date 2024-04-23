@@ -93,6 +93,7 @@ const fetchCategories = async () => {
     catsLoading.value = false;
   })
   .catch(err => {
+    if (err?.response?.status == 401) router.push({ name: "home" });
     catsLoading.value = false;
     console.log("Error retrieving categories!");
   });

@@ -88,7 +88,7 @@ const retrieveAssetTemplate = () => {
         templateLoading.value = false;
     })
     .catch(err => {
-        if (err?.response?.status == 404) router.push({ name: "home" });
+        if (err?.response?.status == 404 || err?.response?.status == 401) router.push({ name: "home" });
         console.log(err?.data?.response?.message ?? "Error loading asset template");
         templateLoading.value = false;
     })

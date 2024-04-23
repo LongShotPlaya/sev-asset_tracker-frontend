@@ -113,7 +113,7 @@ const retrieveAssetType = () => {
         typeLoading.value = false;
     })
     .catch(err => {
-        if (err?.response?.status == 404) router.push({ name: "home" });
+        if (err?.response?.status == 404 || err?.response?.status == 401) router.push({ name: "home" });
         else console.log("Error retrieving asset type!");
         typeLoading.value = false;
     });

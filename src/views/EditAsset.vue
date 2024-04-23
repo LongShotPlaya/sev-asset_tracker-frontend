@@ -220,7 +220,7 @@
             fullAsset.value.locationId ??= "No Location";
         })
         .catch(error => {
-            if (error?.response?.status == 404) router.push({ name: "home" });
+            if (error?.response?.status == 404 || error?.response?.status == 401) router.push({ name: "home" });
             message.value = error.response.data.message;
         })
     };
